@@ -1,33 +1,33 @@
 import pygame
 
 
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
-WINDOW_TITLE = "The King is Dead"
-BACKGROUND_COLOR = (30, 35, 45)
-FRAMES_PER_SECOND = 60
+LARGURA_JANELA = 800
+ALTURA_JANELA = 600
+TITULO_JANELA = "The King is Dead"
+COR_DE_FUNDO = (230, 217, 191)
+QUADROS_POR_SEGUNDO = 60
 
 
-def main() -> None:
+def principal() -> None:
     """Inicializa e mantém a primeira janela do jogo aberta."""
     pygame.init()
 
-    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption(WINDOW_TITLE)
-    clock = pygame.time.Clock()
+    tela = pygame.display.set_mode((LARGURA_JANELA, ALTURA_JANELA))
+    pygame.display.set_caption(TITULO_JANELA)
+    relogio = pygame.time.Clock()
 
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+    executando = True
+    while executando:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                executando = False
 
-        screen.fill(BACKGROUND_COLOR)
+        tela.fill(COR_DE_FUNDO)
         pygame.display.flip()
-        clock.tick(FRAMES_PER_SECOND)
+        relogio.tick(QUADROS_POR_SEGUNDO)
 
     pygame.quit()
 
 
 if __name__ == "__main__":
-    main()
+    principal()
