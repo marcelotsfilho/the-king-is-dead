@@ -1,7 +1,7 @@
 import unittest
 
-from jogo.enumeracoes import Faccao
-from jogo.regiao import Regiao
+from model.enums import Faccao
+from model.region import Regiao
 
 
 class TesteRegiao(unittest.TestCase):
@@ -70,3 +70,4 @@ class TesteRegiao(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

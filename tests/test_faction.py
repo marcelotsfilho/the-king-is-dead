@@ -1,6 +1,6 @@
 import unittest
 
-from jogo.enumeracoes import Faccao
+from model.enums import Faccao
 
 
 class TesteFaccao(unittest.TestCase):
@@ -23,3 +23,4 @@ class TesteFaccao(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

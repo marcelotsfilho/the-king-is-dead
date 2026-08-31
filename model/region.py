@@ -1,4 +1,4 @@
-from jogo.enumeracoes import Faccao
+from model.enums import Faccao
 
 
 class Regiao:
