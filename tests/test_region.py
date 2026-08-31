@@ -7,13 +7,13 @@ from model.region import Regiao
 class TesteRegiao(unittest.TestCase):
     """Verifica o estado e as operações básicas de uma região."""
 
-    def test_regiao_comeca_sem_seguidores(self) -> None:
+    def test_regiao_comeca_sem_seguidores(self):
         regiao = Regiao("Moray")
 
         for faccao in Faccao:
             self.assertEqual(regiao.quantidade_de_seguidores(faccao), 0)
 
-    def test_adiciona_seguidores_de_uma_faccao(self) -> None:
+    def test_adiciona_seguidores_de_uma_faccao(self):
         regiao = Regiao("Moray")
 
         regiao.adicionar_seguidores(Faccao.ESCOCESES, 2)
@@ -24,7 +24,7 @@ class TesteRegiao(unittest.TestCase):
         )
         self.assertEqual(regiao.quantidade_de_seguidores(Faccao.GALESES), 0)
 
-    def test_remove_seguidores_existentes(self) -> None:
+    def test_remove_seguidores_existentes(self):
         regiao = Regiao("Moray")
         regiao.adicionar_seguidores(Faccao.ESCOCESES, 2)
 
@@ -35,20 +35,20 @@ class TesteRegiao(unittest.TestCase):
             1,
         )
 
-    def test_nao_remove_mais_seguidores_do_que_existem(self) -> None:
+    def test_nao_remove_mais_seguidores_do_que_existem(self):
         regiao = Regiao("Moray")
         regiao.adicionar_seguidores(Faccao.ESCOCESES)
 
         with self.assertRaises(ValueError):
             regiao.remover_seguidores(Faccao.ESCOCESES, 2)
 
-    def test_quantidade_deve_ser_positiva(self) -> None:
+    def test_quantidade_deve_ser_positiva(self):
         regiao = Regiao("Moray")
 
         with self.assertRaises(ValueError):
             regiao.adicionar_seguidores(Faccao.ESCOCESES, 0)
 
-    def test_regiao_controlada_esta_resolvida(self) -> None:
+    def test_regiao_controlada_esta_resolvida(self):
         regiao = Regiao("Moray")
 
         regiao.definir_controlador(Faccao.ESCOCESES)
@@ -57,7 +57,7 @@ class TesteRegiao(unittest.TestCase):
         self.assertEqual(regiao.controlador, Faccao.ESCOCESES)
         self.assertFalse(regiao.instavel)
 
-    def test_regiao_instavel_esta_resolvida_e_sem_controlador(self) -> None:
+    def test_regiao_instavel_esta_resolvida_e_sem_controlador(self):
         regiao = Regiao("Moray")
         regiao.definir_controlador(Faccao.ESCOCESES)
 
@@ -70,4 +70,3 @@ class TesteRegiao(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

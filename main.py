@@ -4,7 +4,7 @@ from controller.game_controller import ControladorJogo
 from view.game_view import VisaoJogo
 
 
-def principal() -> None:
+def principal():
     """Monta as camadas MVC e inicia a aplicação."""
     pygame.init()
 
