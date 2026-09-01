@@ -11,15 +11,15 @@ class Jogador:
         self._mao = []
         self._descarte_mao = []
 
-        self.corte = {
+        self._corte = {
             Faccao.ESCOCESES: 0,
             Faccao.INGLESES: 0,
-            Faccao.IRLANDESES: 0,
+            Faccao.GALESES: 0,
         }
 
         self.disco_negociacao_disponivel = True
 
-    def  obter_mao(self):
+    def obter_mao(self):
         return self._mao.copy()
 
     def obter_descarte_mao(self):
@@ -34,7 +34,7 @@ class Jogador:
         self._mao.remove(carta)
         self._descarte_mao.append(carta)
 
-    def obter_corte(self, faccao):
+    def obter_corte(self):
         return self._corte.copy()
 
     def qtd_na_corte(self, faccao):
