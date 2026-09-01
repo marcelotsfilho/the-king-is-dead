@@ -4,10 +4,18 @@ class TrilhaDisputas:
     """Representa a trilha de disputas do jogo"""
 
     def __init__(self, nomes_regioes):
+        if not isinstance(nomes_regioes, list):
+            raise ValueError("Os nomes das regiões devem ser informados em uma lista.")
         if not nomes_regioes:
             raise ValueError("A lista de nomes de regiões não pode ser vazia.")
         if len(nomes_regioes) != 8:
             raise ValueError("A lista de nomes de regiões deve conter exatamente 8 elementos.")
+
+        nomes_encontrados = set()
+        for nome in nomes_regioes:
+            if nome in nomes_encontrados:
+                raise ValueError("Os nomes das regiões não podem se repetir.")
+            nomes_encontrados.add(nome)
 
         self.cartas_regiao = []
 
@@ -21,10 +29,9 @@ class TrilhaDisputas:
     def obter_carta(self, posicao):
         if not isinstance(posicao, int):
             raise ValueError("A posição da carta deve ser um número inteiro.")
-        if posicao < 0 or posicao >= len(self.cartas_regiao):
-            # TODO: CONSIDERAR A PARTIR DO 1, JÁ QUE O JOGADOR VERÁ 1 AO 8
-            raise ValueError("A posição da carta deve ser um número inteiro entre 0 e 7.")
-        return self.cartas_regiao[posicao]
+        if posicao < 1 or posicao > 8:
+            raise ValueError("A posição da carta deve ser um número inteiro entre 1 e 8.")
+        return self.cartas_regiao[posicao - 1]
 
     def obter_proxima_carta(self):
         for carta in self.cartas_regiao:
@@ -35,8 +42,8 @@ class TrilhaDisputas:
     def trocar_cartas(self, posicao_a, posicao_b):
         if not isinstance(posicao_a, int) or not isinstance(posicao_b, int):
             raise ValueError("As posições para troca devem ser números inteiros.")
-        if posicao_a < 0 or posicao_a >= len(self.cartas_regiao) or posicao_b < 0 or posicao_b >= len(self.cartas_regiao):
-            raise ValueError("As posições para troca devem ser números inteiros entre 0 e 7.")
+        if posicao_a < 1 or posicao_a > 8 or posicao_b < 1 or posicao_b > 8:
+            raise ValueError("As posições para troca devem ser números inteiros entre 1 e 8.")
 
-        self.cartas_regiao[posicao_a], self.cartas_regiao[posicao_b] = self.cartas_regiao[posicao_b], self.cartas_regiao[posicao_a]
+        self.cartas_regiao[posicao_a - 1], self.cartas_regiao[posicao_b - 1] = self.cartas_regiao[posicao_b - 1], self.cartas_regiao[posicao_a - 1]
         
