@@ -1,7 +1,6 @@
 import random
 
 from model.dispute_track import TrilhaDisputas
-from model.board import Tabuleiro
 
 class ConfiguracaoJogo:
     """Preparando a configuração inicial do jogo"""
