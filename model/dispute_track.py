@@ -1,5 +1,6 @@
 from model.region_card import CartaRegiao
 
+
 class TrilhaDisputas:
     """Representa a trilha de disputas do jogo"""
 
@@ -39,11 +40,22 @@ class TrilhaDisputas:
                 return carta
         return None
 
+    def quantidade_resolvida(self):
+        """Retorna quantas cartas já foram viradas para baixo."""
+        quantidade = 0
+
+        for carta in self.cartas_regiao:
+            if not carta.virada_para_cima:
+                quantidade += 1
+
+        return quantidade
+
     def trocar_cartas(self, posicao_a, posicao_b):
         if not isinstance(posicao_a, int) or not isinstance(posicao_b, int):
             raise ValueError("As posições para troca devem ser números inteiros.")
         if posicao_a < 1 or posicao_a > 8 or posicao_b < 1 or posicao_b > 8:
             raise ValueError("As posições para troca devem ser números inteiros entre 1 e 8.")
 
-        self.cartas_regiao[posicao_a - 1], self.cartas_regiao[posicao_b - 1] = self.cartas_regiao[posicao_b - 1], self.cartas_regiao[posicao_a - 1]
-        
+        carta_temporaria = self.cartas_regiao[posicao_a - 1]
+        self.cartas_regiao[posicao_a - 1] = self.cartas_regiao[posicao_b - 1]
+        self.cartas_regiao[posicao_b - 1] = carta_temporaria

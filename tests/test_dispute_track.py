@@ -120,6 +120,13 @@ class TesteTrilhaDisputas(unittest.TestCase):
         with self.assertRaises(ValueError):
             trilha.trocar_cartas(1, 9)
 
+    def test_quantidade_resolvida_conta_cartas_viradas(self):
+        trilha = TrilhaDisputas(obter_nomes_regioes())
+        trilha.obter_carta(1).virar_para_baixo()
+        trilha.obter_carta(2).virar_para_baixo()
+
+        self.assertEqual(trilha.quantidade_resolvida(), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

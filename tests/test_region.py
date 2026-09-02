@@ -67,6 +67,31 @@ class TesteRegiao(unittest.TestCase):
         self.assertIsNone(regiao.controlador)
         self.assertTrue(regiao.instavel)
 
+    def test_total_de_seguidores_soma_todas_as_faccoes(self):
+        regiao = Regiao("Moray")
+        regiao.adicionar_seguidores(Faccao.ESCOCESES, 2)
+        regiao.adicionar_seguidores(Faccao.GALESES)
+
+        self.assertEqual(regiao.total_de_seguidores(), 3)
+
+    def test_remove_todos_os_seguidores(self):
+        regiao = Regiao("Moray")
+        regiao.adicionar_seguidores(Faccao.ESCOCESES, 2)
+        regiao.adicionar_seguidores(Faccao.INGLESES)
+
+        removidos = regiao.remover_todos_os_seguidores()
+
+        self.assertEqual(removidos[Faccao.ESCOCESES], 2)
+        self.assertEqual(removidos[Faccao.INGLESES], 1)
+        self.assertEqual(regiao.total_de_seguidores(), 0)
+
+    def test_regiao_resolvida_nao_pode_receber_seguidores(self):
+        regiao = Regiao("Moray")
+        regiao.definir_controlador(Faccao.ESCOCESES)
+
+        with self.assertRaises(ValueError):
+            regiao.adicionar_seguidores(Faccao.GALESES)
+
 
 if __name__ == "__main__":
     unittest.main()
