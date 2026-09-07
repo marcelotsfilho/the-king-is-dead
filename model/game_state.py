@@ -1,3 +1,6 @@
+from model.enums import FaseTurno
+
+
 class EstadoJogo:
     """Reúne o estado atual de uma partida."""
 
@@ -18,6 +21,11 @@ class EstadoJogo:
         self.disputas_resolvidas = 0
         self.quantidade_instabilidades = 0
         self.historico_vitorias_faccoes = []
+        self.historico_acoes = []
+        self.ultimo_jogador_que_agiu = None
+        self.ordem_jogadores_sem_cartas = []
+        self.fase_turno = FaseTurno.ESCOLHER_ACAO
+        self.carta_em_execucao = None
         self.finalizado = False
         self.vencedor = None
         self.faccao_vencedora = None

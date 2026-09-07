@@ -1,5 +1,6 @@
 from model.enums import Faccao
 
+
 class Jogador:
     def __init__(self, nome):
         nome_limpo = nome.strip()
@@ -27,6 +28,14 @@ class Jogador:
 
     def adicionar_carta_mao(self, carta):
         self._mao.append(carta)
+
+    def possui_carta(self, carta):
+        """Informa se uma carta específica ainda está disponível."""
+        return carta in self._mao
+
+    def quantidade_cartas(self):
+        """Retorna quantas cartas ainda não foram utilizadas."""
+        return len(self._mao)
 
     def usar_carta(self, carta):
         if carta not in self._mao:

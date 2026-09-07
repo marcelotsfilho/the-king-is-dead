@@ -29,6 +29,14 @@ class TesteJogador(unittest.TestCase):
 
         self.assertEqual(jogador.obter_mao(), ["Assemble"])
 
+    def test_possui_carta_e_quantidade_cartas_consultam_a_mao(self):
+        jogador = Jogador("Jogador 1")
+        jogador.adicionar_carta_mao("Assemble")
+
+        self.assertTrue(jogador.possui_carta("Assemble"))
+        self.assertFalse(jogador.possui_carta("Negotiate"))
+        self.assertEqual(jogador.quantidade_cartas(), 1)
+
     def test_carta_usada_sai_da_mao_e_vai_para_o_descarte(self):
         jogador = Jogador("Jogador 1")
         jogador.adicionar_carta_mao("Assemble")

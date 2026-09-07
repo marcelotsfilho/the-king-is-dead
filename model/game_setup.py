@@ -1,5 +1,6 @@
 import random
 
+from model.action_card import criar_conjunto_padrao
 from model.board import Tabuleiro
 from model.dispute_track import TrilhaDisputas
 from model.enums import Faccao
@@ -29,7 +30,9 @@ class ConfiguracaoJogo:
         jogadores = []
 
         for nome in nomes_jogadores:
-            jogadores.append(Jogador(nome))
+            jogador = Jogador(nome)
+            self._entregar_cartas_ao_jogador(jogador)
+            jogadores.append(jogador)
 
         reserva = ReservaSeguidores(16)
 
@@ -38,6 +41,12 @@ class ConfiguracaoJogo:
         self._completar_seguidores_das_regioes(tabuleiro, reserva)
 
         return EstadoJogo(tabuleiro, trilha, jogadores, reserva)
+
+    def _entregar_cartas_ao_jogador(self, jogador):
+        cartas = criar_conjunto_padrao()
+
+        for carta in cartas:
+            jogador.adicionar_carta_mao(carta)
 
     def _colocar_seguidores_das_regioes_iniciais(self, tabuleiro, reserva):
         iniciais = {

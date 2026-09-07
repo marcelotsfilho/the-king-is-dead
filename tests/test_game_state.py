@@ -1,5 +1,6 @@
 import unittest
 
+from model.enums import FaseTurno
 from model.board import Tabuleiro
 from model.game_setup import ConfiguracaoJogo
 from model.game_state import EstadoJogo
@@ -41,6 +42,12 @@ class TesteEstadoJogo(unittest.TestCase):
 
         self.assertEqual(estado.passes_consecutivos, 0)
         self.assertFalse(estado.finalizado)
+
+    def test_estado_comeca_na_fase_de_escolher_acao(self):
+        estado = ConfiguracaoJogo(42).criar_estado_inicial(["Ana", "Bruno"])
+
+        self.assertEqual(estado.fase_turno, FaseTurno.ESCOLHER_ACAO)
+        self.assertIsNone(estado.carta_em_execucao)
         self.assertIsNone(estado.vencedor)
         self.assertIsNone(estado.motivo_encerramento)
 

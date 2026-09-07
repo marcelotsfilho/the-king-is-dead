@@ -1,5 +1,7 @@
+# Estas são as dimensões lógicas usadas para desenhar o jogo.
+# A janela real é calculada de acordo com a resolução do monitor.
 LARGURA_JANELA = 1200
-ALTURA_JANELA = 800
+ALTURA_JANELA = 1030
 TITULO_JANELA = "The King is Dead"
 COR_DE_FUNDO = (230, 217, 191)
 COR_TEXTO = (35, 32, 28)
@@ -29,3 +31,9 @@ POSICOES_REGIOES = {
 
 LARGURA_REGIAO = 190
 ALTURA_REGIAO = 130
+
+LARGURA_CARTA_ACAO = 132
+ALTURA_CARTA_ACAO = 78
+ESPACO_ENTRE_CARTAS = 8
+POSICAO_X_MAO = 40
+POSICAO_Y_MAO = 815

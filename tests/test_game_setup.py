@@ -3,6 +3,7 @@ import unittest
 from model.board import Tabuleiro
 from model.dispute_track import TrilhaDisputas
 from model.enums import Faccao
+from model.enums import TipoCartaAcao
 from model.game_setup import ConfiguracaoJogo
 
 
@@ -110,6 +111,34 @@ class TesteConfiguracaoJogo(unittest.TestCase):
             nomes_2.append(carta.nome_regiao)
 
         self.assertEqual(nomes_1, nomes_2)
+
+    def test_cada_jogador_recebe_oito_cartas_de_acao(self):
+        estado = ConfiguracaoJogo(42).criar_estado_inicial(["Ana", "Bruno"])
+
+        for jogador in estado.obter_jogadores():
+            self.assertEqual(len(jogador.obter_mao()), 8)
+            self.assertEqual(jogador.obter_descarte_mao(), [])
+
+    def test_cada_jogador_recebe_duas_cartas_assemble(self):
+        estado = ConfiguracaoJogo(42).criar_estado_inicial(["Ana", "Bruno"])
+
+        for jogador in estado.obter_jogadores():
+            quantidade_assemble = 0
+
+            for carta in jogador.obter_mao():
+                if carta.tipo == TipoCartaAcao.REUNIR:
+                    quantidade_assemble += 1
+
+            self.assertEqual(quantidade_assemble, 2)
+
+    def test_jogadores_nao_compartilham_as_mesmas_cartas(self):
+        estado = ConfiguracaoJogo(42).criar_estado_inicial(["Ana", "Bruno"])
+        jogadores = estado.obter_jogadores()
+        mao_1 = jogadores[0].obter_mao()
+        mao_2 = jogadores[1].obter_mao()
+
+        for indice in range(8):
+            self.assertIsNot(mao_1[indice], mao_2[indice])
 
 
 if __name__ == "__main__":

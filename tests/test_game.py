@@ -2,7 +2,8 @@ import unittest
 
 from model.board import Tabuleiro
 from model.dispute_track import TrilhaDisputas
-from model.enums import Faccao
+from model.action_card import CartaAcao
+from model.enums import Faccao, TipoCartaAcao
 from model.game import Jogo
 from model.game_setup import ConfiguracaoJogo
 from model.game_state import EstadoJogo
@@ -98,6 +99,17 @@ class TesteJogo(unittest.TestCase):
 
         self.assertIs(jogo.estado.vencedor, jogador_1)
 
+    def test_empate_na_invasao_favorece_quem_agiu_por_ultimo(self):
+        jogo = criar_jogo_manual()
+        jogador_2 = jogo.estado.obter_jogadores()[1]
+        jogo.estado.ultimo_jogador_que_agiu = jogador_2
+
+        jogo.resolver_proxima_disputa()
+        jogo.resolver_proxima_disputa()
+        jogo.resolver_proxima_disputa()
+
+        self.assertIs(jogo.estado.vencedor, jogador_2)
+
     def test_oitava_disputa_encerra_por_coroacao(self):
         jogo = criar_jogo_manual()
 
@@ -114,6 +126,37 @@ class TesteJogo(unittest.TestCase):
         self.assertEqual(jogo.estado.motivo_encerramento, "Coroação")
         self.assertEqual(jogo.estado.faccao_vencedora, Faccao.ESCOCESES)
         self.assertIs(jogo.estado.vencedor, jogador_1)
+
+    def test_empate_na_coroacao_favorece_quem_usou_as_cartas_primeiro(self):
+        jogo = criar_jogo_manual()
+        jogador_1 = jogo.estado.obter_jogadores()[0]
+        jogador_2 = jogo.estado.obter_jogadores()[1]
+        jogo.estado.ordem_jogadores_sem_cartas = [jogador_2, jogador_1]
+
+        for regiao in jogo.estado.tabuleiro.obter_regioes().values():
+            regiao.adicionar_seguidores(Faccao.ESCOCESES)
+
+        for _ in range(8):
+            jogo.resolver_proxima_disputa()
+
+        self.assertIs(jogo.estado.vencedor, jogador_2)
+
+    def test_jogador_entra_na_ordem_quando_usa_a_ultima_carta(self):
+        estado = ConfiguracaoJogo(42).criar_estado_inicial(["Ana", "Bruno"])
+        jogo = Jogo(estado)
+        ana = estado.obter_jogadores()[0]
+
+        while ana.quantidade_cartas() > 0:
+            primeira_carta = ana.obter_mao()[0]
+            ana.usar_carta(primeira_carta)
+
+        carta = CartaAcao(TipoCartaAcao.APOIO_ESCOCES)
+        ana.adicionar_carta_mao(carta)
+
+        regioes_validas = jogo.obter_regioes_validas_para_apoio(carta.tipo)
+        jogo.jogar_carta(carta, {"regiao": regioes_validas[0]})
+
+        self.assertEqual(estado.ordem_jogadores_sem_cartas, [ana])
 
     def test_nao_permite_passar_depois_do_encerramento(self):
         jogo = criar_jogo_manual()

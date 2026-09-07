@@ -8,3 +8,22 @@ class Faccao(Enum):
     GALESES = "galeses"
     INGLESES = "ingleses"
 
+
+class TipoCartaAcao(Enum):
+    """Identidades das sete ações do modo básico."""
+
+    APOIO_ESCOCES = "Scottish Support"
+    APOIO_GALES = "Welsh Support"
+    APOIO_INGLES = "English Support"
+    NEGOCIAR = "Negotiate"
+    MANOBRAR = "Manoeuvre"
+    SUPERAR_MANOBRA = "Outmanoeuvre"
+    REUNIR = "Assemble"
+
+
+class FaseTurno(Enum):
+    """Etapas possíveis de um turno do modo básico."""
+
+    ESCOLHER_ACAO = "escolher_acao"
+    CONVOCAR_SEGUIDOR = "convocar_seguidor"
+    ENCERRADO = "encerrado"
