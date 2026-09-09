@@ -22,60 +22,29 @@ class ControladorJogo:
         self.regiao_convocacao = None
         self.instrucao = "Escolha uma carta de ação ou passe."
 
-    def executar(self):
-        """Mantém o loop principal ativo até o fechamento da janela."""
-        while self.executando:
-            self._processar_eventos()
-            selecao = self._obter_selecao()
-            self.visao.desenhar(self.jogo.estado, selecao, self.instrucao)
-            self.relogio.tick(QUADROS_POR_SEGUNDO)
-
-    def _processar_eventos(self):
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                self.executando = False
-
-            if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
-                self._processar_clique(evento.pos)
-
-    def _processar_clique(self, posicao):
-        estado = self.jogo.estado
-
-        if estado.finalizado:
-            return
-
-        if self.visao.botao_cancelar_foi_clicado(posicao):
-            if estado.fase_turno == FaseTurno.ESCOLHER_ACAO:
-                self._limpar_selecao()
-                self.instrucao = "Seleção cancelada. Escolha uma carta ou passe."
-            return
-
-        if estado.fase_turno == FaseTurno.CONVOCAR_SEGUIDOR:
-            self._processar_convocacao(posicao)
-            return
-
-        if self.carta_selecionada is None:
-            self._processar_inicio_da_jogada(posicao)
-            return
-
-        if self.visao.botao_sem_efeito_foi_clicado(posicao):
-            self._tentar_jogar_carta({})
-            return
-
+    def _atualizar_instrucao_da_carta(self):
         tipo = self.carta_selecionada.tipo
 
         if tipo == TipoCartaAcao.REUNIR:
-            self._processar_assemble(posicao)
+            primeira = None
+            for faccao in Faccao:
+                if self.jogo.estado.reserva.quantidade(faccao) > 0:
+                    primeira = faccao
+                    break
+            if primeira is None:
+                self.instrucao = "Assemble não tem efeito. Use SEM EFEITO."
+            else:
+                self.instrucao = "Assemble: clique na região dos " + primeira.value + "."
         elif tipo in [
             TipoCartaAcao.APOIO_ESCOCES,
             TipoCartaAcao.APOIO_GALES,
             TipoCartaAcao.APOIO_INGLES,
         ]:
-            self._processar_support(posicao)
+            self.instrucao = "Support: clique na região que receberá os seguidores."
         elif tipo == TipoCartaAcao.NEGOCIAR:
-            self._processar_negotiate(posicao)
-        elif tipo in [TipoCartaAcao.MANOBRAR, TipoCartaAcao.SUPERAR_MANOBRA]:
-            self._processar_troca_de_seguidores(posicao)
+            self.instrucao = "Negotiate: escolha a primeira carta da trilha."
+        else:
+            self.instrucao = "Escolha a primeira região da troca."
 
     def _processar_inicio_da_jogada(self, posicao):
         if self.visao.botao_passar_foi_clicado(posicao, self.jogo.estado):
@@ -94,6 +63,24 @@ class ControladorJogo:
         mao = self.jogo.estado.obter_jogador_atual().obter_mao()
         self.carta_selecionada = mao[indice]
         self._atualizar_instrucao_da_carta()
+
+    def _tentar_jogar_carta(self, parametros):
+        try:
+            self.jogo.jogar_carta(self.carta_selecionada, parametros)
+            self.carta_selecionada = None
+            self.destinos_assemble = {}
+            self.regioes_troca = []
+            self.faccoes_troca = []
+            self.posicoes_trilha = []
+            self.instrucao = "Convocação obrigatória: escolha uma região."
+        except (TypeError, ValueError) as erro:
+            mensagem_erro = str(erro)
+            self.destinos_assemble = {}
+            self.regioes_troca = []
+            self.faccoes_troca = []
+            self.posicoes_trilha = []
+            self._atualizar_instrucao_da_carta()
+            self.instrucao = "Erro: " + mensagem_erro + " " + self.instrucao
 
     def _processar_assemble(self, posicao):
         nome_regiao = self.visao.obter_nome_regiao_clicada(posicao)
@@ -192,6 +179,14 @@ class ControladorJogo:
         }
         self._tentar_jogar_carta(parametros)
 
+    def _limpar_selecao(self):
+        self.carta_selecionada = None
+        self.destinos_assemble = {}
+        self.regioes_troca = []
+        self.faccoes_troca = []
+        self.posicoes_trilha = []
+        self.regiao_convocacao = None
+
     def _processar_convocacao(self, posicao):
         if self.regiao_convocacao is None:
             nome_regiao = self.visao.obter_nome_regiao_clicada(posicao)
@@ -214,55 +209,52 @@ class ControladorJogo:
             self.regiao_convocacao = None
             self.instrucao = "Erro: " + str(erro) + " Escolha novamente."
 
-    def _tentar_jogar_carta(self, parametros):
-        try:
-            self.jogo.jogar_carta(self.carta_selecionada, parametros)
-            self.carta_selecionada = None
-            self.destinos_assemble = {}
-            self.regioes_troca = []
-            self.faccoes_troca = []
-            self.posicoes_trilha = []
-            self.instrucao = "Convocação obrigatória: escolha uma região."
-        except (TypeError, ValueError) as erro:
-            mensagem_erro = str(erro)
-            self.destinos_assemble = {}
-            self.regioes_troca = []
-            self.faccoes_troca = []
-            self.posicoes_trilha = []
-            self._atualizar_instrucao_da_carta()
-            self.instrucao = "Erro: " + mensagem_erro + " " + self.instrucao
+    def _processar_clique(self, posicao):
+        estado = self.jogo.estado
 
-    def _atualizar_instrucao_da_carta(self):
+        if estado.finalizado:
+            return
+
+        if self.visao.botao_cancelar_foi_clicado(posicao):
+            if estado.fase_turno == FaseTurno.ESCOLHER_ACAO:
+                self._limpar_selecao()
+                self.instrucao = "Seleção cancelada. Escolha uma carta ou passe."
+            return
+
+        if estado.fase_turno == FaseTurno.CONVOCAR_SEGUIDOR:
+            self._processar_convocacao(posicao)
+            return
+
+        if self.carta_selecionada is None:
+            self._processar_inicio_da_jogada(posicao)
+            return
+
+        if self.visao.botao_sem_efeito_foi_clicado(posicao):
+            self._tentar_jogar_carta({})
+            return
+
         tipo = self.carta_selecionada.tipo
 
         if tipo == TipoCartaAcao.REUNIR:
-            primeira = None
-            for faccao in Faccao:
-                if self.jogo.estado.reserva.quantidade(faccao) > 0:
-                    primeira = faccao
-                    break
-            if primeira is None:
-                self.instrucao = "Assemble não tem efeito. Use SEM EFEITO."
-            else:
-                self.instrucao = "Assemble: clique na região dos " + primeira.value + "."
+            self._processar_assemble(posicao)
         elif tipo in [
             TipoCartaAcao.APOIO_ESCOCES,
             TipoCartaAcao.APOIO_GALES,
             TipoCartaAcao.APOIO_INGLES,
         ]:
-            self.instrucao = "Support: clique na região que receberá os seguidores."
+            self._processar_support(posicao)
         elif tipo == TipoCartaAcao.NEGOCIAR:
-            self.instrucao = "Negotiate: escolha a primeira carta da trilha."
-        else:
-            self.instrucao = "Escolha a primeira região da troca."
+            self._processar_negotiate(posicao)
+        elif tipo in [TipoCartaAcao.MANOBRAR, TipoCartaAcao.SUPERAR_MANOBRA]:
+            self._processar_troca_de_seguidores(posicao)
 
-    def _limpar_selecao(self):
-        self.carta_selecionada = None
-        self.destinos_assemble = {}
-        self.regioes_troca = []
-        self.faccoes_troca = []
-        self.posicoes_trilha = []
-        self.regiao_convocacao = None
+    def _processar_eventos(self):
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                self.executando = False
+
+            if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
+                self._processar_clique(evento.pos)
 
     def _obter_selecao(self):
         return {
@@ -272,3 +264,10 @@ class ControladorJogo:
             "posicoes_trilha": self.posicoes_trilha.copy(),
             "regiao_convocacao": self.regiao_convocacao,
         }
+    def executar(self):
+        """Mantém o loop principal ativo até o fechamento da janela."""
+        while self.executando:
+            self._processar_eventos()
+            selecao = self._obter_selecao()
+            self.visao.desenhar(self.jogo.estado, selecao, self.instrucao)
+            self.relogio.tick(QUADROS_POR_SEGUNDO)

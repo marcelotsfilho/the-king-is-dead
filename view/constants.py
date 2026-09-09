@@ -7,6 +7,7 @@ COR_DE_FUNDO = (230, 217, 191)
 COR_TEXTO = (35, 32, 28)
 COR_PAINEL = (245, 238, 220)
 COR_BORDA = (90, 75, 55)
+COR_FRONTEIRA = (135, 112, 78)
 COR_BOTAO = (126, 70, 52)
 COR_BOTAO_DESATIVADO = (150, 145, 135)
 COR_BRANCA = (255, 255, 255)
@@ -27,6 +28,16 @@ POSICOES_REGIOES = {
     "Warwick": (260, 280),
     "Essex": (480, 280),
     "Devon": (700, 280),
+}
+
+# Algumas fronteiras longas precisam passar pelos corredores entre as caixas.
+# Estes pontos alteram apenas o desenho; as regras continuam em model/board.py.
+ROTAS_FRONTEIRAS = {
+    frozenset(["Moray", "Northumbria"]): [(135, 82), (575, 82)],
+    frozenset(["Strathclyde", "Lancaster"]): [(355, 72), (795, 72)],
+    frozenset(["Gwynedd", "Lancaster"]): [(240, 255), (680, 255)],
+    frozenset(["Gwynedd", "Devon"]): [(135, 432), (795, 432)],
+    frozenset(["Warwick", "Devon"]): [(355, 422), (795, 422)],
 }
 
 LARGURA_REGIAO = 190

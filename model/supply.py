@@ -25,20 +25,6 @@ class ReservaSeguidores:
         """Retorna quantos seguidores de uma facção estão disponíveis."""
         return self._quantidades[faccao]
 
-    def retirar(self, faccao, quantidade=1):
-        """Retira seguidores da reserva quando houver quantidade suficiente."""
-        self._validar_quantidade(quantidade)
-
-        if quantidade > self._quantidades[faccao]:
-            raise ValueError("Não há seguidores suficientes na reserva.")
-
-        self._quantidades[faccao] -= quantidade
-
-    def devolver(self, faccao, quantidade=1):
-        """Devolve seguidores para a reserva."""
-        self._validar_quantidade(quantidade)
-        self._quantidades[faccao] += quantidade
-
     def total(self):
         """Retorna a soma dos seguidores de todas as facções."""
         total = 0
@@ -54,3 +40,17 @@ class ReservaSeguidores:
 
         if quantidade <= 0:
             raise ValueError("A quantidade deve ser maior que zero.")
+        
+    def retirar(self, faccao, quantidade=1):
+        """Retira seguidores da reserva quando houver quantidade suficiente."""
+        self._validar_quantidade(quantidade)
+
+        if quantidade > self._quantidades[faccao]:
+            raise ValueError("Não há seguidores suficientes na reserva.")
+
+        self._quantidades[faccao] -= quantidade
+
+    def devolver(self, faccao, quantidade=1):
+        """Devolve seguidores para a reserva."""
+        self._validar_quantidade(quantidade)
+        self._quantidades[faccao] += quantidade

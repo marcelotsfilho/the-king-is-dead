@@ -21,6 +21,57 @@ class ConfiguracaoJogo:
         trilha = TrilhaDisputas(nomes_regioes)
         return trilha
 
+    def _entregar_cartas_ao_jogador(self, jogador):
+        cartas = criar_conjunto_padrao()
+
+        for carta in cartas:
+            jogador.adicionar_carta_mao(carta)
+
+    def _colocar_seguidores_das_regioes_iniciais(self, tabuleiro, reserva):
+        iniciais = {
+            "Moray": Faccao.ESCOCESES,
+            "Gwynedd": Faccao.GALESES,
+            "Essex": Faccao.INGLESES,
+        }
+
+        for nome_regiao in iniciais:
+            faccao = iniciais[nome_regiao]
+            reserva.retirar(faccao, 2)
+            tabuleiro.obter_regiao(nome_regiao).adicionar_seguidores(faccao, 2)
+
+    def _sortear_faccao_disponivel(self, reserva):
+        opcoes = []
+
+        for faccao in Faccao:
+            quantidade = reserva.quantidade(faccao)
+
+            for _ in range(quantidade):
+                opcoes.append(faccao)
+
+        return self._gerador_aleatorio.choice(opcoes)
+
+    def _distribuir_seguidores_para_as_cortes(self, jogadores, reserva):
+        for jogador in jogadores:
+            for _ in range(2):
+                faccao = self._sortear_faccao_disponivel(reserva)
+                reserva.retirar(faccao)
+                jogador.adicionar_seguidor_na_corte(faccao)
+
+    def _completar_seguidores_das_regioes(self, tabuleiro, reserva):
+        for nome_regiao in tabuleiro.obter_nomes_das_regioes():
+            regiao = tabuleiro.obter_regiao(nome_regiao)
+
+            while regiao.total_de_seguidores() < 4:
+                faccao = self._sortear_faccao_disponivel(reserva)
+                reserva.retirar(faccao)
+                regiao.adicionar_seguidores(faccao)
+
+    def _validar_nomes_jogadores(self, nomes_jogadores):
+        if not isinstance(nomes_jogadores, list):
+            raise ValueError("Os nomes dos jogadores devem estar em uma lista.")
+
+        if len(nomes_jogadores) != 2:
+            raise ValueError("A partida deve possuir exatamente dois jogadores.")
     def criar_estado_inicial(self, nomes_jogadores):
         """Cria tabuleiro, jogadores, reserva e trilha prontos para jogar."""
         self._validar_nomes_jogadores(nomes_jogadores)
@@ -41,55 +92,3 @@ class ConfiguracaoJogo:
         self._completar_seguidores_das_regioes(tabuleiro, reserva)
 
         return EstadoJogo(tabuleiro, trilha, jogadores, reserva)
-
-    def _entregar_cartas_ao_jogador(self, jogador):
-        cartas = criar_conjunto_padrao()
-
-        for carta in cartas:
-            jogador.adicionar_carta_mao(carta)
-
-    def _colocar_seguidores_das_regioes_iniciais(self, tabuleiro, reserva):
-        iniciais = {
-            "Moray": Faccao.ESCOCESES,
-            "Gwynedd": Faccao.GALESES,
-            "Essex": Faccao.INGLESES,
-        }
-
-        for nome_regiao in iniciais:
-            faccao = iniciais[nome_regiao]
-            reserva.retirar(faccao, 2)
-            tabuleiro.obter_regiao(nome_regiao).adicionar_seguidores(faccao, 2)
-
-    def _distribuir_seguidores_para_as_cortes(self, jogadores, reserva):
-        for jogador in jogadores:
-            for _ in range(2):
-                faccao = self._sortear_faccao_disponivel(reserva)
-                reserva.retirar(faccao)
-                jogador.adicionar_seguidor_na_corte(faccao)
-
-    def _completar_seguidores_das_regioes(self, tabuleiro, reserva):
-        for nome_regiao in tabuleiro.obter_nomes_das_regioes():
-            regiao = tabuleiro.obter_regiao(nome_regiao)
-
-            while regiao.total_de_seguidores() < 4:
-                faccao = self._sortear_faccao_disponivel(reserva)
-                reserva.retirar(faccao)
-                regiao.adicionar_seguidores(faccao)
-
-    def _sortear_faccao_disponivel(self, reserva):
-        opcoes = []
-
-        for faccao in Faccao:
-            quantidade = reserva.quantidade(faccao)
-
-            for _ in range(quantidade):
-                opcoes.append(faccao)
-
-        return self._gerador_aleatorio.choice(opcoes)
-
-    def _validar_nomes_jogadores(self, nomes_jogadores):
-        if not isinstance(nomes_jogadores, list):
-            raise ValueError("Os nomes dos jogadores devem estar em uma lista.")
-
-        if len(nomes_jogadores) != 2:
-            raise ValueError("A partida deve possuir exatamente dois jogadores.")

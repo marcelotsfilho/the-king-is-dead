@@ -27,7 +27,7 @@ _DESCRICOES_DAS_CARTAS = {
 
 
 class CartaAcao:
-    """Representa uma carta de ação do modo básico."""
+    """Cartas de ação."""
 
     def __init__(self, tipo):
         if not isinstance(tipo, TipoCartaAcao):

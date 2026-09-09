@@ -38,6 +38,10 @@ class Tabuleiro:
 
         self._validar_grafo()
 
+    def _validar_nome(self, nome):
+        if nome not in self._regioes:
+            raise ValueError(f"Região desconhecida: {nome}.")
+
     def obter_regioes(self):
         """Retorna uma cópia do catálogo de regiões."""
         return self._regioes.copy()
@@ -64,10 +68,6 @@ class Tabuleiro:
         self._validar_nome(nome_regiao_a)
         self._validar_nome(nome_regiao_b)
         return nome_regiao_b in self._adjacencias[nome_regiao_a]
-
-    def _validar_nome(self, nome):
-        if nome not in self._regioes:
-            raise ValueError(f"Região desconhecida: {nome}.")
 
     def _validar_grafo(self):
         nomes = set(self._regioes.keys())
