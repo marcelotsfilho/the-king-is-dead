@@ -304,7 +304,7 @@ class TesteNegotiate(unittest.TestCase):
 
         jogo.jogar_carta(carta)
 
-        detalhes = jogo.estado.historico_acoes[-1]["detalhes"]
+        detalhes = jogo.estado.ultima_acao["detalhes"]
         self.assertTrue(detalhes["sem_efeito"])
 
 
@@ -364,7 +364,7 @@ class TesteManoeuvre(unittest.TestCase):
         jogo.jogar_carta(carta)
 
         self.assertTrue(
-            jogo.estado.historico_acoes[-1]["detalhes"]["sem_efeito"]
+            jogo.estado.ultima_acao["detalhes"]["sem_efeito"]
         )
 
     def test_adversario_nao_pode_desfazer_a_manobra_imediatamente(self):

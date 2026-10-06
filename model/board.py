@@ -69,6 +69,16 @@ class Tabuleiro:
         self._validar_nome(nome_regiao_b)
         return nome_regiao_b in self._adjacencias[nome_regiao_a]
 
+    def quantidade_instabilidades(self):
+        """Conta quantas regiões do tabuleiro estão instáveis."""
+        quantidade = 0
+
+        for regiao in self._regioes.values():
+            if regiao.instavel:
+                quantidade += 1
+
+        return quantidade
+
     def _validar_grafo(self):
         nomes = set(self._regioes.keys())
 

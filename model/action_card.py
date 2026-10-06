@@ -1,4 +1,4 @@
-from model.enums import TipoCartaAcao
+from model.enums import Faccao, TipoCartaAcao
 
 
 _DESCRICOES_DAS_CARTAS = {
@@ -24,6 +24,26 @@ _DESCRICOES_DAS_CARTAS = {
         "Adiciona um seguidor de cada facção em regiões permitidas."
     ),
 }
+
+
+_DADOS_DAS_CARTAS_DE_APOIO = {
+    TipoCartaAcao.APOIO_ESCOCES: (Faccao.ESCOCESES, "Moray"),
+    TipoCartaAcao.APOIO_GALES: (Faccao.GALESES, "Gwynedd"),
+    TipoCartaAcao.APOIO_INGLES: (Faccao.INGLESES, "Essex"),
+}
+
+
+def eh_carta_de_apoio(tipo_carta):
+    """Informa se o tipo pertence a uma das três cartas Support."""
+    return tipo_carta in _DADOS_DAS_CARTAS_DE_APOIO
+
+
+def obter_dados_da_carta_de_apoio(tipo_carta):
+    """Retorna a facção e a região inicial associadas ao Support."""
+    if not eh_carta_de_apoio(tipo_carta):
+        raise ValueError("A carta informada não é uma carta Support.")
+
+    return _DADOS_DAS_CARTAS_DE_APOIO[tipo_carta]
 
 
 class CartaAcao:

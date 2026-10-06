@@ -449,13 +449,17 @@ class VisaoJogo:
             altura += 18
 
         self._desenhar_texto(
-            "Disputas: " + str(estado.disputas_resolvidas) + "/8",
+            "Disputas: "
+            + str(estado.trilha_disputas.quantidade_resolvida())
+            + "/8",
             955,
             555,
             pequena=True,
         )
         self._desenhar_texto(
-            "Instabilidades: " + str(estado.quantidade_instabilidades) + "/3",
+            "Instabilidades: "
+            + str(estado.tabuleiro.quantidade_instabilidades())
+            + "/3",
             955,
             580,
             pequena=True,

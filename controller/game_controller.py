@@ -1,5 +1,6 @@
 import pygame
 
+from model.action_card import eh_carta_de_apoio
 from model.enums import Faccao, FaseTurno, TipoCartaAcao
 
 
@@ -35,11 +36,7 @@ class ControladorJogo:
                 self.instrucao = "Assemble não tem efeito. Use SEM EFEITO."
             else:
                 self.instrucao = "Assemble: clique na região dos " + primeira.value + "."
-        elif tipo in [
-            TipoCartaAcao.APOIO_ESCOCES,
-            TipoCartaAcao.APOIO_GALES,
-            TipoCartaAcao.APOIO_INGLES,
-        ]:
+        elif eh_carta_de_apoio(tipo):
             self.instrucao = "Support: clique na região que receberá os seguidores."
         elif tipo == TipoCartaAcao.NEGOCIAR:
             self.instrucao = "Negotiate: escolha a primeira carta da trilha."
@@ -68,17 +65,11 @@ class ControladorJogo:
         try:
             self.jogo.jogar_carta(self.carta_selecionada, parametros)
             self.carta_selecionada = None
-            self.destinos_assemble = {}
-            self.regioes_troca = []
-            self.faccoes_troca = []
-            self.posicoes_trilha = []
+            self._limpar_parametros_da_carta()
             self.instrucao = "Convocação obrigatória: escolha uma região."
         except (TypeError, ValueError) as erro:
             mensagem_erro = str(erro)
-            self.destinos_assemble = {}
-            self.regioes_troca = []
-            self.faccoes_troca = []
-            self.posicoes_trilha = []
+            self._limpar_parametros_da_carta()
             self._atualizar_instrucao_da_carta()
             self.instrucao = "Erro: " + mensagem_erro + " " + self.instrucao
 
@@ -179,12 +170,15 @@ class ControladorJogo:
         }
         self._tentar_jogar_carta(parametros)
 
-    def _limpar_selecao(self):
-        self.carta_selecionada = None
+    def _limpar_parametros_da_carta(self):
         self.destinos_assemble = {}
         self.regioes_troca = []
         self.faccoes_troca = []
         self.posicoes_trilha = []
+
+    def _limpar_selecao(self):
+        self.carta_selecionada = None
+        self._limpar_parametros_da_carta()
         self.regiao_convocacao = None
 
     def _processar_convocacao(self, posicao):
@@ -237,11 +231,7 @@ class ControladorJogo:
 
         if tipo == TipoCartaAcao.REUNIR:
             self._processar_assemble(posicao)
-        elif tipo in [
-            TipoCartaAcao.APOIO_ESCOCES,
-            TipoCartaAcao.APOIO_GALES,
-            TipoCartaAcao.APOIO_INGLES,
-        ]:
+        elif eh_carta_de_apoio(tipo):
             self._processar_support(posicao)
         elif tipo == TipoCartaAcao.NEGOCIAR:
             self._processar_negotiate(posicao)

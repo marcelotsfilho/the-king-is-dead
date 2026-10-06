@@ -1,7 +1,12 @@
 import unittest
 
-from model.action_card import CartaAcao, criar_conjunto_padrao
-from model.enums import TipoCartaAcao
+from model.action_card import (
+    CartaAcao,
+    criar_conjunto_padrao,
+    eh_carta_de_apoio,
+    obter_dados_da_carta_de_apoio,
+)
+from model.enums import Faccao, TipoCartaAcao
 
 
 class TesteCartaAcao(unittest.TestCase):
@@ -62,6 +67,20 @@ class TesteCartaAcao(unittest.TestCase):
 
         for indice in range(8):
             self.assertIsNot(conjunto_1[indice], conjunto_2[indice])
+
+    def test_identifica_as_tres_cartas_de_apoio(self):
+        self.assertTrue(eh_carta_de_apoio(TipoCartaAcao.APOIO_ESCOCES))
+        self.assertTrue(eh_carta_de_apoio(TipoCartaAcao.APOIO_GALES))
+        self.assertTrue(eh_carta_de_apoio(TipoCartaAcao.APOIO_INGLES))
+        self.assertFalse(eh_carta_de_apoio(TipoCartaAcao.REUNIR))
+
+    def test_obtem_faccao_e_regiao_inicial_do_apoio(self):
+        faccao, regiao = obter_dados_da_carta_de_apoio(
+            TipoCartaAcao.APOIO_ESCOCES
+        )
+
+        self.assertEqual(faccao, Faccao.ESCOCESES)
+        self.assertEqual(regiao, "Moray")
 
 
 if __name__ == "__main__":

@@ -40,7 +40,10 @@ class TesteJogo(unittest.TestCase):
         jogo.passar()
         jogo.passar()
 
-        self.assertEqual(jogo.estado.disputas_resolvidas, 1)
+        self.assertEqual(
+            jogo.estado.trilha_disputas.quantidade_resolvida(),
+            1,
+        )
         self.assertEqual(jogo.estado.passes_consecutivos, 0)
         self.assertEqual(moray.controlador, Faccao.ESCOCESES)
         self.assertFalse(jogo.estado.trilha_disputas.obter_carta(1).virada_para_cima)
@@ -66,7 +69,7 @@ class TesteJogo(unittest.TestCase):
         jogo.resolver_proxima_disputa()
 
         self.assertTrue(moray.instavel)
-        self.assertEqual(jogo.estado.quantidade_instabilidades, 1)
+        self.assertEqual(jogo.estado.tabuleiro.quantidade_instabilidades(), 1)
 
     def test_regiao_vazia_fica_instavel(self):
         jogo = criar_jogo_manual()

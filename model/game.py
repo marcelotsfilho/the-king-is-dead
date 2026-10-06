@@ -1,12 +1,9 @@
-from model.action_card import CartaAcao
+from model.action_card import (
+    CartaAcao,
+    eh_carta_de_apoio,
+    obter_dados_da_carta_de_apoio,
+)
 from model.enums import Faccao, FaseTurno, TipoCartaAcao
-
-
-_DADOS_DOS_APOIOS = {
-    TipoCartaAcao.APOIO_ESCOCES: (Faccao.ESCOCESES, "Moray"),
-    TipoCartaAcao.APOIO_GALES: (Faccao.GALESES, "Gwynedd"),
-    TipoCartaAcao.APOIO_INGLES: (Faccao.INGLESES, "Essex"),
-}
 
 
 class Jogo:
@@ -17,10 +14,9 @@ class Jogo:
 
     def obter_regioes_validas_para_apoio(self, tipo_carta):
         """Retorna regiões que podem receber uma carta Support."""
-        if tipo_carta not in _DADOS_DOS_APOIOS:
-            raise ValueError("A carta informada não é uma carta Support.")
-
-        faccao, nome_regiao_inicial = _DADOS_DOS_APOIOS[tipo_carta]
+        faccao, nome_regiao_inicial = obter_dados_da_carta_de_apoio(
+            tipo_carta
+        )
         nomes_validos = []
         tabuleiro = self.estado.tabuleiro
         regiao_inicial = tabuleiro.obter_regiao(nome_regiao_inicial)
@@ -131,10 +127,10 @@ class Jogo:
         return False
 
     def _obter_ultima_acao_adversaria(self, tipo):
-        if not self.estado.historico_acoes:
+        if self.estado.ultima_acao is None:
             return None
 
-        ultima_acao = self.estado.historico_acoes[-1]
+        ultima_acao = self.estado.ultima_acao
         jogador_atual = self.estado.obter_jogador_atual()
 
         if ultima_acao["tipo"] != tipo:
@@ -197,14 +193,12 @@ class Jogo:
         self.estado.ultimo_jogador_que_agiu = jogador
         self.estado.carta_em_execucao = carta
         self.estado.fase_turno = FaseTurno.CONVOCAR_SEGUIDOR
-        self.estado.historico_acoes.append(
-            {
-                "jogador": jogador,
-                "tipo": carta.tipo,
-                "detalhes": detalhes,
-                "convocacao": None,
-            }
-        )
+        self.estado.ultima_acao = {
+            "jogador": jogador,
+            "tipo": carta.tipo,
+            "detalhes": detalhes,
+            "convocacao": None,
+        }
 
         if jogador.quantidade_cartas() == 0:
             if jogador not in self.estado.ordem_jogadores_sem_cartas:
@@ -268,7 +262,7 @@ class Jogo:
         return {"destinos": detalhes_destinos}
 
     def _executar_apoio(self, tipo_carta, parametros):
-        faccao, _ = _DADOS_DOS_APOIOS[tipo_carta]
+        faccao, _ = obter_dados_da_carta_de_apoio(tipo_carta)
         regioes_validas = self.obter_regioes_validas_para_apoio(tipo_carta)
         quantidade_disponivel = self.estado.reserva.quantidade(faccao)
         quantidade_colocada = 0
@@ -608,7 +602,7 @@ class Jogo:
 
         if carta.tipo == TipoCartaAcao.REUNIR:
             detalhes = self._executar_assemble(parametros)
-        elif carta.tipo in _DADOS_DOS_APOIOS:
+        elif eh_carta_de_apoio(carta.tipo):
             detalhes = self._executar_apoio(carta.tipo, parametros)
         elif carta.tipo == TipoCartaAcao.NEGOCIAR:
             detalhes = self._executar_negociar(parametros)
@@ -641,7 +635,7 @@ class Jogo:
         regiao.remover_seguidores(faccao)
         jogador.adicionar_seguidor_na_corte(faccao)
 
-        ultima_acao = self.estado.historico_acoes[-1]
+        ultima_acao = self.estado.ultima_acao
         ultima_acao["convocacao"] = {
             "regiao": nome_regiao,
             "faccao": faccao,
@@ -677,7 +671,6 @@ class Jogo:
 
         if faccao_controladora is None:
             regiao.marcar_como_instavel()
-            self.estado.quantidade_instabilidades += 1
             resultado = regiao.nome + " ficou instável."
         else:
             regiao.definir_controlador(faccao_controladora)
@@ -686,11 +679,10 @@ class Jogo:
             resultado += faccao_controladora.value + "."
 
         carta.virar_para_baixo()
-        self.estado.disputas_resolvidas += 1
         self.estado.passes_consecutivos = 0
         self.estado.ultima_mensagem = resultado
 
-        if self.estado.quantidade_instabilidades >= 3:
+        if self.estado.tabuleiro.quantidade_instabilidades() >= 3:
             self._finalizar_por_invasao()
         elif self.estado.trilha_disputas.obter_proxima_carta() is None:
             self._finalizar_por_coroacao()

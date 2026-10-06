@@ -18,10 +18,8 @@ class EstadoJogo:
 
         self.indice_jogador_atual = 0
         self.passes_consecutivos = 0
-        self.disputas_resolvidas = 0
-        self.quantidade_instabilidades = 0
         self.historico_vitorias_faccoes = []
-        self.historico_acoes = []
+        self.ultima_acao = None
         self.ultimo_jogador_que_agiu = None
         self.ordem_jogadores_sem_cartas = []
         self.fase_turno = FaseTurno.ESCOLHER_ACAO

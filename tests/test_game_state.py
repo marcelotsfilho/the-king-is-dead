@@ -48,6 +48,7 @@ class TesteEstadoJogo(unittest.TestCase):
 
         self.assertEqual(estado.fase_turno, FaseTurno.ESCOLHER_ACAO)
         self.assertIsNone(estado.carta_em_execucao)
+        self.assertIsNone(estado.ultima_acao)
         self.assertIsNone(estado.vencedor)
         self.assertIsNone(estado.motivo_encerramento)
 

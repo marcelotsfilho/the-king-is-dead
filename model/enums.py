@@ -21,6 +21,13 @@ class TipoCartaAcao(Enum):
     REUNIR = "Assemble"
 
 
+class TipoJogada(Enum):
+    """Distingue as duas formas de concluir uma jogada."""
+
+    PASSE = "passe"
+    CARTA = "carta"
+
+
 class FaseTurno(Enum):
     """Etapas possíveis de um turno do modo básico."""
 

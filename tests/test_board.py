@@ -67,6 +67,13 @@ class TesteTabuleiro(unittest.TestCase):
         for nome in tabuleiro.obter_nomes_das_regioes():
             self.assertFalse(tabuleiro.sao_adjacentes(nome, nome))
 
+    def test_conta_regioes_instaveis(self):
+        tabuleiro = Tabuleiro()
+        tabuleiro.obter_regiao("Moray").marcar_como_instavel()
+        tabuleiro.obter_regiao("Devon").marcar_como_instavel()
+
+        self.assertEqual(tabuleiro.quantidade_instabilidades(), 2)
+
     def test_nome_desconhecido_e_rejeitado(self):
         tabuleiro = Tabuleiro()
         with self.assertRaisesRegex(ValueError, "Região desconhecida"):
