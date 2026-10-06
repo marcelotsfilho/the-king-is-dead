@@ -294,6 +294,36 @@ trilha e pelo tabuleiro, evitando guardar a mesma informação duas vezes.
 - `possui_mesmos_dados()`: compara todas as escolhas de duas jogadas;
 - `descrever()`: produz um resumo para apresentação.
 
+### `model/legal_move_executor.py`
+
+- `ExecutorJogada.executar(estado, jogada)`: copia o estado, aplica uma jogada
+  completa e devolve o resultado sem modificar a partida original;
+- `_obter_carta_do_jogador()`: encontra na cópia a carta indicada pela jogada.
+
+Esse executor será compartilhado pela árvore e pela futura IA. Um passe inclui
+suas consequências automáticas; uma carta inclui efeito, convocação e troca de
+jogador.
+
+### `model/legal_move_generator.py`
+
+- `GeradorJogadas.gerar(estado)`: encontra todas as jogadas completas que o
+  jogador atual pode realizar sem modificar o estado recebido;
+- os métodos `_gerar_parametros_*()`: enumeram as escolhas de cada tipo de
+  carta;
+- `_simular_carta()`: aplica temporariamente apenas o efeito da carta para
+  descobrir quais seguidores poderão ser convocados;
+- `_adicionar_se_valida()`: utiliza o executor como verificação final antes de
+  incluir uma jogada no resultado.
+
+O gerador não substitui as regras de `Jogo`. Ele cria combinações possíveis e
+reutiliza o executor para descartar aquelas que forem rejeitadas pelo model.
+Cartas repetidas do mesmo tipo, como as duas Assemble, são processadas uma única
+vez porque produzem as mesmas escolhas.
+
+Como uma única carta pode gerar muitas combinações, a futura árvore deverá ser
+expandida sob demanda: somente os filhos do estado que está sendo analisado
+serão criados, sem antecipar os netos de jogadas que ainda não aconteceram.
+
 ### `model/game_setup.py`
 
 - `ConfiguracaoJogo.__init__(semente)`: cria um gerador aleatório que pode ser
