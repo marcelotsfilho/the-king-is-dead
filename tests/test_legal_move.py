@@ -1,7 +1,11 @@
 import unittest
 
 from model.enums import Faccao, TipoCartaAcao, TipoJogada
-from model.legal_move import Jogada
+from model.legal_move import (
+    Jogada,
+    restaurar_jogada,
+    serializar_jogada,
+)
 
 
 class TesteJogada(unittest.TestCase):
@@ -152,8 +156,90 @@ class TesteJogada(unittest.TestCase):
         self.assertEqual(passe.descrever(), "Passar.")
         self.assertEqual(
             carta.descrever(),
-            "Jogar Negotiate e convocar ingleses de Essex.",
+            "Jogar Negotiate trocando as posições 1 e 2, com disco na "
+            "posição 1 e convocar ingleses de Essex.",
         )
+
+    def test_descricao_diferencia_destinos_de_support(self):
+        primeira = Jogada(
+            TipoJogada.CARTA,
+            tipo_carta=TipoCartaAcao.APOIO_ESCOCES,
+            parametros={"regiao": "Strathclyde"},
+            nome_regiao_convocacao="Moray",
+            faccao_convocacao=Faccao.ESCOCESES,
+        )
+        segunda = Jogada(
+            TipoJogada.CARTA,
+            tipo_carta=TipoCartaAcao.APOIO_ESCOCES,
+            parametros={"regiao": "Northumbria"},
+            nome_regiao_convocacao="Moray",
+            faccao_convocacao=Faccao.ESCOCESES,
+        )
+
+        self.assertNotEqual(primeira.descrever(), segunda.descrever())
+        self.assertIn("Strathclyde", primeira.descrever())
+        self.assertIn("Northumbria", segunda.descrever())
+
+    def test_serializa_e_restaura_passe(self):
+        jogada = Jogada(TipoJogada.PASSE)
+
+        dados = serializar_jogada(jogada)
+        restaurada = restaurar_jogada(dados)
+
+        self.assertEqual(dados, {"tipo": "PASSE"})
+        self.assertTrue(restaurada.possui_mesmos_dados(jogada))
+
+    def test_serializa_e_restaura_jogada_de_assemble(self):
+        jogada = Jogada(
+            TipoJogada.CARTA,
+            tipo_carta=TipoCartaAcao.REUNIR,
+            parametros={
+                "destinos": {
+                    Faccao.ESCOCESES: "Moray",
+                    Faccao.GALESES: "Gwynedd",
+                    Faccao.INGLESES: "Essex",
+                }
+            },
+            nome_regiao_convocacao="Moray",
+            faccao_convocacao=Faccao.ESCOCESES,
+        )
+
+        dados = serializar_jogada(jogada)
+        restaurada = restaurar_jogada(dados)
+
+        self.assertEqual(
+            dados["parametros"]["destinos"]["GALESES"],
+            "Gwynedd",
+        )
+        self.assertTrue(restaurada.possui_mesmos_dados(jogada))
+
+    def test_serializa_e_restaura_jogada_de_manobra(self):
+        jogada = Jogada(
+            TipoJogada.CARTA,
+            tipo_carta=TipoCartaAcao.MANOBRAR,
+            parametros={
+                "regiao_a": "Moray",
+                "faccao_a": Faccao.ESCOCESES,
+                "regiao_b": "Gwynedd",
+                "faccao_b": Faccao.GALESES,
+            },
+            nome_regiao_convocacao="Gwynedd",
+            faccao_convocacao=Faccao.ESCOCESES,
+        )
+
+        restaurada = restaurar_jogada(serializar_jogada(jogada))
+
+        self.assertTrue(restaurada.possui_mesmos_dados(jogada))
+
+    def test_serializacao_rejeita_dados_invalidos(self):
+        with self.assertRaises(TypeError):
+            serializar_jogada("jogada")
+
+        with self.assertRaises(TypeError):
+            restaurar_jogada("dados")
+
+        with self.assertRaises(ValueError):
+            restaurar_jogada({"tipo": "DESCONHECIDO"})
 
 
 if __name__ == "__main__":

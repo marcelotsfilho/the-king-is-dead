@@ -1,20 +1,105 @@
+import os
+import sys
+
 import pygame
 
 from controller.game_controller import ControladorJogo
+from controller.start_menu_controller import (
+    ACAO_CONTINUAR_JOGO,
+    ACAO_NOVO_JOGO,
+    ACAO_SAIR,
+    ControladorMenuInicial,
+)
 from model.game import Jogo
 from model.game_setup import ConfiguracaoJogo
+from model.state_tree import ArvoreEstados
+from model.state_tree_serializer import SerializadorArvoreEstados
 from view.game_view import VisaoJogo
+
+
+_PASTA_DO_PROJETO = os.path.dirname(os.path.abspath(__file__))
+_PASTA_DE_SALVAMENTOS = os.path.join(_PASTA_DO_PROJETO, "saves")
+_CAMINHO_DA_ARVORE = os.path.join(
+    _PASTA_DE_SALVAMENTOS,
+    "state_tree.json",
+)
+
+
+def _preparar_arvore(argumentos, serializador):
+    if "--carregar" in argumentos:
+        return serializador.carregar(_CAMINHO_DA_ARVORE)
+
+    configuracao = ConfiguracaoJogo()
+    estado = configuracao.criar_estado_inicial(
+        ["Jogador 1", "Jogador 2"]
+    )
+    return ArvoreEstados(estado)
+
+
+def _escolher_arvore_pelo_menu(visao, serializador, mensagem=""):
+    controlador_menu = ControladorMenuInicial(
+        visao,
+        _CAMINHO_DA_ARVORE,
+    )
+
+    while True:
+        acao = controlador_menu.executar(mensagem)
+
+        if acao == ACAO_SAIR:
+            return None
+
+        if acao == ACAO_NOVO_JOGO:
+            return _preparar_arvore([], serializador)
+
+        if acao == ACAO_CONTINUAR_JOGO:
+            visao.desenhar_menu_inicial(
+                True,
+                "Carregando a partida salva...",
+            )
+
+            try:
+                return _preparar_arvore(["--carregar"], serializador)
+            except (OSError, KeyError, TypeError, ValueError) as erro:
+                mensagem = "Não foi possível carregar a partida: " + str(
+                    erro
+                )
 
 
 def principal():
     """Monta as camadas MVC e inicia a aplicação."""
+    os.makedirs(_PASTA_DE_SALVAMENTOS, exist_ok=True)
     pygame.init()
-
-    configuracao = ConfiguracaoJogo()
-    estado = configuracao.criar_estado_inicial(["Jogador 1", "Jogador 2"])
-    jogo = Jogo(estado)
+    serializador = SerializadorArvoreEstados()
     visao = VisaoJogo()
-    controlador = ControladorJogo(jogo, visao)
+
+    if "--carregar" in sys.argv[1:]:
+        try:
+            arvore = _preparar_arvore(sys.argv[1:], serializador)
+        except (OSError, KeyError, TypeError, ValueError) as erro:
+            mensagem = "Não foi possível carregar a partida: " + str(
+                erro
+            )
+            arvore = _escolher_arvore_pelo_menu(
+                visao,
+                serializador,
+                mensagem,
+            )
+    else:
+        arvore = _escolher_arvore_pelo_menu(visao, serializador)
+
+    if arvore is None:
+        pygame.quit()
+        return
+
+    estado = arvore.obter_estado_atual()
+    jogo = Jogo(estado)
+    controlador = ControladorJogo(
+        jogo,
+        visao,
+        arvore,
+        serializador,
+        _CAMINHO_DA_ARVORE,
+    )
     controlador.executar()
 
     pygame.quit()

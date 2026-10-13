@@ -1,3 +1,5 @@
+import json
+
 from model.action_card import CartaAcao
 from model.board import Tabuleiro
 from model.dispute_track import TrilhaDisputas
@@ -111,6 +113,27 @@ class SerializadorEstadoJogo:
         """Cria uma cópia independente do estado atual."""
         dados = self.serializar(estado)
         return self.restaurar(dados)
+
+    def obter_identificador(self, estado):
+        """Retorna um texto estável que identifica o conteúdo do estado."""
+        dados = self._obter_dados_relevantes(estado)
+        return json.dumps(
+            dados,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+
+    def possuem_mesmo_estado(self, primeiro_estado, segundo_estado):
+        """Compara as informações que podem influenciar a partida."""
+        dados_do_primeiro = self._obter_dados_relevantes(primeiro_estado)
+        dados_do_segundo = self._obter_dados_relevantes(segundo_estado)
+        return dados_do_primeiro == dados_do_segundo
+
+    def _obter_dados_relevantes(self, estado):
+        dados = self.serializar(estado)
+        del dados["ultima_mensagem"]
+        return dados
 
     def _validar_dados(self, dados):
         if not isinstance(dados, dict):

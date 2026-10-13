@@ -126,9 +126,138 @@ class Jogada:
         return (
             "Jogar "
             + self.tipo_carta.value
+            + self._descrever_efeito()
             + " e convocar "
             + self.faccao_convocacao.value
             + " de "
             + self.nome_regiao_convocacao
             + "."
         )
+
+    def _descrever_efeito(self):
+        if not self._parametros:
+            return " sem efeito"
+
+        if "regiao" in self._parametros:
+            return " em " + self._parametros["regiao"]
+
+        if self.tipo_carta == TipoCartaAcao.REUNIR:
+            partes = []
+            destinos = self._parametros["destinos"]
+
+            for faccao in Faccao:
+                if faccao in destinos:
+                    partes.append(faccao.value + " em " + destinos[faccao])
+
+            return " colocando " + ", ".join(partes)
+
+        if self.tipo_carta == TipoCartaAcao.NEGOCIAR:
+            return (
+                " trocando as posições "
+                + str(self._parametros["posicao_a"])
+                + " e "
+                + str(self._parametros["posicao_b"])
+                + ", com disco na posição "
+                + str(self._parametros["posicao_disco"])
+            )
+
+        return (
+            " trocando "
+            + self._parametros["faccao_a"].value
+            + " de "
+            + self._parametros["regiao_a"]
+            + " por "
+            + self._parametros["faccao_b"].value
+            + " de "
+            + self._parametros["regiao_b"]
+        )
+
+
+def serializar_jogada(jogada):
+    """Transforma uma Jogada em dados simples para salvar em arquivo."""
+    if not isinstance(jogada, Jogada):
+        raise TypeError("O valor informado deve ser uma Jogada.")
+
+    dados = {"tipo": jogada.tipo.name}
+
+    if jogada.eh_passe():
+        return dados
+
+    dados["tipo_carta"] = jogada.tipo_carta.name
+    dados["parametros"] = _serializar_parametros(
+        jogada.obter_parametros()
+    )
+    dados["nome_regiao_convocacao"] = jogada.nome_regiao_convocacao
+    dados["faccao_convocacao"] = jogada.faccao_convocacao.name
+    return dados
+
+
+def restaurar_jogada(dados):
+    """Reconstrói uma Jogada a partir dos dados salvos."""
+    if not isinstance(dados, dict):
+        raise TypeError("Os dados da jogada devem estar em um dicionário.")
+
+    try:
+        tipo = TipoJogada[dados["tipo"]]
+    except (KeyError, TypeError):
+        raise ValueError("O tipo da jogada salva é inválido.")
+
+    if tipo == TipoJogada.PASSE:
+        return Jogada(TipoJogada.PASSE)
+
+    try:
+        tipo_carta = TipoCartaAcao[dados["tipo_carta"]]
+        faccao = Faccao[dados["faccao_convocacao"]]
+        parametros = _restaurar_parametros(dados["parametros"])
+        nome_regiao = dados["nome_regiao_convocacao"]
+    except (KeyError, TypeError):
+        raise ValueError("Os dados da carta salva estão incompletos.")
+
+    return Jogada(
+        TipoJogada.CARTA,
+        tipo_carta=tipo_carta,
+        parametros=parametros,
+        nome_regiao_convocacao=nome_regiao,
+        faccao_convocacao=faccao,
+    )
+
+
+def _serializar_parametros(parametros):
+    resultado = parametros.copy()
+
+    if "destinos" in resultado:
+        destinos = {}
+
+        for faccao in resultado["destinos"]:
+            destinos[faccao.name] = resultado["destinos"][faccao]
+
+        resultado["destinos"] = destinos
+
+    for chave in ["faccao_a", "faccao_b"]:
+        if chave in resultado:
+            resultado[chave] = resultado[chave].name
+
+    return resultado
+
+
+def _restaurar_parametros(parametros):
+    if not isinstance(parametros, dict):
+        raise TypeError("Os parâmetros salvos devem estar em um dicionário.")
+
+    resultado = parametros.copy()
+
+    if "destinos" in resultado:
+        destinos = {}
+
+        for nome_faccao in resultado["destinos"]:
+            destinos[Faccao[nome_faccao]] = resultado["destinos"][
+                nome_faccao
+            ]
+
+        resultado["destinos"] = destinos
+
+    for chave in ["faccao_a", "faccao_b"]:
+        if chave in resultado:
+            resultado[chave] = Faccao[resultado[chave]]
+
+    return resultado

@@ -60,6 +60,104 @@ class TesteSerializadorEstadoJogo(unittest.TestCase):
         self.assertEqual(estado.indice_jogador_atual, 0)
         self.assertEqual(copia.indice_jogador_atual, 1)
 
+    def test_copia_possui_o_mesmo_identificador_do_original(self):
+        estado = ConfiguracaoJogo(semente=10).criar_estado_inicial(
+            ["Ana", "Bruno"]
+        )
+        copia = self.serializador.copiar(estado)
+
+        identificador_original = self.serializador.obter_identificador(estado)
+        identificador_copia = self.serializador.obter_identificador(copia)
+
+        self.assertEqual(identificador_original, identificador_copia)
+        self.assertTrue(
+            self.serializador.possuem_mesmo_estado(estado, copia)
+        )
+
+    def test_alteracao_do_tabuleiro_produz_estado_diferente(self):
+        estado = criar_estado_manual()
+        outro_estado = self.serializador.copiar(estado)
+        outro_estado.tabuleiro.obter_regiao("Moray").adicionar_seguidores(
+            Faccao.ESCOCESES
+        )
+
+        self.assertFalse(
+            self.serializador.possuem_mesmo_estado(estado, outro_estado)
+        )
+        self.assertNotEqual(
+            self.serializador.obter_identificador(estado),
+            self.serializador.obter_identificador(outro_estado),
+        )
+
+    def test_mensagem_da_interface_nao_diferencia_estados(self):
+        estado = criar_estado_manual()
+        outro_estado = self.serializador.copiar(estado)
+        outro_estado.ultima_mensagem = "Uma mensagem diferente para a tela."
+
+        self.assertTrue(
+            self.serializador.possuem_mesmo_estado(estado, outro_estado)
+        )
+
+    def test_ordem_das_chaves_nao_altera_o_identificador(self):
+        primeiro_estado = criar_estado_manual()
+        segundo_estado = self.serializador.copiar(primeiro_estado)
+        primeiro_jogador = primeiro_estado.obter_jogadores()[0]
+        segundo_jogador = segundo_estado.obter_jogadores()[0]
+
+        primeiro_estado.ultima_acao = {
+            "jogador": primeiro_jogador,
+            "tipo": TipoCartaAcao.REUNIR,
+            "detalhes": {
+                "destinos": {
+                    Faccao.ESCOCESES: "Moray",
+                    Faccao.GALESES: "Gwynedd",
+                    Faccao.INGLESES: "Essex",
+                }
+            },
+            "convocacao": None,
+        }
+        segundo_estado.ultima_acao = {
+            "jogador": segundo_jogador,
+            "tipo": TipoCartaAcao.REUNIR,
+            "detalhes": {
+                "destinos": {
+                    Faccao.INGLESES: "Essex",
+                    Faccao.GALESES: "Gwynedd",
+                    Faccao.ESCOCESES: "Moray",
+                }
+            },
+            "convocacao": None,
+        }
+
+        self.assertEqual(
+            self.serializador.obter_identificador(primeiro_estado),
+            self.serializador.obter_identificador(segundo_estado),
+        )
+
+    def test_ultima_acao_diferencia_estados(self):
+        estado = criar_estado_manual()
+        outro_estado = self.serializador.copiar(estado)
+        jogador = outro_estado.obter_jogador_atual()
+        outro_estado.ultima_acao = {
+            "jogador": jogador,
+            "tipo": TipoCartaAcao.REUNIR,
+            "detalhes": {"destinos": {}},
+            "convocacao": None,
+        }
+
+        self.assertFalse(
+            self.serializador.possuem_mesmo_estado(estado, outro_estado)
+        )
+
+    def test_comparacao_rejeita_objeto_que_nao_seja_estado(self):
+        estado = criar_estado_manual()
+
+        with self.assertRaises(TypeError):
+            self.serializador.obter_identificador("estado")
+
+        with self.assertRaises(TypeError):
+            self.serializador.possuem_mesmo_estado(estado, "estado")
+
     def test_restaura_carta_em_execucao_e_ultima_acao_de_manobra(self):
         estado = criar_estado_manual()
         jogo = Jogo(estado)

@@ -17,7 +17,8 @@ As regras foram implementadas a partir do
 Requisitos:
 
 - Python 3.13;
-- Pygame 2.6.1.
+- Pygame 2.6.1;
+- Graphviz, usado somente para exportar a árvore completa.
 
 No PowerShell:
 
@@ -27,6 +28,16 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
+
+No Windows, o programa Graphviz pode ser instalado com:
+
+```powershell
+winget install --id Graphviz.Graphviz --exact
+```
+
+Depois da instalação, feche e abra novamente o terminal para atualizar o
+`PATH`. O jogo continua funcionando sem Graphviz; somente a criação do SVG
+fica indisponível e o arquivo DOT ainda é gerado.
 
 O ambiente virtual `.venv` isola a dependência do projeto das demais
 instalações do computador.
@@ -39,12 +50,197 @@ Com o ambiente virtual ativado:
 python main.py
 ```
 
-Os nomes iniciais são `Jogador 1` e `Jogador 2`. A partida acontece na mesma
-tela e o painel à direita informa de quem é o turno.
+O jogo começa em uma tela inicial com três opções:
+
+- **NOVO JOGO:** cria uma partida desde o estado inicial;
+- **CONTINUAR JOGO:** carrega `saves/state_tree.json` e fica desativado quando
+  não existe uma partida salva;
+- **SAIR:** fecha a aplicação sem criar uma partida.
+
+Se o arquivo salvo estiver inválido, o jogo volta ao menu e apresenta uma
+mensagem de erro. Os nomes iniciais são `Jogador 1` e `Jogador 2`. A partida
+acontece na mesma tela e o painel à direita informa de quem é o turno.
 
 A janela calcula automaticamente um tamanho compatível com a resolução do
 monitor. Ela também pode ser redimensionada manualmente: o conteúdo mantém a
 proporção e os cliques continuam alinhados aos elementos exibidos.
+
+Durante a partida, o botão **ÁRVORE** abre a representação visual do histórico.
+O botão **VOLTAR** restaura o estado anterior quando não existe uma carta ou
+convocação pendente.
+
+Ao fechar o jogo, a árvore atual é gravada em
+`saves/state_tree.json`. O mesmo arquivo também é salvo automaticamente
+quando a partida termina. Durante a partida, o botão **SALVAR** permite gravar
+manualmente o estado atual e apresenta uma confirmação no quadro de
+instruções. Para continuar, use o botão **CONTINUAR JOGO**.
+
+O argumento abaixo foi mantido como uma alternativa para carregar diretamente
+pelo terminal, sem passar pelo menu:
+
+```powershell
+python main.py --carregar
+```
+
+O comando sem `--carregar` abre a tela inicial.
+
+Para executar a demonstração textual da árvore de estados:
+
+```powershell
+python main_tree.py
+```
+
+A posição inicial possui muitas combinações completas. Por isso, a geração do
+primeiro nível pode levar alguns segundos. A demonstração mostra vinte filhos
+e informa quantos foram omitidos da impressão, mas todos permanecem registrados
+na árvore.
+
+## Segunda entrega — árvore de estados
+
+Na segunda etapa, cada nó representa uma fotografia completa da partida depois
+de uma jogada. Uma jogada de carta inclui seu efeito, a convocação obrigatória
+e a troca do jogador atual. O passe também inclui suas consequências, como a
+resolução automática de uma disputa depois de dois passes.
+
+O fluxo implementado é:
+
+```text
+Estado do nó atual
+        ↓
+Gerador encontra jogadas completas possíveis
+        ↓
+Executor aplica cada jogada em uma cópia
+        ↓
+Comparador descarta estados já existentes
+        ↓
+Novos estados são ligados como filhos do nó atual
+```
+
+A árvore cresce sob demanda. Apenas o nó atual pode ser expandido. Portanto,
+os filhos de uma jogada que ainda não foi escolhida não são gerados. Quando o
+jogador avança para um filho, esse novo nó poderá ser expandido. Ao voltar, o
+estado anterior é recuperado sem recalcular a partida.
+
+Uma jogada feita na interface é registrada imediatamente, mesmo que as demais
+opções daquele nível ainda não tenham sido geradas. Se o nível já tiver sido
+expandido, a árvore encontra e reutiliza o filho correspondente em vez de criar
+outro nó.
+
+### Visualização no Pygame
+
+O botão **ÁRVORE** mostra duas áreas:
+
+- **Caminho percorrido:** estados realmente visitados desde a raiz. O nó azul é
+  o estado atual e os nós verdes são seus antecessores;
+- **Próximas jogadas:** filhos já conhecidos do estado atual, limitados a sete
+  por página.
+
+O botão **GERAR OPÇÕES** calcula todas as jogadas completas possíveis somente
+para o estado atual. Essa ação não é automática porque o início da partida pode
+produzir milhares de combinações e levar alguns segundos. Os botões
+**ANTERIOR** e **PRÓXIMA** percorrem as páginas sem tentar desenhar todos os nós
+ao mesmo tempo.
+
+Os marcadores da apresentação textual significam:
+
+- `[ATUAL]`: posição atual da partida;
+- `[CAMINHO]`: estado que faz parte do caminho entre a raiz e o nó atual;
+- `[NÃO VISITADO]`: alternativa gerada, mas não escolhida.
+
+### Visualização completa pelo Graphviz
+
+Na tela da árvore, o botão **ABRIR GRAPHVIZ** exporta todos os estados que já
+foram registrados naquele momento. A exportação gera:
+
+- `saves/state_tree.dot`: descrição textual entendida pelo Graphviz;
+- `saves/state_tree.svg`: diagrama vetorial que pode ser ampliado sem perder
+  qualidade e é aberto no navegador padrão.
+
+O nó atual aparece em azul, o caminho visitado em verde e as alternativas não
+visitadas em cinza. Cada caixa informa índice, nível, jogada de origem e se as
+opções daquele nó já foram geradas. As setas representam a relação entre pai e
+filho.
+
+A exportação é manual porque árvores com milhares de estados podem demorar e
+produzir um SVG muito grande. Assim, uma jogada comum continua rápida. Depois
+de qualquer jogada, basta abrir a tela **ÁRVORE** e solicitar uma nova
+exportação para obter a versão completa e atualizada.
+
+### Salvar e carregar a árvore
+
+A árvore é salva em JSON porque o projeto já representa estados e jogadas por
+dicionários, listas, textos e números. Esse formato é legível, faz parte da
+biblioteca padrão do Python e não exige outra dependência.
+
+```python
+from model.state_tree_serializer import SerializadorArvoreEstados
+
+serializador = SerializadorArvoreEstados()
+serializador.salvar(arvore, "arvore_da_partida.json")
+
+arvore_carregada = serializador.carregar("arvore_da_partida.json")
+```
+
+O arquivo guarda os estados, as jogadas, a relação entre pais e filhos, quais
+nós já foram expandidos e qual era o nó atual. A marcação do caminho visitado é
+reconstruída no carregamento.
+
+No fluxo normal não é necessário chamar esses métodos manualmente. O Controller
+salva `saves/state_tree.json` ao encerrar a aplicação ou concluir a partida, e
+o botão **CONTINUAR JOGO** restaura a árvore e usa uma cópia do nó atual como
+estado do jogo. Durante a leitura, o menu apresenta a mensagem de carregamento.
+
+O salvamento manual ou automático acontece desta forma:
+
+1. o `ControladorJogo` solicita o salvamento quando o jogador clica em
+   **SALVAR**, fecha a janela ou finaliza a partida;
+2. `SerializadorArvoreEstados` transforma cada nó, estado e jogada em
+   dicionários e listas;
+3. esses dados são escritos em `saves/state_tree.json`;
+4. também são guardados o pai de cada nó, o nó atual e a informação de quais
+   nós já foram expandidos.
+
+O carregamento faz o caminho inverso:
+
+1. o menu verifica se o arquivo existe antes de habilitar **CONTINUAR JOGO**;
+2. `SerializadorArvoreEstados` lê e valida o JSON;
+3. os estados e as jogadas são reconstruídos;
+4. as relações entre pais e filhos são refeitas;
+5. a árvore avança até o nó que era o atual no momento do salvamento;
+6. o `Jogo` recebe uma cópia desse estado e a partida continua no Pygame.
+
+Uma seleção incompleta de carta não é salva como jogada. A árvore registra
+somente passes completos ou ações que já incluam a convocação obrigatória.
+
+### Alterações finais da segunda entrega e seus motivos
+
+- `model/state_tree.py` recebeu `registrar_jogada_realizada()` para centralizar
+  a procura ou criação do filho correspondente. O Controller não precisa
+  repetir regras de comparação;
+- `controller/game_controller.py` passou a guardar a árvore, formar uma
+  `Jogada` somente depois que carta e convocação foram concluídas, restaurar o
+  estado ao voltar e solicitar salvamento. Assim, uma escolha parcial nunca
+  vira nó;
+- o mesmo Controller passou a combinar o nome, `descricao` e próximo passo da
+  carta selecionada. Isso cria a legenda solicitada sem repetir o texto das
+  cartas na View;
+- o botão **SALVAR** passou a solicitar a gravação imediatamente e informar o
+  resultado no quadro de instruções. O salvamento automático foi mantido como
+  proteção;
+- `view/game_view.py` recebeu a tela paginada e os botões da árvore. A View
+  continua apenas desenhando e identificando cliques, sem validar regras;
+- `main.py` passou a iniciar uma árvore nova ou carregar o JSON existente e
+  entrega a mesma árvore ao Controller;
+- a tela inicial passou a oferecer novo jogo, continuação e saída. A opção de
+  continuar só aceita um arquivo existente e erros de leitura são apresentados
+  no próprio menu;
+- `view/state_tree_graphviz_view.py` passou a transformar todos os nós
+  registrados em DOT e solicitar ao Graphviz a criação do SVG. Essa View não
+  altera estados nem repete regras do jogo;
+- `.gitignore` passou a ignorar `saves/` porque os arquivos dessa pasta são
+  resultados de partidas locais, não código-fonte;
+- os testes de `main.py`, Controller, árvore e View passaram a verificar
+  carregamento, registro, volta, salvamento, abertura da tela e paginação.
 
 ## Como jogar pela interface
 
@@ -59,6 +255,16 @@ carta jogada interrompe a sequência de passes.
 Depois de executar uma carta de ação, o mesmo jogador é obrigado a convocar um
 seguidor do tabuleiro para sua corte. Para isso, deve clicar primeiro na região
 e depois no botão da facção desejada. Somente então o turno passa ao adversário.
+
+Ao clicar em uma carta, a área **O que fazer agora** apresenta três informações:
+
+1. o nome da carta selecionada;
+2. uma explicação curta do seu efeito;
+3. o próximo clique necessário para continuar a jogada.
+
+Foi escolhida uma ajuda textual em vez de imagens porque as descrições já fazem
+parte de `CartaAcao`. Assim, a interface reutiliza o Model, não exige arquivos
+externos e evita que a explicação visual fique diferente da regra implementada.
 
 Os botões auxiliares são:
 
@@ -161,7 +367,8 @@ cálculos do jogo com coordenadas da interface.
 ```text
 the-king-is-dead/
 ├── controller/
-│   └── game_controller.py
+│   ├── game_controller.py
+│   └── start_menu_controller.py
 ├── model/
 │   ├── action_card.py
 │   ├── board.py
@@ -170,15 +377,26 @@ the-king-is-dead/
 │   ├── game.py
 │   ├── game_setup.py
 │   ├── game_state.py
+│   ├── game_state_serializer.py
+│   ├── legal_move.py
+│   ├── legal_move_executor.py
+│   ├── legal_move_generator.py
 │   ├── player.py
 │   ├── region.py
 │   ├── region_card.py
+│   ├── state_node.py
+│   ├── state_tree.py
+│   ├── state_tree_serializer.py
 │   └── supply.py
 ├── tests/
 ├── view/
 │   ├── constants.py
-│   └── game_view.py
+│   ├── game_view.py
+│   ├── state_tree_graphviz_view.py
+│   └── state_tree_view.py
 ├── main.py
+├── main_tree.py
+├── saves/                 # criado durante a execução
 ├── README.md
 └── requirements.txt
 ```
@@ -187,8 +405,18 @@ the-king-is-dead/
 
 ### `main.py`
 
-- `principal()`: inicializa o Pygame, cria Model, View e Controller, executa a
-  aplicação e encerra o Pygame ao fechar a janela.
+- `_preparar_arvore(argumentos, serializador)`: carrega
+  `saves/state_tree.json` quando existe `--carregar`; caso contrário, cria um
+  novo estado e sua raiz;
+- `_escolher_arvore_pelo_menu(...)`: repete a tela inicial até criar, carregar
+  ou sair; se o JSON for inválido, mantém o menu aberto com uma mensagem;
+- `principal()`: prepara a pasta de salvamento, inicializa Pygame, Model, View,
+  menu, árvore e Controller, executa a aplicação e encerra o Pygame.
+
+### `main_tree.py`
+
+- `principal()`: cria um estado inicial reproduzível, expande somente a raiz e
+  apresenta uma amostra da árvore no terminal.
 
 ### `model/enums.py`
 
@@ -284,7 +512,16 @@ trilha e pelo tabuleiro, evitando guardar a mesma informação duas vezes.
 
 - `serializar(estado)`: cria uma fotografia composta por dados simples;
 - `restaurar(dados)`: reconstrói um `EstadoJogo` independente;
-- `copiar(estado)`: combina as duas operações para futuras simulações.
+- `copiar(estado)`: combina as duas operações para futuras simulações;
+- `obter_identificador(estado)`: gera um texto estável com os dados relevantes;
+- `possuem_mesmo_estado(primeiro, segundo)`: verifica se dois estados possuem
+  as mesmas informações capazes de influenciar a partida;
+- `_obter_dados_relevantes()`: retira da comparação apenas dados de interface.
+
+A comparação ignora apenas `ultima_mensagem`, pois ela serve para orientar a
+interface e não modifica as próximas jogadas. A última ação continua fazendo
+parte da comparação porque algumas cartas não podem desfazer imediatamente a
+ação do adversário.
 
 ### `model/legal_move.py`
 
@@ -292,7 +529,12 @@ trilha e pelo tabuleiro, evitando guardar a mesma informação duas vezes.
 - `obter_parametros()`: devolve uma cópia das escolhas da carta;
 - `eh_passe()` e `eh_carta()`: identificam a natureza da jogada;
 - `possui_mesmos_dados()`: compara todas as escolhas de duas jogadas;
-- `descrever()`: produz um resumo para apresentação.
+- `descrever()`: produz um resumo para apresentação;
+- `_descrever_efeito()`: detalha destinos, trocas ou ausência de efeito;
+- `serializar_jogada()`: converte passe ou carta para dados simples;
+- `restaurar_jogada()`: reconstrói uma jogada salva;
+- `_serializar_parametros()` e `_restaurar_parametros()`: convertem as facções
+  presentes nos parâmetros sem perder seus tipos.
 
 ### `model/legal_move_executor.py`
 
@@ -323,6 +565,64 @@ vez porque produzem as mesmas escolhas.
 Como uma única carta pode gerar muitas combinações, a futura árvore deverá ser
 expandida sob demanda: somente os filhos do estado que está sendo analisado
 serão criados, sem antecipar os netos de jogadas que ainda não aconteceram.
+
+### `model/state_node.py`
+
+- `NoEstado.__init__()`: copia e protege um estado, além de guardar pai e
+  jogada de origem;
+- `obter_estado()`: devolve uma cópia para proteger o histórico armazenado;
+- `obter_identificador()`: devolve a chave estável usada contra repetições;
+- `obter_jogada_origem()`: informa qual jogada criou o nó;
+- `obter_pai()`: permite voltar ao estado anterior;
+- `obter_filhos()` e `quantidade_filhos()`: consultam o próximo nível sem
+  expor a lista interna;
+- `adicionar_filho()`: liga um novo estado ao nó e evita filhos repetidos;
+- `eh_raiz()`, `eh_folha()` e `obter_nivel()`: descrevem a posição do nó;
+- `marcar_como_visitado()`, `desmarcar_como_visitado()` e `esta_visitado()`:
+  controlam a marcação usada para mostrar o caminho percorrido pelo jogador;
+- `marcar_como_expandido()` e `esta_expandido()`: impedem que os mesmos filhos
+  sejam gerados novamente.
+
+O nó raiz não possui pai nem jogada de origem. Todos os outros nós possuem um
+pai e a jogada completa responsável pela criação de seu estado.
+
+### `model/state_tree.py`
+
+- `ArvoreEstados.__init__()`: cria a raiz, marca o caminho inicial e prepara o
+  registro global dos estados;
+- `obter_raiz()` e `obter_no_atual()`: consultam os pontos principal e atual;
+- `adicionar_estado()`: liga um novo estado a um pai somente quando seu
+  identificador ainda não estiver na árvore;
+- `expandir_no_atual()`: usa gerador e executor para criar somente o próximo
+  nível da posição atual;
+- `registrar_jogada_realizada()`: procura o estado resultante entre os filhos,
+  cria o filho quando necessário e avança o caminho atual;
+- `avancar_para()`: permite avançar apenas para um filho do nó atual;
+- `voltar()`: retorna ao pai e atualiza a marcação do caminho percorrido;
+- `obter_caminho_atual()`: lista os nós desde a raiz até a posição atual;
+- `possui_estado()`: consulta se um estado equivalente já foi registrado;
+- `obter_estado_atual()`: entrega uma cópia protegida da posição atual;
+- `obter_nos()` e `quantidade_nos()`: consultam o registro global;
+- `_validar_no_da_arvore()`: impede navegação ou inserção com nós externos.
+
+A raiz começa marcada como visitada. Ao avançar, o novo nó também é marcado;
+ao voltar, o nó abandonado é desmarcado. Dessa maneira, a apresentação poderá
+destacar visualmente o caminho atual sem confundir isso com o registro global
+de estados, que permanece guardado na árvore.
+
+### `model/state_tree_serializer.py`
+
+- `__init__()`: prepara o serializador já usado pelos estados individuais;
+- `serializar(arvore)`: converte todos os nós em dados simples;
+- `restaurar(dados)`: recria nós, pais, filhos, expansão e caminho atual;
+- `salvar(arvore, caminho)`: grava um arquivo JSON em UTF-8;
+- `carregar(caminho)`: lê o JSON e devolve uma `ArvoreEstados` funcional;
+- `_obter_indice_no()`: troca referências entre objetos por índices simples;
+- `_validar_dados_principais()`: verifica versão, lista e nó atual;
+- `_validar_dados_raiz()`: confirma que a raiz não possui pai nem jogada;
+- `_validar_dados_no()`: verifica índice, pai, expansão e jogada dos filhos;
+- `_restaurar_caminho_atual()`: percorre novamente o caminho salvo;
+- `_validar_caminho()`: exige um caminho de arquivo preenchido.
 
 ### `model/game_setup.py`
 
@@ -371,14 +671,37 @@ Métodos internos que dividem as regras em etapas menores:
 
 ### `controller/game_controller.py`
 
-- `__init__(jogo, visao)`: recebe as outras camadas e inicia seleções;
+- `__init__(...)`: recebe jogo, View, árvore e dados de salvamento, além de
+  iniciar as seleções;
+- `_validar_sincronia_inicial()`: impede iniciar o Controller com jogo e árvore
+  representando estados diferentes;
+- `_mostrar_ajuda_da_carta()`: monta a legenda com nome, efeito e próximo passo
+  usando a descrição já armazenada na carta;
+- `_registrar_jogada_realizada()`: envia ao Model somente uma jogada completa;
+- `_salvar_arvore()`: grava o JSON sem encerrar o jogo caso ocorra um erro de
+  arquivo;
+- `_processar_clique()`: também reconhece o botão **SALVAR** e apresenta a
+  confirmação sem alterar o turno ou as seleções do jogador;
 - `executar()`: mantém o loop de eventos e desenho em 60 quadros por segundo;
 - `_processar_eventos()` e `_processar_clique()`: encaminham cliques;
 - métodos `_processar_...`: montam, passo a passo, os parâmetros de cada ação;
 - `_tentar_jogar_carta()`: chama o Model e transforma erros em instruções;
 - `_atualizar_instrucao_da_carta()`: explica a próxima seleção;
+- `_pode_voltar_jogada()` e `_voltar_jogada()`: validam a volta e substituem o
+  estado do jogo pela cópia protegida do nó pai;
+- `_processar_clique_da_arvore()`: fecha a tela, muda páginas ou solicita a
+  expansão do nó atual e também inicia a exportação pelo Graphviz;
 - `_limpar_selecao()`: cancela dados temporários;
-- `_obter_selecao()`: entrega à View somente o necessário para destacar itens.
+- `_obter_selecao()`: entrega à View somente o necessário para destacar itens;
+- `_desenhar_quadro()`: envia estado, seleção e informações da árvore à View.
+
+### `controller/start_menu_controller.py`
+
+- `existe_jogo_salvo()`: verifica se `state_tree.json` está disponível;
+- `executar(mensagem)`: mantém o menu ativo, trata fechamento e clique e
+  devolve uma das três escolhas para `main.py`;
+- as constantes `ACAO_NOVO_JOGO`, `ACAO_CONTINUAR_JOGO` e `ACAO_SAIR` evitam
+  usar textos visuais como decisões do programa.
 
 ### `view/constants.py`
 
@@ -391,8 +714,16 @@ não define quais regiões são vizinhas.
 
 ### `view/game_view.py`
 
-- `desenhar(...)`: redesenha a tela completa;
-- métodos `botao_...foi_clicado()` e `obter_...clicada()`: identificam áreas;
+- `desenhar_menu_inicial(...)`: apresenta novo jogo, continuar e sair, além de
+  mensagens de carregamento ou erro;
+- `obter_acao_menu_inicial(...)`: identifica a opção clicada e bloqueia a
+  continuação quando não existe salvamento;
+- `desenhar(...)`: redesenha a partida e, quando solicitado, sobrepõe a tela da
+  árvore;
+- métodos `botao_...foi_clicado()` e `obter_...clicada()`: identificam áreas,
+  incluindo o botão de salvamento manual;
+- `obter_quantidade_paginas_arvore()`: calcula quantas páginas de sete filhos
+  serão necessárias;
 - `_calcular_tamanho_inicial_da_janela()`: escolhe um tamanho que caiba no
   monitor;
 - `_calcular_escala_e_deslocamento()`: mantém proporção e centralização;
@@ -405,13 +736,34 @@ não define quais regiões são vizinhas.
 - `_obter_pontos_da_fronteira()`: aplica os desvios puramente visuais das
   ligações mais longas;
 - métodos `_desenhar_...`: desenham título, regiões, trilha, painel, mão,
-  mensagens e controles;
+  mensagens, controles, caminho da árvore e filhos paginados;
 - `_obter_retangulo_carta()`: calcula a área de cada carta;
 - `_quebrar_texto()` e métodos de texto: mantêm os textos dentro das áreas.
 
 O prefixo `_` indica um detalhe interno da classe ou do arquivo. É uma
 convenção de Python: o código continua acessível, mas outras classes devem usar
 preferencialmente os métodos públicos.
+
+### `view/state_tree_view.py`
+
+- `formatar(arvore, limite_filhos)`: transforma a árvore em texto indentado;
+- `mostrar(...)`: imprime o texto no terminal;
+- `_adicionar_no()`: percorre pais e filhos respeitando seus níveis;
+- `_obter_marcador()`: diferencia nó atual, caminho e alternativas;
+- `_obter_descricao()`: mostra `Estado inicial` ou a jogada de origem;
+- `_validar_limite()`: protege o limite opcional usado em árvores largas.
+
+### `view/state_tree_graphviz_view.py`
+
+- `gerar_dot(arvore)`: percorre todos os nós uma vez e monta a descrição
+  completa do grafo;
+- `exportar(arvore, caminho_svg, abrir)`: salva o DOT, executa o Graphviz,
+  cria o SVG e pode abri-lo no navegador;
+- `_localizar_dot()`: procura o executável no `PATH` e nas pastas comuns do
+  Windows;
+- `_criar_rotulo(...)`: resume índice, nível, jogada e expansão de cada nó;
+- `_escapar_texto(...)`: protege aspas e barras para produzir DOT válido;
+- `_validar_caminho(...)`: rejeita destinos vazios ou de tipo incorreto.
 
 ## Testes automatizados
 
@@ -425,7 +777,13 @@ A pasta `tests` verifica unidades pequenas e independentes. O arquivo
 `test_actions.py` cobre o ciclo das cartas, execuções parciais, jogadas
 inválidas, convocação e restrições contra desfazer a ação adversária.
 `test_game.py` cobre turnos, disputas, fim, desempates e uma partida completa
-por passes. Os demais arquivos acompanham uma classe do Model.
+por passes. Os arquivos `test_state_...` cobrem nós, expansão controlada,
+navegação, apresentação e persistência da árvore. Os demais arquivos acompanham
+uma classe do Model. `test_controller.py` também garante que passe e carta
+completa atualizem a árvore, que voltar restaure o jogo, que o arquivo possa ser
+carregado e que a ajuda da carta apresente efeito e próximo passo.
+`test_main.py` cobre a escolha entre uma partida nova e uma árvore salva.
+`test_view.py` verifica a paginação da apresentação gráfica.
 
 ## Decisões de implementação para explicar na apresentação
 
@@ -441,5 +799,14 @@ por passes. Os demais arquivos acompanham uma classe do Model.
   ou jogar outra carta antes da convocação obrigatória.
 - O histórico existe porque algumas regras dependem do passado: última ação,
   última vitória de facção e primeiro jogador que esvaziou a mão.
+- A árvore não altera estados existentes: executor e nós trabalham com cópias.
+- Um identificador textual permite comparar estados sem depender da identidade
+  dos objetos em memória. A mensagem da interface não participa da comparação.
+- O registro global da árvore impede repetição no mesmo nível e em níveis
+  diferentes; a marcação de visitado possui somente finalidade de navegação e
+  apresentação.
+- A expansão sob demanda evita gerar netos de jogadas ainda não escolhidas.
+- JSON foi escolhido para persistência por ser legível, simples e nativo do
+  Python. O campo de versão permite rejeitar formatos incompatíveis no futuro.
 - Os testes usam uma semente aleatória ou estados montados manualmente para que
   o resultado seja previsível e repetível.
