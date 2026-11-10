@@ -20,6 +20,9 @@ class VisaoFalsa:
     def botao_cancelar_foi_clicado(self, posicao):
         return posicao == "cancelar"
 
+    def botao_pausar_ia_foi_clicado(self, posicao):
+        return posicao == "pausar_ia"
+
     def botao_sem_efeito_foi_clicado(self, posicao):
         return posicao == "sem_efeito"
 

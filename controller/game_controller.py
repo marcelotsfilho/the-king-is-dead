@@ -1,5 +1,8 @@
 from copy import deepcopy
 import os
+from queue import Queue
+from threading import Thread
+from time import perf_counter
 
 import pygame
 
@@ -9,9 +12,13 @@ from model.enums import (
     FaseTurno,
     TipoCartaAcao,
     TipoJogada,
+    TipoJogador,
 )
 from model.game_state_serializer import SerializadorEstadoJogo
 from model.legal_move import Jogada
+from model.legal_move_executor import ExecutorJogada
+from model.match_settings import ConfiguracaoPartida
+from model.minimax_agent import AgenteMinimax
 from model.state_tree import ArvoreEstados
 from model.state_tree_serializer import SerializadorArvoreEstados
 from view.state_tree_graphviz_view import VisaoArvoreGraphviz
@@ -30,9 +37,13 @@ class ControladorJogo:
         arvore=None,
         serializador_arvore=None,
         caminho_salvamento=None,
+        configuracao_partida=None,
     ):
         self.jogo = jogo
         self.visao = visao
+        if configuracao_partida is None:
+            configuracao_partida = ConfiguracaoPartida()
+        self.configuracao_partida = configuracao_partida
 
         if arvore is None:
             arvore = ArvoreEstados(jogo.estado)
@@ -71,6 +82,148 @@ class ControladorJogo:
         self.mensagem_arvore = ""
         self.arvore_salva = False
         self.instrucao = "Escolha uma carta de ação ou passe."
+        self.ia_pausada = False
+        self.ultima_decisao_ia = None
+        self._fila_ia = Queue()
+        self._tarefa_ia = None
+        self._estado_busca_ia = None
+
+    def _possui_ia(self):
+        for indice in range(2):
+            if self.configuracao_partida.obter_tipo_jogador(indice) != TipoJogador.HUMANO:
+                return True
+        return False
+
+    def _turno_da_ia(self):
+        indice = self.jogo.estado.indice_jogador_atual
+        return self.configuracao_partida.obter_tipo_jogador(indice) != TipoJogador.HUMANO
+
+    def _alternar_pausa_ia(self):
+        self.ia_pausada = not self.ia_pausada
+        if self.ia_pausada:
+            self.instrucao = "IA pausada. Clique em RETOMAR IA para continuar."
+        else:
+            self.instrucao = "IA liberada. Aguardando o próximo turno automático."
+
+    def _calcular_jogada_ia(self, estado, indice, tipo, profundidade):
+        """Calcula sobre uma cópia e envia o resultado sem acessar o Pygame."""
+        inicio = perf_counter()
+        resultado = {"erro": None}
+        try:
+            agente = AgenteMinimax(indice)
+            jogada = agente.escolher_jogada(
+                estado,
+                profundidade_maxima=profundidade,
+                usar_poda=tipo == TipoJogador.ALFA_BETA,
+            )
+            novo_estado = None
+            if jogada is not None:
+                novo_estado = ExecutorJogada().executar(estado, jogada)
+            resultado.update({
+                "jogada": jogada,
+                "estado": novo_estado,
+                "jogador": indice,
+                "algoritmo": tipo.value,
+                "profundidade": profundidade,
+                "pontuacao": agente.ultima_pontuacao,
+                "nos_visitados": agente.nos_visitados,
+                "folhas_avaliadas": agente.folhas_avaliadas,
+                "podas_realizadas": agente.podas_realizadas,
+            })
+        except Exception as erro:
+            # Um erro na thread precisa chegar ao Controller, sem sumir em silêncio.
+            resultado["erro"] = str(erro)
+        resultado["tempo_segundos"] = perf_counter() - inicio
+        self._fila_ia.put(resultado)
+
+    def _iniciar_busca_ia(self):
+        estado = self.jogo.estado
+        indice = estado.indice_jogador_atual
+        tipo = self.configuracao_partida.obter_tipo_jogador(indice)
+        profundidade = self.configuracao_partida.obter_profundidade(indice)
+        copia = SerializadorEstadoJogo().copiar(estado)
+        self._estado_busca_ia = estado
+        self._tarefa_ia = Thread(
+            target=self._calcular_jogada_ia,
+            args=(copia, indice, tipo, profundidade),
+            daemon=True,
+        )
+        self.instrucao = (
+            estado.obter_jogador_atual().nome + " calculando com "
+            + tipo.value + ", profundidade " + str(profundidade) + "."
+        )
+        self._tarefa_ia.start()
+
+    def _receber_jogada_ia(self):
+        if self._fila_ia.empty():
+            return
+
+        # Uma volta troca o objeto de estado, mesmo se o conteúdo for igual.
+        estado_mudou = self.jogo.estado is not self._estado_busca_ia
+        if not estado_mudou and (self.ia_pausada or self.arvore_aberta):
+            return
+
+        resultado = self._fila_ia.get_nowait()
+        self._tarefa_ia = None
+        self._estado_busca_ia = None
+        if estado_mudou:
+            return
+
+        if resultado["erro"] is not None:
+            self.ia_pausada = True
+            self.instrucao = "Erro na IA: " + resultado["erro"] + ". IA pausada."
+            return
+        if resultado["jogada"] is None:
+            self.ia_pausada = True
+            self.instrucao = "A IA não encontrou uma jogada. IA pausada."
+            return
+
+        try:
+            self._registrar_jogada_realizada(
+                resultado["jogada"], resultado["estado"]
+            )
+        except (TypeError, ValueError) as erro:
+            self.ia_pausada = True
+            self.instrucao = "Não foi possível registrar a jogada da IA: " + str(erro)
+            return
+
+        self._limpar_selecao()
+        self.ultima_decisao_ia = resultado
+        resumo = self._obter_resumo_ia()
+        if not (
+            self.jogo.estado.finalizado
+            and self.caminho_salvamento is not None
+            and not self.arvore_salva
+        ):
+            self.instrucao = resumo
+
+    def _obter_resumo_ia(self):
+        resultado = self.ultima_decisao_ia
+        if resultado is None:
+            return ""
+        return (
+            resultado["algoritmo"] + " | profundidade "
+            + str(resultado["profundidade"]) + " | "
+            + format(resultado["tempo_segundos"], ".3f") + " s | "
+            + str(resultado["nos_visitados"]) + " nós | "
+            + str(resultado["podas_realizadas"]) + " cortes."
+        )
+
+    def _atualizar_turno_ia(self):
+        """Verifica o cálculo sem bloquear o loop principal da janela."""
+        if not self.executando:
+            return
+        if self._tarefa_ia is not None:
+            self._receber_jogada_ia()
+            return
+        estado = self.jogo.estado
+        if (
+            estado.finalizado or self.ia_pausada or self.arvore_aberta
+            or not self._turno_da_ia()
+            or estado.fase_turno != FaseTurno.ESCOLHER_ACAO
+        ):
+            return
+        self._iniciar_busca_ia()
 
     def _validar_sincronia_inicial(self):
         comparador = SerializadorEstadoJogo()
@@ -124,11 +277,14 @@ class ControladorJogo:
 
         self._mostrar_ajuda_da_carta(proximo_passo)
 
-    def _registrar_jogada_realizada(self, jogada):
+    def _registrar_jogada_realizada(self, jogada, estado_resultante=None):
+        if estado_resultante is None:
+            estado_resultante = self.jogo.estado
         self.arvore.registrar_jogada_realizada(
             jogada,
-            self.jogo.estado,
+            estado_resultante,
         )
+        self.jogo.estado = estado_resultante
         self.arvore_salva = False
         self._reiniciar_paginacao_arvore()
 
@@ -429,6 +585,10 @@ class ControladorJogo:
         self._reiniciar_paginacao_arvore()
         self._limpar_selecao()
         self.instrucao = "A última jogada foi desfeita."
+        self.ultima_decisao_ia = None
+        if self._possui_ia():
+            self.ia_pausada = True
+            self.instrucao += " IA pausada; use RETOMAR IA para continuar."
 
     def _ir_para_pagina_digitada(self):
         total_paginas = self.visao.obter_quantidade_paginas_arvore(
@@ -592,6 +752,13 @@ class ControladorJogo:
         if estado.finalizado:
             return
 
+        if self._possui_ia() and self.visao.botao_pausar_ia_foi_clicado(posicao):
+            self._alternar_pausa_ia()
+            return
+
+        if self._turno_da_ia():
+            return
+
         if self.visao.botao_cancelar_foi_clicado(posicao):
             if estado.fase_turno == FaseTurno.ESCOLHER_ACAO:
                 self._limpar_selecao()
@@ -631,6 +798,7 @@ class ControladorJogo:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 self.executando = False
+                return
 
             if evento.type == pygame.KEYDOWN:
                 self._processar_tecla_da_arvore(evento)
@@ -662,12 +830,16 @@ class ControladorJogo:
             self.mensagem_arvore,
             self.texto_pagina_arvore,
             self.campo_pagina_arvore_ativo,
+            self._possui_ia(),
+            self.ia_pausada,
+            self._obter_resumo_ia(),
         )
 
     def executar(self):
         """Mantém o loop principal ativo até o fechamento da janela."""
         while self.executando:
             self._processar_eventos()
+            self._atualizar_turno_ia()
             self._desenhar_quadro()
             self.relogio.tick(QUADROS_POR_SEGUNDO)
 

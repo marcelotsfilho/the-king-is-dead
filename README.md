@@ -57,6 +57,38 @@ O jogo começa em uma tela inicial com três opções:
   não existe uma partida salva;
 - **SAIR:** fecha a aplicação sem criar uma partida.
 
+Ao clicar em **NOVO JOGO**, uma segunda tela mostra os painéis **Jogador 1** e
+**Jogador 2**, que permitem configurar
+cada lado independentemente. Clique no tipo para alternar entre **Humano**,
+**Minimax** e **Minimax com alfa-beta**. Use `+` e `-` para ajustar a antecipação
+de cada IA, com mínimo de 1 jogada completa. Para Humano, esses botões ficam
+desativados. Ao trocar entre os tipos, a profundidade escolhida é mantida.
+
+Clique em **INICIAR PARTIDA** para confirmar. **VOLTAR AO MENU** descarta a
+edição e retorna à tela inicial, sem criar uma partida ou alterar o salvamento.
+As escolhas confirmadas são entregues ao `ControladorJogo` ao iniciar o novo
+jogo. Nos turnos configurados como IA, o Controller escolhe e aplica a jogada
+automaticamente, respeitando o algoritmo e a profundidade de cada lado. É
+possível jogar humano contra IA e colocar os algoritmos para jogarem entre si.
+
+Durante um turno automático, cliques nas cartas, regiões e no botão Passar não
+executam jogadas humanas. Salvar, abrir a árvore e voltar continuam disponíveis.
+**PAUSAR IA** suspende a aplicação da próxima jogada; **RETOMAR IA** libera a
+continuação. Ao abrir a árvore, nenhum resultado da IA é aplicado até fechá-la.
+Ao voltar uma jogada, a IA é pausada para permitir analisar a posição restaurada.
+
+O tempo da última decisão, algoritmo, profundidade, nós visitados e cortes
+aparecem no rodapé, inclusive depois do fim da partida. Enquanto calcula, o
+quadro de instruções identifica o jogador, algoritmo e profundidade usados.
+
+O padrão é Humano contra Humano, com profundidades inicialmente em 1. A
+configuração vale para a sessão atual e ainda não é gravada no JSON da árvore.
+**CONTINUAR JOGO** mantém o carregamento direto da partida salva, sem abrir a
+tela de configuração; `--carregar` também continua direto. Como essas escolhas
+ainda não são salvas, o carregamento usa os padrões humanos. Não há um limite superior de
+profundidade imposto pelo menu, mas profundidades maiores ainda precisam ser
+avaliadas nos experimentos de desempenho.
+
 Se o arquivo salvo estiver inválido, o jogo volta ao menu e apresenta uma
 mensagem de erro. Os nomes iniciais são `Jogador 1` e `Jogador 2`. A partida
 acontece na mesma tela e o painel à direita informa de quem é o turno.
@@ -388,6 +420,7 @@ the-king-is-dead/
 │   ├── legal_move_executor.py
 │   ├── legal_move_generator.py
 │   ├── minimax_agent.py
+│   ├── match_settings.py
 │   ├── state_evaluator.py
 │   ├── player.py
 │   ├── region.py
@@ -575,6 +608,23 @@ Como uma única carta pode gerar muitas combinações, a futura árvore deverá 
 expandida sob demanda: somente os filhos do estado que está sendo analisado
 serão criados, sem antecipar os netos de jogadas que ainda não aconteceram.
 
+### `model/match_settings.py`
+
+`ConfiguracaoPartida` guarda as escolhas de controle dos dois jogadores.
+Ela é diferente de `ConfiguracaoJogo`, que distribui cartas e seguidores e
+prepara o tabuleiro. As escolhas de controle não modificam regras ou estados.
+
+- `__init__()`: inicia os dois lados como humanos e profundidades em 1;
+- `_validar_indice(indice)`: aceita somente os índices inteiros 0 e 1;
+- `obter_tipo_jogador(indice)`: retorna o `TipoJogador` daquele lado;
+- `obter_profundidade(indice)`: retorna sua antecipação configurada;
+- `definir_tipo_jogador(indice, tipo)`: altera o tipo, validando o enum;
+- `definir_profundidade(indice, profundidade)`: aceita um inteiro a partir de 1.
+
+O enum `TipoJogador`, em `model/enums.py`, identifica Humano, Minimax e Minimax
+com alfa-beta. O objeto de configuração é compartilhado por `main.py`, menu e
+Controller da partida, evitando cópias divergentes das escolhas.
+
 ### `model/state_evaluator.py`
 
 - `AvaliadorEstado(indice_jogador_ia)`: identifica qual dos dois jogadores será
@@ -652,8 +702,8 @@ Responsabilidades dos métodos:
 
 Os estados são simulados pelo `ExecutorJogada`, que trabalha com cópias. A busca
 não insere simulações no histórico `ArvoreEstados`: esse histórico continua
-registrando as jogadas realizadas. A integração da escolha automática com o
-Controller e o Pygame será uma etapa posterior.
+registrando as jogadas realizadas. O Controller usa o agente em uma cópia do
+estado e registra somente o resultado escolhido, após a busca terminar.
 
 Esta versão mantém todas as alternativas legais, sem limitar artificialmente
 o número de filhos. A poda evita percorrer alguns ramos, mas o gerador ainda
@@ -770,6 +820,35 @@ Métodos internos que dividem as regras em etapas menores:
 
 ### `controller/game_controller.py`
 
+Execução dos turnos da IA:
+
+- `_possui_ia()` e `_turno_da_ia()`: consultam a configuração da sessão;
+- `_alternar_pausa_ia()`: suspende ou libera a aplicação de jogadas automáticas;
+- `_calcular_jogada_ia(...)`: executa a busca na thread, aplica a jogada na
+  cópia pelo `ExecutorJogada` e devolve resultado ou erro pela fila;
+- `_iniciar_busca_ia()`: copia a posição atual, informa o cálculo na tela e
+  inicia uma única thread;
+- `_receber_jogada_ia()`: recebe a resposta, confere se o estado ainda é o da
+  busca, registra a jogada e só então atualiza o jogo. Respostas antigas são
+  descartadas; erros pausam a IA sem alterar a posição;
+- `_obter_resumo_ia()`: formata as estatísticas da última decisão;
+- `_atualizar_turno_ia()`: consulta a fila ou inicia a busca no turno correto,
+  sem aguardar o cálculo dentro do loop da janela.
+
+`Thread` e `Queue` são recursos da biblioteca padrão. A thread trabalha em uma
+cópia e não acessa o Pygame nem altera a árvore. Apenas o loop principal aplica
+o resultado. Isso permite processar eventos e desenhar enquanto a busca ocorre,
+mas não torna a busca mais rápida. O tempo medido com `perf_counter()` inclui
+a criação do agente, busca e execução final sobre a cópia; não inclui a cópia
+inicial feita pelo Controller, o desenho, o salvamento nem a espera em pausa.
+
+A pausa não interrompe um cálculo já iniciado: sua resposta fica aguardando na
+fila. Há no máximo uma tarefa de cálculo por Controller. Ao voltar, a resposta
+antiga é descartada quando chegar; uma nova busca aguarda a anterior terminar.
+Ao fechar, a thread é daemon e não impede a saída; somente as jogadas já
+confirmadas são salvas. O custo de posições grandes ainda exige experimentos
+de viabilidade antes de recomendar profundidades maiores.
+
 - `__init__(...)`: recebe jogo, View, árvore e dados de salvamento, além de
   iniciar as seleções;
 - `_validar_sincronia_inicial()`: impede iniciar o Controller com jogo e árvore
@@ -798,8 +877,16 @@ Métodos internos que dividem as regras em etapas menores:
 - `_obter_selecao()`: entrega à View somente o necessário para destacar itens;
 - `_desenhar_quadro()`: envia estado, seleção e informações da árvore à View.
 
+`_registrar_jogada_realizada(jogada, estado_resultante)` aceita o resultado de
+uma simulação e atualiza o jogo após a árvore aceitar a transição, preservando
+a sincronia em caso de erro de registro. O argumento é opcional no fluxo humano.
+
 ### `controller/start_menu_controller.py`
 
+- `__init__(..., configuracao_partida)`: recebe as escolhas da sessão; quando
+  omitidas, cria os padrões;
+- `_alterar_configuracao(acao, indice, configuracao)`: alterna tipos ou ajusta a profundidade
+  do jogador indicado, bloqueando alterações para humanos e valores abaixo de 1;
 - `existe_jogo_salvo()`: verifica se `state_tree.json` está disponível;
 - `executar(mensagem)`: mantém o menu ativo, trata fechamento e clique e
   devolve uma das três escolhas para `main.py`;
@@ -817,12 +904,25 @@ não define quais regiões são vizinhas.
 
 ### `view/game_view.py`
 
-- `desenhar_menu_inicial(...)`: apresenta novo jogo, continuar e sair, além de
-  mensagens de carregamento ou erro;
+- `desenhar_menu_inicial(...)`: apresenta somente novo jogo, continuar e sair,
+  além de mensagens de carregamento ou erro;
+- `desenhar_tela_configuracao(configuracao_partida)`: apresenta a página de
+  configuração exclusiva do novo jogo, com iniciar partida e voltar ao menu;
+- `obter_acao_tela_configuracao(posicao)`: identifica iniciar ou voltar,
+  respeitando a escala da janela;
+- `_obter_controles_configuracao(indice)`: define áreas usadas tanto no desenho
+  quanto na identificação dos cliques, evitando coordenadas duplicadas;
+- `_desenhar_configuracao_jogadores(configuracao)`: desenha os dois painéis e
+  desativa visualmente os ajustes de profundidade dos humanos;
+- `obter_acao_configuracao(posicao)`: converte a posição redimensionada e retorna
+  a ação e o índice do jogador, ou `None` quando nenhum controle foi clicado;
 - `obter_acao_menu_inicial(...)`: identifica a opção clicada e bloqueia a
   continuação quando não existe salvamento;
 - `desenhar(...)`: redesenha a partida e, quando solicitado, sobrepõe a tela da
   árvore;
+- `botao_pausar_ia_foi_clicado(posicao)`: identifica o controle de pausa usando
+  as mesmas coordenadas lógicas do desenho. `desenhar(...)` também recebe
+  presença de IA, pausa e resumo da última decisão para exibição;
 - métodos `botao_...foi_clicado()` e `obter_...clicada()`: identificam áreas,
   incluindo o botão de salvamento manual;
 - `obter_quantidade_paginas_arvore()`: calcula quantas páginas de sete filhos

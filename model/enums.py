@@ -1,6 +1,14 @@
 from enum import Enum
 
 
+class TipoJogador(Enum):
+    """Formas de controlar cada jogador da partida."""
+
+    HUMANO = "Humano"
+    MINIMAX = "Minimax"
+    ALFA_BETA = "Minimax com alfa-beta"
+
+
 class Faccao(Enum):
     """Identidades das três facções presentes no jogo."""
 

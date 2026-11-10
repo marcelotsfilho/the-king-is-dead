@@ -32,6 +32,32 @@ class ArvoreFalsa:
 
 
 class TesteVisaoResponsiva(unittest.TestCase):
+    def test_identifica_pausa_da_ia_em_janela_reduzida(self):
+        visao = VisaoJogo.__new__(VisaoJogo)
+        visao.janela = JanelaFalsa(600, 515)
+        visao.retangulo_pausar_ia = pygame.Rect(650, 35, 240, 45)
+        self.assertTrue(visao.botao_pausar_ia_foi_clicado((385, 28)))
+        self.assertFalse(visao.botao_pausar_ia_foi_clicado((0, 0)))
+
+    def test_configuracao_identifica_iniciar_e_voltar_com_escala(self):
+        visao = VisaoJogo.__new__(VisaoJogo)
+        visao.janela = JanelaFalsa(600, 515)
+        visao.retangulo_iniciar_partida = pygame.Rect(420, 650, 360, 70)
+        visao.retangulo_voltar_menu = pygame.Rect(420, 750, 360, 70)
+        self.assertEqual(visao.obter_acao_tela_configuracao((300, 342.5)), "iniciar")
+        self.assertEqual(visao.obter_acao_tela_configuracao((300, 392.5)), "voltar")
+        self.assertIsNone(visao.obter_acao_tela_configuracao((0, 0)))
+
+    def test_configuracao_reconhece_jogador_e_controle_em_janela_reduzida(self):
+        visao = VisaoJogo.__new__(VisaoJogo)
+        visao.janela = JanelaFalsa(600, 515)
+        for indice in (0, 1):
+            controles = visao._obter_controles_configuracao(indice)
+            for acao, retangulo in controles.items():
+                posicao = (retangulo.centerx / 2, retangulo.centery / 2)
+                self.assertEqual(visao.obter_acao_configuracao(posicao), (acao, indice))
+        self.assertIsNone(visao.obter_acao_configuracao((0, 0)))
+
     def test_tamanho_inicial_cabe_em_monitor_full_hd(self):
         visao = VisaoJogo.__new__(VisaoJogo)
 

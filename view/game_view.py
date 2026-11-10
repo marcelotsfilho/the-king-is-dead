@@ -1,6 +1,6 @@
 import pygame
 
-from model.enums import Faccao, FaseTurno
+from model.enums import Faccao, FaseTurno, TipoJogador
 from view.constants import (
     ALTURA_CARTA_ACAO,
     ALTURA_JANELA,
@@ -48,6 +48,9 @@ class VisaoJogo:
         self.retangulo_novo_jogo = pygame.Rect(420, 410, 360, 70)
         self.retangulo_continuar_jogo = pygame.Rect(420, 510, 360, 70)
         self.retangulo_sair = pygame.Rect(420, 610, 360, 70)
+        self.retangulo_iniciar_partida = pygame.Rect(420, 650, 360, 70)
+        self.retangulo_voltar_menu = pygame.Rect(420, 750, 360, 70)
+        self.retangulo_pausar_ia = pygame.Rect(650, 35, 240, 45)
         self.retangulo_botao_passar = pygame.Rect(930, 680, 240, 52)
         self.retangulo_botao_cancelar = pygame.Rect(930, 750, 115, 45)
         self.retangulo_botao_sem_efeito = pygame.Rect(1055, 750, 115, 45)
@@ -169,6 +172,10 @@ class VisaoJogo:
         posicao_logica = self._converter_para_posicao_logica(posicao)
         return self.retangulo_botao_arvore.collidepoint(posicao_logica)
 
+    def botao_pausar_ia_foi_clicado(self, posicao):
+        posicao_logica = self._converter_para_posicao_logica(posicao)
+        return self.retangulo_pausar_ia.collidepoint(posicao_logica)
+
     def botao_salvar_foi_clicado(self, posicao):
         posicao_logica = self._converter_para_posicao_logica(posicao)
         return self.retangulo_botao_salvar.collidepoint(posicao_logica)
@@ -212,6 +219,33 @@ class VisaoJogo:
     def botao_ir_pagina_foi_clicado(self, posicao):
         posicao_logica = self._converter_para_posicao_logica(posicao)
         return self.retangulo_ir_pagina.collidepoint(posicao_logica)
+
+    def _obter_controles_configuracao(self, indice):
+        """Compartilha as mesmas áreas entre desenho e leitura dos cliques."""
+        posicao_x = 200 + indice * 440
+        return {
+            "tipo": pygame.Rect(posicao_x, 365, 360, 55),
+            "diminuir": pygame.Rect(posicao_x + 35, 475, 55, 45),
+            "aumentar": pygame.Rect(posicao_x + 270, 475, 55, 45),
+        }
+
+    def obter_acao_configuracao(self, posicao):
+        """Retorna o controle e o índice do jogador selecionados."""
+        posicao_logica = self._converter_para_posicao_logica(posicao)
+        for indice in range(2):
+            controles = self._obter_controles_configuracao(indice)
+            for acao, retangulo in controles.items():
+                if retangulo.collidepoint(posicao_logica):
+                    return acao, indice
+        return None
+
+    def obter_acao_tela_configuracao(self, posicao):
+        posicao_logica = self._converter_para_posicao_logica(posicao)
+        if self.retangulo_iniciar_partida.collidepoint(posicao_logica):
+            return "iniciar"
+        if self.retangulo_voltar_menu.collidepoint(posicao_logica):
+            return "voltar"
+        return None
 
     def obter_acao_menu_inicial(
         self,
@@ -443,6 +477,50 @@ class VisaoJogo:
             retangulo,
             COR_BRANCA,
         )
+
+    def _desenhar_configuracao_jogadores(self, configuracao):
+        for indice in range(2):
+            controles = self._obter_controles_configuracao(indice)
+            posicao_x = controles["tipo"].x
+            painel = pygame.Rect(posicao_x - 20, 290, 400, 290)
+            pygame.draw.rect(self.tela, COR_PAINEL, painel)
+            pygame.draw.rect(self.tela, COR_BORDA, painel, 2)
+            self._desenhar_texto("Jogador " + str(indice + 1), posicao_x, 315)
+            tipo = configuracao.obter_tipo_jogador(indice)
+            self._desenhar_botao_menu(controles["tipo"], tipo.value)
+            self._desenhar_texto("Antecipação (jogadas completas)", posicao_x, 440)
+            eh_ia = tipo != TipoJogador.HUMANO
+            profundidade = configuracao.obter_profundidade(indice)
+            self._desenhar_botao_menu(
+                controles["diminuir"], "-", eh_ia and profundidade > 1
+            )
+            self._desenhar_botao_menu(controles["aumentar"], "+", eh_ia)
+            texto = str(profundidade) if eh_ia else "Não se aplica"
+            self._desenhar_texto_centralizado(
+                texto, pygame.Rect(posicao_x + 95, 475, 170, 45), COR_TEXTO
+            )
+            self._desenhar_texto(
+                "Clique no tipo para alternar.", posicao_x, 545, pequena=True
+            )
+
+    def desenhar_tela_configuracao(self, configuracao_partida):
+        """Apresenta as escolhas exclusivas da criação de uma partida."""
+        self.tela.fill(COR_DE_FUNDO)
+        titulo = self.fonte_titulo_menu.render("Configurar novo jogo", True, COR_TEXTO)
+        self.tela.blit(titulo, titulo.get_rect(center=(LARGURA_JANELA // 2, 150)))
+        self._desenhar_texto_centralizado(
+            "Escolha o controle e a antecipação de cada jogador.",
+            pygame.Rect(150, 210, 900, 30), COR_TEXTO,
+        )
+        self._desenhar_configuracao_jogadores(configuracao_partida)
+        self._desenhar_texto_centralizado(
+            "A IA joga automaticamente. Você pode pausá-la durante a partida.",
+            pygame.Rect(150, 605, 900, 25), COR_TEXTO, True,
+        )
+        self._desenhar_botao_menu(self.retangulo_iniciar_partida, "INICIAR PARTIDA")
+        self._desenhar_botao_menu(self.retangulo_voltar_menu, "VOLTAR AO MENU")
+        self._apresentar_tela_redimensionada()
+        pygame.display.flip()
 
     def desenhar_menu_inicial(
         self,
@@ -1038,6 +1116,9 @@ class VisaoJogo:
         mensagem_arvore="",
         texto_pagina_arvore="1",
         campo_pagina_arvore_ativo=False,
+        possui_ia=False,
+        ia_pausada=False,
+        resumo_ia="",
     ):
         """Desenha e apresenta um quadro da aplicação."""
         if selecao is None:
@@ -1045,6 +1126,8 @@ class VisaoJogo:
 
         self.tela.fill(COR_DE_FUNDO)
         self._desenhar_titulo()
+        if resumo_ia:
+            self._desenhar_texto(resumo_ia, 40, 990, pequena=True)
         self._desenhar_fronteiras(estado.tabuleiro)
         self._desenhar_regioes(estado, selecao)
         self._desenhar_painel_lateral(estado)
@@ -1053,6 +1136,9 @@ class VisaoJogo:
         self._desenhar_mao(estado, selecao)
         self._desenhar_botoes_de_faccao()
         self._desenhar_botoes(estado, arvore)
+        if possui_ia and not estado.finalizado:
+            texto = "RETOMAR IA" if ia_pausada else "PAUSAR IA"
+            self._desenhar_botao_menu(self.retangulo_pausar_ia, texto)
 
         if arvore_aberta and arvore is not None:
             self._desenhar_arvore(

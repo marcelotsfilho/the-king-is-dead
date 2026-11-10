@@ -12,6 +12,7 @@ from controller.start_menu_controller import (
 )
 from model.game import Jogo
 from model.game_setup import ConfiguracaoJogo
+from model.match_settings import ConfiguracaoPartida
 from model.state_tree import ArvoreEstados
 from model.state_tree_serializer import SerializadorArvoreEstados
 from view.game_view import VisaoJogo
@@ -37,10 +38,13 @@ def _preparar_arvore(argumentos, serializador):
     return ArvoreEstados(estado)
 
 
-def _escolher_arvore_pelo_menu(visao, serializador, mensagem=""):
+def _escolher_arvore_pelo_menu(
+    visao, serializador, mensagem="", configuracao_partida=None
+):
     controlador_menu = ControladorMenuInicial(
         visao,
         _CAMINHO_DA_ARVORE,
+        configuracao_partida,
     )
 
     while True:
@@ -72,6 +76,7 @@ def principal():
     pygame.init()
     serializador = SerializadorArvoreEstados()
     visao = VisaoJogo()
+    configuracao_partida = ConfiguracaoPartida()
 
     if "--carregar" in sys.argv[1:]:
         try:
@@ -84,9 +89,12 @@ def principal():
                 visao,
                 serializador,
                 mensagem,
+                configuracao_partida,
             )
     else:
-        arvore = _escolher_arvore_pelo_menu(visao, serializador)
+        arvore = _escolher_arvore_pelo_menu(
+            visao, serializador, configuracao_partida=configuracao_partida
+        )
 
     if arvore is None:
         pygame.quit()
@@ -100,6 +108,7 @@ def principal():
         arvore,
         serializador,
         _CAMINHO_DA_ARVORE,
+        configuracao_partida=configuracao_partida,
     )
     controlador.executar()
 

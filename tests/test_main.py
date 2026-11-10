@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 
 import main
-from model.enums import TipoJogada
+from model.enums import TipoJogada, TipoJogador
 from model.game_setup import ConfiguracaoJogo
 from model.legal_move import Jogada
 from model.legal_move_executor import ExecutorJogada
@@ -16,7 +16,9 @@ class VisaoMenuFalsa:
     def __init__(self):
         self.mensagens = []
 
-    def desenhar_menu_inicial(self, salvamento_disponivel, mensagem):
+    def desenhar_menu_inicial(
+        self, salvamento_disponivel, mensagem, configuracao_partida=None
+    ):
         self.mensagens.append(mensagem)
 
 
@@ -31,6 +33,29 @@ class ControladorMenuFalso:
 
 
 class TesteInicializacaoPrincipal(unittest.TestCase):
+    def test_principal_entrega_as_escolhas_do_menu_ao_controller(self):
+        def escolher_no_menu(mensagem=""):
+            configuracao = criar_menu.call_args.args[2]
+            configuracao.definir_tipo_jogador(0, TipoJogador.MINIMAX)
+            configuracao.definir_tipo_jogador(1, TipoJogador.ALFA_BETA)
+            configuracao.definir_profundidade(0, 2)
+            configuracao.definir_profundidade(1, 3)
+            return "novo_jogo"
+
+        with patch("main.VisaoJogo"):
+            with patch("main.ControladorMenuInicial") as criar_menu:
+                criar_menu.return_value.executar.side_effect = escolher_no_menu
+                with patch("main.ControladorJogo") as criar_controlador:
+                    with patch("main.sys.argv", ["main.py"]):
+                        main.principal()
+
+        configuracao = criar_controlador.call_args.kwargs["configuracao_partida"]
+        self.assertEqual(configuracao.obter_tipo_jogador(0), TipoJogador.MINIMAX)
+        self.assertEqual(configuracao.obter_tipo_jogador(1), TipoJogador.ALFA_BETA)
+        self.assertEqual(configuracao.obter_profundidade(0), 2)
+        self.assertEqual(configuracao.obter_profundidade(1), 3)
+        criar_controlador.return_value.executar.assert_called_once()
+
     def test_sem_argumento_cria_nova_arvore(self):
         serializador = SerializadorArvoreEstados()
 
