@@ -2,6 +2,8 @@ import os
 import tempfile
 import unittest
 
+import pygame
+
 from controller.game_controller import ControladorJogo
 from model.enums import Faccao, FaseTurno, TipoCartaAcao
 from model.game import Jogo
@@ -48,8 +50,14 @@ class VisaoFalsa:
     def botao_proxima_pagina_foi_clicado(self, posicao):
         return posicao == "proxima_pagina"
 
+    def campo_pagina_arvore_foi_clicado(self, posicao):
+        return posicao == "campo_pagina"
+
+    def botao_ir_pagina_foi_clicado(self, posicao):
+        return posicao == "ir_pagina"
+
     def obter_quantidade_paginas_arvore(self, arvore):
-        return 1
+        return getattr(self, "quantidade_paginas", 1)
 
     def obter_indice_carta_clicada(self, posicao, estado):
         if isinstance(posicao, int):
@@ -204,6 +212,59 @@ class TesteControladorJogo(unittest.TestCase):
 
         controlador._processar_clique("fechar_arvore")
         self.assertFalse(controlador.arvore_aberta)
+
+    def test_escolhe_pagina_diretamente_pelo_campo(self):
+        controlador = criar_controlador()
+        controlador.visao.quantidade_paginas = 5
+        controlador._processar_clique("arvore")
+
+        controlador._processar_clique("campo_pagina")
+        controlador.texto_pagina_arvore = "4"
+        controlador._processar_clique("ir_pagina")
+
+        self.assertEqual(controlador.pagina_arvore, 3)
+        self.assertFalse(controlador.campo_pagina_arvore_ativo)
+        self.assertEqual(
+            controlador.mensagem_arvore,
+            "Página 4 selecionada.",
+        )
+
+    def test_rejeita_pagina_digitada_fora_do_intervalo(self):
+        controlador = criar_controlador()
+        controlador.visao.quantidade_paginas = 3
+        controlador._processar_clique("arvore")
+
+        controlador._processar_clique("campo_pagina")
+        controlador.texto_pagina_arvore = "8"
+        controlador._processar_clique("ir_pagina")
+
+        self.assertEqual(controlador.pagina_arvore, 0)
+        self.assertEqual(
+            controlador.mensagem_arvore,
+            "Escolha uma página entre 1 e 3.",
+        )
+
+    def test_campo_de_pagina_recebe_numeros_e_enter(self):
+        controlador = criar_controlador()
+        controlador.visao.quantidade_paginas = 5
+        controlador._processar_clique("arvore")
+        controlador._processar_clique("campo_pagina")
+
+        tecla = pygame.event.Event(
+            pygame.KEYDOWN,
+            key=pygame.K_3,
+            unicode="3",
+        )
+        enter = pygame.event.Event(
+            pygame.KEYDOWN,
+            key=pygame.K_RETURN,
+            unicode="\r",
+        )
+        controlador._processar_tecla_da_arvore(tecla)
+        controlador._processar_tecla_da_arvore(enter)
+
+        self.assertEqual(controlador.pagina_arvore, 2)
+        self.assertEqual(controlador.texto_pagina_arvore, "3")
 
     def test_botao_graphviz_exporta_a_arvore_completa(self):
         class VisualizadorGraphvizFalso:

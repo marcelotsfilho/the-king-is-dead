@@ -75,6 +75,30 @@ class TesteSerializadorArvoreEstados(unittest.TestCase):
             arvore.obter_no_atual().obter_identificador(),
         )
 
+    def test_preserva_marca_de_jogada_voltada(self):
+        arvore = criar_arvore_com_tres_niveis()
+        arvore.voltar()
+
+        dados = self.serializador.serializar(arvore)
+        restaurada = self.serializador.restaurar(dados)
+        no_atual = restaurada.obter_no_atual()
+        no_voltado = no_atual.obter_filhos()[0]
+
+        self.assertTrue(no_voltado.representa_jogada_voltada())
+        self.assertFalse(no_voltado.esta_visitado())
+
+    def test_carrega_arquivo_antigo_sem_marca_de_jogada_voltada(self):
+        arvore = criar_arvore_com_tres_niveis()
+        dados = self.serializador.serializar(arvore)
+
+        for dados_no in dados["nos"]:
+            del dados_no["jogada_voltada"]
+
+        restaurada = self.serializador.restaurar(dados)
+
+        for no in restaurada.obter_nos():
+            self.assertFalse(no.representa_jogada_voltada())
+
     def test_restaura_jogada_de_carta_na_arvore(self):
         tabuleiro = Tabuleiro()
         trilha = TrilhaDisputas(tabuleiro.obter_nomes_das_regioes())

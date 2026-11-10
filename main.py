@@ -29,7 +29,8 @@ def _preparar_arvore(argumentos, serializador):
     if "--carregar" in argumentos:
         return serializador.carregar(_CAMINHO_DA_ARVORE)
 
-    configuracao = ConfiguracaoJogo()
+    # geracao da arvore com uma determinada seed
+    configuracao = ConfiguracaoJogo(semente=42)
     estado = configuracao.criar_estado_inicial(
         ["Jogador 1", "Jogador 2"]
     )

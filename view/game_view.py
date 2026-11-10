@@ -62,6 +62,8 @@ class VisaoJogo:
         self.retangulo_fechar_arvore = pygame.Rect(1030, 45, 120, 45)
         self.retangulo_exportar_graphviz = pygame.Rect(800, 45, 210, 45)
         self.retangulo_gerar_opcoes = pygame.Rect(40, 940, 220, 50)
+        self.retangulo_campo_pagina = pygame.Rect(650, 940, 55, 50)
+        self.retangulo_ir_pagina = pygame.Rect(715, 940, 55, 50)
         self.retangulo_pagina_anterior = pygame.Rect(
             785,
             940,
@@ -202,6 +204,14 @@ class VisaoJogo:
         return self.retangulo_proxima_pagina.collidepoint(
             posicao_logica
         )
+
+    def campo_pagina_arvore_foi_clicado(self, posicao):
+        posicao_logica = self._converter_para_posicao_logica(posicao)
+        return self.retangulo_campo_pagina.collidepoint(posicao_logica)
+
+    def botao_ir_pagina_foi_clicado(self, posicao):
+        posicao_logica = self._converter_para_posicao_logica(posicao)
+        return self.retangulo_ir_pagina.collidepoint(posicao_logica)
 
     def obter_acao_menu_inicial(
         self,
@@ -905,6 +915,8 @@ class VisaoJogo:
         arvore,
         pagina,
         mensagem,
+        texto_pagina,
+        campo_pagina_ativo,
     ):
         botoes = [
             (self.retangulo_fechar_arvore, "FECHAR", COR_BOTAO),
@@ -916,6 +928,11 @@ class VisaoJogo:
             (
                 self.retangulo_gerar_opcoes,
                 "GERAR OPÇÕES",
+                COR_BOTAO,
+            ),
+            (
+                self.retangulo_ir_pagina,
+                "IR",
                 COR_BOTAO,
             ),
             (
@@ -940,15 +957,37 @@ class VisaoJogo:
                 True,
             )
 
+        cor_borda_campo = COR_BORDA
+
+        if campo_pagina_ativo:
+            cor_borda_campo = CORES_FACCOES[Faccao.ESCOCESES.value]
+
+        pygame.draw.rect(
+            self.tela,
+            COR_PAINEL,
+            self.retangulo_campo_pagina,
+        )
+        pygame.draw.rect(
+            self.tela,
+            cor_borda_campo,
+            self.retangulo_campo_pagina,
+            3,
+        )
+        self._desenhar_texto_centralizado(
+            texto_pagina,
+            self.retangulo_campo_pagina,
+            COR_TEXTO,
+            True,
+        )
+        self._desenhar_texto("PÁG.", 605, 955, pequena=True)
+
         total_paginas = self.obter_quantidade_paginas_arvore(arvore)
         resumo = (
             "Nós: "
             + str(arvore.quantidade_nos())
             + " | Nível atual: "
             + str(arvore.obter_no_atual().obter_nivel())
-            + " | Página: "
-            + str(pagina + 1)
-            + "/"
+            + " | Total de páginas: "
             + str(total_paginas)
         )
         self._desenhar_texto(resumo, 285, 955, pequena=True)
@@ -962,7 +1001,14 @@ class VisaoJogo:
                 pequena=True,
             )
 
-    def _desenhar_arvore(self, arvore, pagina, mensagem):
+    def _desenhar_arvore(
+        self,
+        arvore,
+        pagina,
+        mensagem,
+        texto_pagina,
+        campo_pagina_ativo,
+    ):
         self.tela.fill(COR_DE_FUNDO)
         self._desenhar_texto("Árvore de estados", 40, 45)
         self._desenhar_texto(
@@ -977,6 +1023,8 @@ class VisaoJogo:
             arvore,
             pagina,
             mensagem,
+            texto_pagina,
+            campo_pagina_ativo,
         )
 
     def desenhar(
@@ -988,6 +1036,8 @@ class VisaoJogo:
         arvore_aberta=False,
         pagina_arvore=0,
         mensagem_arvore="",
+        texto_pagina_arvore="1",
+        campo_pagina_arvore_ativo=False,
     ):
         """Desenha e apresenta um quadro da aplicação."""
         if selecao is None:
@@ -1009,6 +1059,8 @@ class VisaoJogo:
                 arvore,
                 pagina_arvore,
                 mensagem_arvore,
+                texto_pagina_arvore,
+                campo_pagina_arvore_ativo,
             )
 
         self._apresentar_tela_redimensionada()

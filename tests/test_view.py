@@ -145,6 +145,20 @@ class TesteVisaoResponsiva(unittest.TestCase):
 
         self.assertTrue(clicou)
 
+    def test_identifica_cliques_no_filtro_de_pagina(self):
+        visao = VisaoJogo.__new__(VisaoJogo)
+        visao.janela = JanelaFalsa(1200, 1030)
+        visao.retangulo_campo_pagina = pygame.Rect(650, 940, 55, 50)
+        visao.retangulo_ir_pagina = pygame.Rect(715, 940, 55, 50)
+
+        clicou_campo = visao.campo_pagina_arvore_foi_clicado(
+            (675, 965)
+        )
+        clicou_ir = visao.botao_ir_pagina_foi_clicado((740, 965))
+
+        self.assertTrue(clicou_campo)
+        self.assertTrue(clicou_ir)
+
 
 class TesteFronteirasDaVisao(unittest.TestCase):
     def setUp(self):

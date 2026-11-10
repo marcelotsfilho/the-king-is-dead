@@ -32,6 +32,7 @@ class TesteNoEstado(unittest.TestCase):
         self.assertIsNone(raiz.obter_pai())
         self.assertIsNone(raiz.obter_jogada_origem())
         self.assertFalse(raiz.esta_visitado())
+        self.assertFalse(raiz.representa_jogada_voltada())
         self.assertFalse(raiz.esta_expandido())
 
     def test_no_protege_estado_armazenado(self):
@@ -113,6 +114,19 @@ class TesteNoEstado(unittest.TestCase):
         raiz.marcar_como_expandido()
 
         self.assertTrue(raiz.esta_expandido())
+
+    def test_marca_jogada_voltada_e_limpa_ao_visitar_novamente(self):
+        raiz = NoEstado(criar_estado_manual())
+
+        raiz.marcar_como_jogada_voltada()
+
+        self.assertFalse(raiz.esta_visitado())
+        self.assertTrue(raiz.representa_jogada_voltada())
+
+        raiz.marcar_como_visitado()
+
+        self.assertTrue(raiz.esta_visitado())
+        self.assertFalse(raiz.representa_jogada_voltada())
 
     def test_rejeita_configuracoes_invalidas(self):
         estado = criar_estado_manual()

@@ -18,7 +18,7 @@ Requisitos:
 
 - Python 3.13;
 - Pygame 2.6.1;
-- Graphviz, usado somente para exportar a árvore completa.
+- Graphviz, usado somente para exportar a visualização do caminho atual.
 
 No PowerShell:
 
@@ -139,7 +139,9 @@ O botão **GERAR OPÇÕES** calcula todas as jogadas completas possíveis soment
 para o estado atual. Essa ação não é automática porque o início da partida pode
 produzir milhares de combinações e levar alguns segundos. Os botões
 **ANTERIOR** e **PRÓXIMA** percorrem as páginas sem tentar desenhar todos os nós
-ao mesmo tempo.
+ao mesmo tempo. Para acessar diretamente uma página, clique no campo **PÁG.**,
+digite o número desejado e pressione **ENTER** ou o botão **IR**. O Controller
+recusa números menores que um ou maiores que a quantidade de páginas.
 
 Os marcadores da apresentação textual significam:
 
@@ -147,24 +149,28 @@ Os marcadores da apresentação textual significam:
 - `[CAMINHO]`: estado que faz parte do caminho entre a raiz e o nó atual;
 - `[NÃO VISITADO]`: alternativa gerada, mas não escolhida.
 
-### Visualização completa pelo Graphviz
+### Visualização otimizada pelo Graphviz
 
-Na tela da árvore, o botão **ABRIR GRAPHVIZ** exporta todos os estados que já
-foram registrados naquele momento. A exportação gera:
+Na tela da árvore, o botão **ABRIR GRAPHVIZ** exporta o caminho entre a raiz e
+o nó atual, os filhos diretos do nó atual e os nós de jogadas voltadas.
+Alternativas nunca visitadas de níveis anteriores são omitidas para reduzir o
+arquivo e deixar o diagrama mais legível. A exportação gera:
 
 - `saves/state_tree.dot`: descrição textual entendida pelo Graphviz;
 - `saves/state_tree.svg`: diagrama vetorial que pode ser ampliado sem perder
   qualidade e é aberto no navegador padrão.
 
 O nó atual aparece em azul, o caminho visitado em verde e as alternativas não
-visitadas em cinza. Cada caixa informa índice, nível, jogada de origem e se as
-opções daquele nó já foram geradas. As setas representam a relação entre pai e
-filho.
+visitadas em cinza claro. Quando o jogador usa **VOLTAR**, o nó abandonado
+recebe o texto `Jogada voltada`, uma borda mais forte e um cinza mais escuro.
+Cada caixa também informa índice, nível, jogada de origem e se as opções daquele
+nó já foram geradas. As setas representam a relação entre pai e filho. A
+configuração `ranksep="1.0"` aumenta a distância vertical entre os níveis,
+evitando que caixas e setas de níveis consecutivos fiquem muito próximas.
 
-A exportação é manual porque árvores com milhares de estados podem demorar e
-produzir um SVG muito grande. Assim, uma jogada comum continua rápida. Depois
-de qualquer jogada, basta abrir a tela **ÁRVORE** e solicitar uma nova
-exportação para obter a versão completa e atualizada.
+A exportação é manual para não interferir em uma jogada comum. Depois de uma
+jogada ou de uma volta, basta abrir a tela **ÁRVORE** e solicitar outra
+exportação para obter a versão atualizada do caminho e das próximas opções.
 
 ### Salvar e carregar a árvore
 
@@ -234,9 +240,9 @@ somente passes completos ou ações que já incluam a convocação obrigatória.
 - a tela inicial passou a oferecer novo jogo, continuação e saída. A opção de
   continuar só aceita um arquivo existente e erros de leitura são apresentados
   no próprio menu;
-- `view/state_tree_graphviz_view.py` passou a transformar todos os nós
-  registrados em DOT e solicitar ao Graphviz a criação do SVG. Essa View não
-  altera estados nem repete regras do jogo;
+- `view/state_tree_graphviz_view.py` transforma o caminho atual e seus filhos
+  diretos em DOT e solicita ao Graphviz a criação do SVG. Ramos antigos não
+  visitados são omitidos, e a View não altera estados nem repete regras;
 - `.gitignore` passou a ignorar `saves/` porque os arquivos dessa pasta são
   resultados de partidas locais, não código-fonte;
 - os testes de `main.py`, Controller, árvore e View passaram a verificar
@@ -381,6 +387,8 @@ the-king-is-dead/
 │   ├── legal_move.py
 │   ├── legal_move_executor.py
 │   ├── legal_move_generator.py
+│   ├── minimax_agent.py
+│   ├── state_evaluator.py
 │   ├── player.py
 │   ├── region.py
 │   ├── region_card.py
@@ -559,12 +567,99 @@ jogador.
 
 O gerador não substitui as regras de `Jogo`. Ele cria combinações possíveis e
 reutiliza o executor para descartar aquelas que forem rejeitadas pelo model.
+
 Cartas repetidas do mesmo tipo, como as duas Assemble, são processadas uma única
 vez porque produzem as mesmas escolhas.
 
 Como uma única carta pode gerar muitas combinações, a futura árvore deverá ser
 expandida sob demanda: somente os filhos do estado que está sendo analisado
 serão criados, sem antecipar os netos de jogadas que ainda não aconteceram.
+
+### `model/state_evaluator.py`
+
+- `AvaliadorEstado(indice_jogador_ia)`: identifica qual dos dois jogadores será
+  maximizado pelo Minimax;
+- `avaliar(estado, profundidade)`: retorna uma pontuação positiva quando o
+  estado favorece a IA e negativa quando favorece o adversário;
+- estados finais recebem prioridade absoluta. Vitória vale um valor muito alto
+  e diminui conforme a profundidade, enquanto derrota recebe valor negativo e
+  fica menos ruim quando é adiada;
+- estados não finais combinam ameaça imediata, conjuntos completos para uma
+  possível invasão, vantagem na corte para a coroação, potencial das regiões e
+  mobilidade;
+- a classe usa `GeradorJogadas` e `ExecutorJogada`, portanto não cria regras
+  paralelas para descobrir jogadas ou executar cartas. Ela apenas avalia os
+  resultados produzidos pelo Model.
+
+### `model/minimax_agent.py`
+
+`AgenteMinimax` escolhe uma jogada completa usando antecipação. No turno da IA,
+busca a maior pontuação; no turno do adversário, considera a menor pontuação,
+representando a melhor resposta dele contra a IA.
+
+```python
+from model.minimax_agent import AgenteMinimax
+
+PROFUNDIDADE_ANTECIPACAO = 2
+USAR_PODA_ALFA_BETA = True
+
+agente = AgenteMinimax(indice_jogador_ia=0)
+jogada = agente.escolher_jogada(
+    estado,
+    profundidade_maxima=PROFUNDIDADE_ANTECIPACAO,
+    usar_poda=USAR_PODA_ALFA_BETA,
+)
+
+if jogada is not None:
+    print(jogada.descrever())
+
+print(agente.ultima_pontuacao)
+print(agente.nos_visitados)
+print(agente.folhas_avaliadas)
+print(agente.podas_realizadas)
+```
+
+A profundidade é um parâmetro inteiro, a partir de 1, e pode ser alterada em
+cada chamada. O valor padrão é 1, pois o jogo pode gerar milhares de combinações:
+
+- profundidade 1: avalia o resultado das jogadas da IA;
+- profundidade 2: inclui as respostas do adversário;
+- profundidade 3: inclui mais uma jogada da IA.
+
+O limite conta transições de jogadas completas desde o estado recebido (raiz
+da busca em profundidade zero), independentemente do nível no histórico salvo.
+A heurística existente também simula ameaças imediatas nas folhas; essas
+simulações internas não entram nos contadores de nós do Minimax.
+
+Para executar Minimax simples, use `usar_poda=False`. Com `True`, o mesmo
+algoritmo atualiza alfa (melhor limite do maximizador) e beta (melhor limite do
+minimizador). Quando `beta <= alfa`, os irmãos restantes daquele ramo não
+precisam ser avaliados. A poda preserva a decisão e a pontuação da busca com
+a mesma profundidade e ordem de jogadas. Em empate, mantém a primeira opção.
+
+Responsabilidades dos métodos:
+
+- `__init__(indice_jogador_ia)`: prepara avaliador, gerador e executor;
+- `_limpar_estatisticas()`: zera os contadores antes de cada busca;
+- `_validar_entrada(...)`: valida estado, profundidade, opção de poda e turno;
+- `_avaliar_folha(estado, profundidade)`: conta uma avaliação e chama a
+  heurística ao atingir o limite, um estado final ou uma posição sem jogadas;
+- `_buscar(...)`: percorre recursivamente as opções, escolhe máximo ou mínimo
+  conforme o jogador e aplica os cortes quando habilitados;
+- `escolher_jogada(...)`: devolve a jogada escolhida e publica os contadores
+  da busca. Retorna `None` para partidas finalizadas ou sem jogadas completas,
+  incluindo uma convocação pendente. Uma chamada fora do turno da IA é rejeitada.
+
+Os estados são simulados pelo `ExecutorJogada`, que trabalha com cópias. A busca
+não insere simulações no histórico `ArvoreEstados`: esse histórico continua
+registrando as jogadas realizadas. A integração da escolha automática com o
+Controller e o Pygame será uma etapa posterior.
+
+Esta versão mantém todas as alternativas legais, sem limitar artificialmente
+o número de filhos. A poda evita percorrer alguns ramos, mas o gerador ainda
+enumera as opções de cada estado analisado. Por isso, aumente a profundidade
+gradualmente em posições pequenas; o custo também inclui a heurística nas
+folhas. A busca não possui limite de tempo nem treinamento automático.
 
 ### `model/state_node.py`
 
@@ -580,6 +675,8 @@ serão criados, sem antecipar os netos de jogadas que ainda não aconteceram.
 - `eh_raiz()`, `eh_folha()` e `obter_nivel()`: descrevem a posição do nó;
 - `marcar_como_visitado()`, `desmarcar_como_visitado()` e `esta_visitado()`:
   controlam a marcação usada para mostrar o caminho percorrido pelo jogador;
+- `marcar_como_jogada_voltada()` e `representa_jogada_voltada()`: diferenciam
+  um nó nunca escolhido de outro que foi visitado e depois abandonado;
 - `marcar_como_expandido()` e `esta_expandido()`: impedem que os mesmos filhos
   sejam gerados novamente.
 
@@ -605,16 +702,18 @@ pai e a jogada completa responsável pela criação de seu estado.
 - `obter_nos()` e `quantidade_nos()`: consultam o registro global;
 - `_validar_no_da_arvore()`: impede navegação ou inserção com nós externos.
 
-A raiz começa marcada como visitada. Ao avançar, o novo nó também é marcado;
-ao voltar, o nó abandonado é desmarcado. Dessa maneira, a apresentação poderá
-destacar visualmente o caminho atual sem confundir isso com o registro global
-de estados, que permanece guardado na árvore.
+A raiz começa marcada como visitada. Ao avançar, o novo nó também é marcado e
+qualquer marca anterior de volta é removida. Ao voltar, o nó abandonado recebe
+a marca de jogada voltada. Dessa maneira, a apresentação diferencia caminho
+atual, alternativa nunca visitada e estado que já foi percorrido e abandonado.
 
 ### `model/state_tree_serializer.py`
 
 - `__init__()`: prepara o serializador já usado pelos estados individuais;
-- `serializar(arvore)`: converte todos os nós em dados simples;
-- `restaurar(dados)`: recria nós, pais, filhos, expansão e caminho atual;
+- `serializar(arvore)`: converte todos os nós, incluindo a marca de jogada
+  voltada, em dados simples;
+- `restaurar(dados)`: recria nós, pais, filhos, expansão, voltas e caminho
+  atual; arquivos anteriores sem a nova marca continuam aceitos;
 - `salvar(arvore, caminho)`: grava um arquivo JSON em UTF-8;
 - `carregar(caminho)`: lê o JSON e devolve uma `ArvoreEstados` funcional;
 - `_obter_indice_no()`: troca referências entre objetos por índices simples;
@@ -691,6 +790,10 @@ Métodos internos que dividem as regras em etapas menores:
   estado do jogo pela cópia protegida do nó pai;
 - `_processar_clique_da_arvore()`: fecha a tela, muda páginas ou solicita a
   expansão do nó atual e também inicia a exportação pelo Graphviz;
+- `_ir_para_pagina_digitada()`: valida o número informado no filtro e troca
+  diretamente a página de filhos;
+- `_processar_tecla_da_arvore()`: recebe números, BACKSPACE, ESC e ENTER no
+  campo de página;
 - `_limpar_selecao()`: cancela dados temporários;
 - `_obter_selecao()`: entrega à View somente o necessário para destacar itens;
 - `_desenhar_quadro()`: envia estado, seleção e informações da árvore à View.
@@ -724,6 +827,8 @@ não define quais regiões são vizinhas.
   incluindo o botão de salvamento manual;
 - `obter_quantidade_paginas_arvore()`: calcula quantas páginas de sete filhos
   serão necessárias;
+- `campo_pagina_arvore_foi_clicado()` e `botao_ir_pagina_foi_clicado()`:
+  identificam os controles usados para escolher diretamente uma página;
 - `_calcular_tamanho_inicial_da_janela()`: escolhe um tamanho que caiba no
   monitor;
 - `_calcular_escala_e_deslocamento()`: mantém proporção e centralização;
@@ -755,13 +860,20 @@ preferencialmente os métodos públicos.
 
 ### `view/state_tree_graphviz_view.py`
 
-- `gerar_dot(arvore)`: percorre todos os nós uma vez e monta a descrição
-  completa do grafo;
+- `gerar_dot(arvore)`: monta o DOT com o caminho atual e os filhos diretos do
+  nó atual, mantendo a numeração original dos nós;
 - `exportar(arvore, caminho_svg, abrir)`: salva o DOT, executa o Graphviz,
   cria o SVG e pode abri-lo no navegador;
+- `_obter_nos_visiveis(arvore)`: mantém o caminho, os filhos atuais e as
+  jogadas voltadas, omitindo alternativas que nunca foram visitadas;
+- `_organizar_jogadas_voltadas(linhas, arvore, indices)`: coloca uma escolha
+  voltada ao lado da nova escolha feita a partir do mesmo nó, mesmo depois de
+  o jogo avançar novamente. O agrupamento de mesmo nível e a ligação invisível
+  servem apenas para orientar o Graphviz;
 - `_localizar_dot()`: procura o executável no `PATH` e nas pastas comuns do
   Windows;
-- `_criar_rotulo(...)`: resume índice, nível, jogada e expansão de cada nó;
+- `_criar_rotulo(...)`: resume índice, nível, jogada, expansão e informa quando
+  a jogada foi voltada;
 - `_escapar_texto(...)`: protege aspas e barras para produzir DOT válido;
 - `_validar_caminho(...)`: rejeita destinos vazios ou de tipo incorreto.
 

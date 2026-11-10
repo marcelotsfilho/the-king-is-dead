@@ -66,6 +66,8 @@ class ControladorJogo:
         self.regiao_convocacao = None
         self.arvore_aberta = False
         self.pagina_arvore = 0
+        self.texto_pagina_arvore = "1"
+        self.campo_pagina_arvore_ativo = False
         self.mensagem_arvore = ""
         self.arvore_salva = False
         self.instrucao = "Escolha uma carta de ação ou passe."
@@ -128,7 +130,7 @@ class ControladorJogo:
             self.jogo.estado,
         )
         self.arvore_salva = False
-        self.pagina_arvore = 0
+        self._reiniciar_paginacao_arvore()
 
         if self.jogo.estado.finalizado:
             self._salvar_arvore()
@@ -353,6 +355,11 @@ class ControladorJogo:
         self._limpar_parametros_da_carta()
         self.regiao_convocacao = None
 
+    def _reiniciar_paginacao_arvore(self):
+        self.pagina_arvore = 0
+        self.texto_pagina_arvore = "1"
+        self.campo_pagina_arvore_ativo = False
+
     def _processar_convocacao(self, posicao):
         if self.regiao_convocacao is None:
             nome_regiao = self.visao.obter_nome_regiao_clicada(
@@ -419,18 +426,81 @@ class ControladorJogo:
         self.arvore.voltar()
         self.jogo.estado = self.arvore.obter_estado_atual()
         self.arvore_salva = False
-        self.pagina_arvore = 0
+        self._reiniciar_paginacao_arvore()
         self._limpar_selecao()
         self.instrucao = "A última jogada foi desfeita."
+
+    def _ir_para_pagina_digitada(self):
+        total_paginas = self.visao.obter_quantidade_paginas_arvore(
+            self.arvore
+        )
+        texto = self.texto_pagina_arvore
+
+        if not texto:
+            self.mensagem_arvore = "Digite o número da página."
+            return
+
+        numero_pagina = int(texto)
+
+        if numero_pagina < 1 or numero_pagina > total_paginas:
+            self.mensagem_arvore = (
+                "Escolha uma página entre 1 e "
+                + str(total_paginas)
+                + "."
+            )
+            return
+
+        self.pagina_arvore = numero_pagina - 1
+        self.campo_pagina_arvore_ativo = False
+        self.mensagem_arvore = (
+            "Página " + str(numero_pagina) + " selecionada."
+        )
+
+    def _processar_tecla_da_arvore(self, evento):
+        if not self.arvore_aberta or not self.campo_pagina_arvore_ativo:
+            return
+
+        if evento.key == pygame.K_RETURN:
+            self._ir_para_pagina_digitada()
+            return
+
+        if evento.key == pygame.K_ESCAPE:
+            self.campo_pagina_arvore_ativo = False
+            self.texto_pagina_arvore = str(self.pagina_arvore + 1)
+            return
+
+        if evento.key == pygame.K_BACKSPACE:
+            self.texto_pagina_arvore = self.texto_pagina_arvore[:-1]
+            return
+
+        texto_digitado = getattr(evento, "unicode", "")
+
+        if texto_digitado.isdigit() and len(self.texto_pagina_arvore) < 6:
+            self.texto_pagina_arvore += texto_digitado
 
     def _processar_clique_da_arvore(self, posicao):
         if self.visao.botao_fechar_arvore_foi_clicado(posicao):
             self.arvore_aberta = False
+            self.campo_pagina_arvore_ativo = False
+            return
+
+        if self.visao.campo_pagina_arvore_foi_clicado(posicao):
+            self.campo_pagina_arvore_ativo = True
+            self.texto_pagina_arvore = ""
+            self.mensagem_arvore = (
+                "Digite a página e pressione ENTER ou IR."
+            )
+            return
+
+        if self.visao.botao_ir_pagina_foi_clicado(posicao):
+            self._ir_para_pagina_digitada()
             return
 
         if self.visao.botao_pagina_anterior_foi_clicado(posicao):
             if self.pagina_arvore > 0:
                 self.pagina_arvore -= 1
+                self.texto_pagina_arvore = str(self.pagina_arvore + 1)
+            self.campo_pagina_arvore_ativo = False
             return
 
         if self.visao.botao_proxima_pagina_foi_clicado(posicao):
@@ -442,6 +512,8 @@ class ControladorJogo:
 
             if self.pagina_arvore + 1 < total_paginas:
                 self.pagina_arvore += 1
+                self.texto_pagina_arvore = str(self.pagina_arvore + 1)
+            self.campo_pagina_arvore_ativo = False
             return
 
         if self.visao.botao_exportar_graphviz_foi_clicado(posicao):
@@ -483,7 +555,7 @@ class ControladorJogo:
                     str(len(filhos))
                     + " jogadas possíveis foram geradas."
                 )
-                self.pagina_arvore = 0
+                self._reiniciar_paginacao_arvore()
                 self.arvore_salva = False
             except (TypeError, ValueError) as erro:
                 self.mensagem_arvore = (
@@ -507,7 +579,7 @@ class ControladorJogo:
 
         if self.visao.botao_arvore_foi_clicado(posicao):
             self.arvore_aberta = True
-            self.pagina_arvore = 0
+            self._reiniciar_paginacao_arvore()
             self.mensagem_arvore = ""
             return
 
@@ -560,6 +632,9 @@ class ControladorJogo:
             if evento.type == pygame.QUIT:
                 self.executando = False
 
+            if evento.type == pygame.KEYDOWN:
+                self._processar_tecla_da_arvore(evento)
+
             if (
                 evento.type == pygame.MOUSEBUTTONDOWN
                 and evento.button == 1
@@ -585,6 +660,8 @@ class ControladorJogo:
             self.arvore_aberta,
             self.pagina_arvore,
             self.mensagem_arvore,
+            self.texto_pagina_arvore,
+            self.campo_pagina_arvore_ativo,
         )
 
     def executar(self):

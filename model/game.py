@@ -444,6 +444,10 @@ class Jogo:
 
         return menor_quantidade
 
+    def obter_quantidade_conjuntos(self, jogador):
+        """Retorna quantos conjuntos completos o jogador possui na corte."""
+        return self._quantidade_conjuntos(jogador)
+
     def _determinar_vencedor_invasao(self):
         jogadores = self.estado.obter_jogadores()
         conjuntos_jogador_1 = self._quantidade_conjuntos(jogadores[0])
@@ -523,6 +527,10 @@ class Jogo:
             faccoes_restantes.remove(mais_poderosa)
 
         return faccoes_ordenadas
+
+    def obter_faccoes_por_poder(self):
+        """Retorna as facções na ordem usada pela coroação."""
+        return self._ordenar_faccoes_por_poder()
 
     def _determinar_vencedor_coroacao(self, faccoes_ordenadas):
         jogadores = self.estado.obter_jogadores()

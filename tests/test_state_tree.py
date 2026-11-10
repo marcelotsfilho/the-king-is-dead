@@ -175,7 +175,11 @@ class TesteArvoreEstados(unittest.TestCase):
         self.assertTrue(self.arvore.voltar())
         self.assertIs(self.arvore.obter_no_atual(), primeiro_filho)
         self.assertFalse(segundo_filho.esta_visitado())
+        self.assertTrue(segundo_filho.representa_jogada_voltada())
         self.assertTrue(primeiro_filho.esta_visitado())
+
+        self.arvore.avancar_para(segundo_filho)
+        self.assertFalse(segundo_filho.representa_jogada_voltada())
 
     def test_nao_volta_quando_esta_na_raiz(self):
         self.assertFalse(self.arvore.voltar())

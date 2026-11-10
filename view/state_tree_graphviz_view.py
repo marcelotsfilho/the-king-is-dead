@@ -8,28 +8,32 @@ from model.state_tree import ArvoreEstados
 
 
 class VisaoArvoreGraphviz:
-    """Exporta todos os nós conhecidos para o formato do Graphviz."""
+    """Exporta o caminho atual e suas próximas opções para o Graphviz."""
 
     def gerar_dot(self, arvore):
         """Monta o texto DOT que representa a árvore completa."""
         if not isinstance(arvore, ArvoreEstados):
             raise TypeError("O valor informado deve ser uma ArvoreEstados.")
 
-        nos = arvore.obter_nos()
+        todos_os_nos = arvore.obter_nos()
+        nos_visiveis = self._obter_nos_visiveis(arvore)
         indices = {}
 
-        for indice in range(len(nos)):
-            indices[id(nos[indice])] = indice
+        for indice in range(len(todos_os_nos)):
+            indices[id(todos_os_nos[indice])] = indice
 
         linhas = [
             "digraph ArvoreEstados {",
-            '  graph [rankdir="TB", bgcolor="#f5eedc"];',
+            (
+                '  graph [rankdir="TB", bgcolor="#f5eedc", '
+                'ranksep="1.0"];'
+            ),
             '  node [shape="box", style="rounded,filled", fontsize="9"];',
             '  edge [color="#5a4b37"];',
         ]
 
-        for indice in range(len(nos)):
-            no = nos[indice]
+        for no in nos_visiveis:
+            indice = indices[id(no)]
             rotulo = self._criar_rotulo(no, indice)
             cor = "#ded9cf"
             borda = "#5a4b37"
@@ -37,6 +41,11 @@ class VisaoArvoreGraphviz:
 
             if no.esta_visitado():
                 cor = "#b8d8b8"
+
+            if no.representa_jogada_voltada():
+                cor = "#a8a8a8"
+                borda = "#5f5f5f"
+                espessura = 2
 
             if no is arvore.obter_no_atual():
                 cor = "#9ec5f8"
@@ -57,15 +66,75 @@ class VisaoArvoreGraphviz:
                 + '"];'
             )
 
-        for indice in range(1, len(nos)):
-            pai = nos[indice].obter_pai()
+        for no in nos_visiveis:
+            if no.eh_raiz():
+                continue
+
+            indice = indices[id(no)]
+            pai = no.obter_pai()
             indice_pai = indices[id(pai)]
             linhas.append(
                 "  n" + str(indice_pai) + " -> n" + str(indice) + ";"
             )
 
+        self._organizar_jogadas_voltadas(linhas, arvore, indices)
         linhas.append("}")
         return "\n".join(linhas)
+
+    def _organizar_jogadas_voltadas(self, linhas, arvore, indices):
+        """Mantém cada volta próxima da nova escolha do mesmo nível."""
+        caminho_atual = arvore.obter_caminho_atual()
+
+        for no_do_caminho in caminho_atual:
+            pai = no_do_caminho.obter_pai()
+
+            if pai is None:
+                continue
+
+            nomes_dos_nos = []
+
+            for filho in pai.obter_filhos():
+                if filho.representa_jogada_voltada():
+                    indice = indices[id(filho)]
+                    nomes_dos_nos.append("n" + str(indice))
+
+            if not nomes_dos_nos:
+                continue
+
+            indice_do_caminho = indices[id(no_do_caminho)]
+            nomes_dos_nos.append("n" + str(indice_do_caminho))
+
+            linhas.append(
+                "  { rank=same; " + "; ".join(nomes_dos_nos) + "; }"
+            )
+
+            for posicao in range(len(nomes_dos_nos) - 1):
+                origem = nomes_dos_nos[posicao]
+                destino = nomes_dos_nos[posicao + 1]
+                linhas.append(
+                    "  "
+                    + origem
+                    + " -> "
+                    + destino
+                    + ' [style="invis", weight="100"];'
+                )
+
+    def _obter_nos_visiveis(self, arvore):
+        """Retorna o caminho, as voltas e os filhos diretos atuais."""
+        nos_visiveis = arvore.obter_caminho_atual()
+        no_atual = arvore.obter_no_atual()
+
+        for filho in no_atual.obter_filhos():
+            nos_visiveis.append(filho)
+
+        for no in arvore.obter_nos():
+            if (
+                no.representa_jogada_voltada()
+                and no not in nos_visiveis
+            ):
+                nos_visiveis.append(no)
+
+        return nos_visiveis
 
     def exportar(self, arvore, caminho_svg, abrir=True):
         """Cria os arquivos DOT e SVG e abre o SVG no navegador."""
@@ -157,6 +226,9 @@ class VisaoArvoreGraphviz:
 
         if no.esta_expandido():
             rotulo += "\\nOpções geradas"
+
+        if no.representa_jogada_voltada():
+            rotulo += "\\nJogada voltada"
 
         return rotulo
 

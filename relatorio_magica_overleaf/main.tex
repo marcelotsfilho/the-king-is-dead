@@ -1,0 +1,166 @@
+% Template de artigo curto para o MÁGICA — SBGames 2026.
+% Projeto: The King is Dead.
+% Compilador recomendado no Overleaf: pdfLaTeX.
+% Antes de submeter, remova todos os comandos \preencher{...}.
+
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage[brazilian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{instrucao}{RGB}{145,35,35}
+\newcommand{\preencher}[1]{\textcolor{instrucao}{\textbf{[Preencher:} #1\textbf{]}}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% Corrige o rótulo da versão original do estilo SBC.
+\renewcommand{\palavraschave}[1]{%
+  \vspace{6pt}\small\linebreak
+  \textbf{\textit{Palavras-chave---}} #1
+}
+
+% Cabeçalho solicitado pelo MÁGICA no padrão dos artigos da SBC.
+\fancypagestyle{magica}{%
+  \fancyhf{}
+  \fancyhead[C]{\footnotesize
+    XXV Simpósio Brasileiro de Jogos e Entretenimento Digital (SBGames 2026) -- Goiânia/GO\\
+    \textbf{Atividade: MÁGICA -- Workshop de Games na Graduação e na Educação Básica}}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+\setlength{\headheight}{28pt}
+
+\title{The King is Dead: desenvolvimento incremental de um jogo de estratégia em Python\\
+\medskip
+\small{\textit{Title: The King is Dead: Incremental Development of a Strategy Game in Python}}}
+
+% O(s) estudante(s) deve(m) aparecer primeiro; o professor responsável, por último.
+\author{Nome do Estudante\inst{1}, Nome do Estudante\inst{1}, Nome do Professor\inst{1}}
+
+\address{Nome do Curso -- Nome da Instituição\\
+  Cidade -- UF -- Brasil
+  \email{estudante@exemplo.edu.br, professor@exemplo.edu.br}
+}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{magica}
+\pagestyle{empty}
+
+\begin{abstract}
+\textbf{Introduction:} \preencher{contextualize o projeto e o problema em uma ou duas frases.}
+\textbf{Objective:} \preencher{declare o objetivo do jogo e deste relato.}
+\textbf{Methodology or Steps:} \preencher{resuma o desenvolvimento incremental, a arquitetura e as entregas.}
+\textbf{Results:} \preencher{informe o que está funcional e as evidências de validação.}
+\end{abstract}
+
+\keywords{digital games, game development, state tree, Python, Pygame.}
+
+\begin{resumo}
+\textbf{Introdução:} \preencher{contextualize o projeto e o problema em uma ou duas frases.}
+\textbf{Objetivo:} \preencher{declare o objetivo do jogo e deste relato.}
+\textbf{Metodologia ou Etapas:} \preencher{resuma o desenvolvimento incremental, a arquitetura e as entregas.}
+\textbf{Resultados:} \preencher{informe o que está funcional e as evidências de validação.}
+\end{resumo}
+
+\palavraschave{jogos digitais, desenvolvimento de jogos, árvore de estados, Python, Pygame.}
+
+\section{Introdução}
+
+\preencher{Apresente o contexto acadêmico, a disciplina ou projeto, o gênero do jogo e o problema enfrentado. Explique por que uma adaptação de \textit{The King is Dead} é relevante para exercitar modelagem de regras, interfaces e inteligência artificial. Finalize indicando a organização do texto.}
+
+% Se necessário, cite o manual do jogo: \cite{osprey2020king}.
+
+\section{Contexto, público e objetivos}
+
+\preencher{Descreva o público-alvo, o nível de escolaridade dos autores, a situação de uso e o escopo adotado. Deixe explícito que se trata de uma versão acadêmica para dois jogadores e informe o que ficou fora do escopo.}
+
+O objetivo geral foi \preencher{escreva o objetivo em uma frase verificável}. Como objetivos específicos, buscou-se: \preencher{liste de três a cinco resultados concretos, como modelar regras, criar uma interface jogável, persistir partidas e construir uma árvore de estados}.
+
+\section{Processo de desenvolvimento e entregas}
+
+\preencher{Explique brevemente como o trabalho foi organizado: ciclos, responsáveis, critérios de conclusão, testes e fontes usadas para interpretar as regras. Em seguida, relate cada entrega com a mesma lógica: necessidade, implementação, decisão e evidência.}
+
+\subsection{Primeira entrega: versão jogável e arquitetura MVC}
+
+\textbf{O que foi feito.} \preencher{Resuma as entidades modeladas, as regras implementadas, o fluxo para dois jogadores, a interface, o menu e o salvamento.}
+
+\textbf{Como foi feito.} \preencher{Explique a separação entre Model, View e Controller; a representação do tabuleiro como grafo; o estado completo da partida; e como as regras foram validadas. Cite classes ou módulos apenas quando isso ajudar o leitor.}
+
+\textbf{Decisões e justificativas.} \preencher{Justifique MVC, estado centralizado, separação entre regra e interface e uso de uma configuração reproduzível. Relacione cada decisão a um benefício ou risco mitigado.}
+
+\textbf{Resultado da entrega.} \preencher{Informe o que podia ser demonstrado ao fim desta etapa e quais limitações permaneceram.}
+
+\subsection{Segunda entrega: jogadas completas e árvore de estados}
+
+\textbf{O que foi feito.} \preencher{Descreva a geração e execução de jogadas legais, a árvore de estados, o retorno a estados anteriores, a eliminação de repetições, a persistência em JSON e as visualizações.}
+
+\textbf{Como foi feito.} \preencher{Explique o fluxo Gerador de Jogadas $\rightarrow$ Executor $\rightarrow$ cópia do estado $\rightarrow$ comparação por identificador $\rightarrow$ novo nó. Informe que a expansão ocorre sob demanda.}
+
+\textbf{Decisões e justificativas.} \preencher{Justifique por que cada nó representa uma jogada completa; por que estados são copiados; por que há um identificador estável; e por que alternativas são geradas sob demanda.}
+
+\textbf{Resultado da entrega.} \preencher{Apresente evidências: navegação na árvore, salvamento/carregamento, exportação Graphviz e quantidade atualizada de testes aprovados.}
+
+% Repita a subseção abaixo para entregas futuras, preservando o limite de páginas.
+% \subsection{Terceira entrega: título}
+% \textbf{O que foi feito.} ...
+% \textbf{Como foi feito.} ...
+% \textbf{Decisões e justificativas.} ...
+% \textbf{Resultado da entrega.} ...
+
+\section{Tecnologias e razões de escolha}
+
+\begin{table}[ht]
+  \centering
+  \caption{Tecnologias empregadas no projeto.}
+  \label{tab:tecnologias}
+  \small
+  \begin{tabularx}{\textwidth}{@{}p{0.19\textwidth}p{0.25\textwidth}Y@{}}
+    \toprule
+    \textbf{Tecnologia} & \textbf{Onde foi usada} & \textbf{Motivo da escolha} \\
+    \midrule
+    Python 3.13 & Regras, entidades, árvore e persistência & Legibilidade, biblioteca padrão abrangente e adequação ao contexto didático. \\
+    Pygame 2.6.1 & Interface, entrada e ciclo principal & Permite criar uma interface 2D interativa mantendo controle explícito do ciclo do jogo. \\
+    JSON & Salvamento da árvore e da partida & Formato textual, portável e compatível com dicionários e listas produzidos pelos serializadores. \\
+    Graphviz & Exportação da árvore para DOT/SVG & Automatiza o posicionamento de grafos e produz diagramas vetoriais legíveis. \\
+    \preencher{tecnologia} & \preencher{uso} & \preencher{justificativa vinculada ao requisito} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\preencher{Complemente a tabela com decisões que não cabem nela, como testes unitários, controle de versão e licenças. Evite dizer apenas que uma tecnologia é ``fácil''; compare a escolha com os requisitos do projeto.}
+
+\section{Apresentação do software e resultados}
+
+\preencher{Inclua uma ou duas capturas que mostrem o jogo e a árvore. Explique o fluxo visível, não apenas a aparência. Indique a versão avaliada, o ambiente de teste, a quantidade de testes executados e limitações conhecidas.}
+
+% Exemplo de figura (adicione o arquivo à pasta figuras):
+% \begin{figure}[ht]
+%   \centering
+%   \includegraphics[width=.88\textwidth]{figuras/interface-jogo.png}
+%   \caption{Interface da partida e principais elementos de interação.}
+%   \label{fig:interface}
+% \end{figure}
+
+\section{Considerações finais}
+
+\preencher{Retome o objetivo e sintetize o aprendizado técnico e de projeto. Diferencie resultados observados de expectativas. Informe limitações e próximos passos, como função de avaliação, Minimax, poda alfa--beta e modo humano contra IA, somente se estiverem realmente planejados.}
+
+% O MÁGICA 2026 exige de 3 a 5 páginas de conteúdo e admite uma página
+% extra de referências.
+% Confira o PDF final e ajuste o texto/figuras antes da submissão.
+
+\bibliographystyle{sbc}
+\bibliography{referencias}
+
+\end{document}

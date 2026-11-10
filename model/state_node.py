@@ -31,6 +31,7 @@ class NoEstado:
         self._pai = pai
         self._filhos = []
         self._visitado = False
+        self._jogada_voltada = False
         self._expandido = False
 
     def obter_estado(self):
@@ -97,6 +98,7 @@ class NoEstado:
     def marcar_como_visitado(self):
         """Indica que este estado faz parte do caminho percorrido."""
         self._visitado = True
+        self._jogada_voltada = False
 
     def desmarcar_como_visitado(self):
         """Remove a marcação para permitir a volta de uma jogada."""
@@ -105,6 +107,15 @@ class NoEstado:
     def esta_visitado(self):
         """Informa se o nó está marcado como visitado."""
         return self._visitado
+
+    def marcar_como_jogada_voltada(self):
+        """Indica que o jogador visitou o nó e depois voltou."""
+        self._visitado = False
+        self._jogada_voltada = True
+
+    def representa_jogada_voltada(self):
+        """Informa se o nó representa uma jogada que foi voltada."""
+        return self._jogada_voltada
 
     def marcar_como_expandido(self):
         """Registra que as próximas jogadas do nó já foram geradas."""

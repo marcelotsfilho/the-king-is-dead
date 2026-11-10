@@ -139,7 +139,7 @@ class ArvoreEstados:
 
         no_anterior = self._no_atual
         self._no_atual = no_anterior.obter_pai()
-        no_anterior.desmarcar_como_visitado()
+        no_anterior.marcar_como_jogada_voltada()
         return True
 
     def obter_caminho_atual(self):

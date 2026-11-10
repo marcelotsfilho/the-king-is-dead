@@ -41,6 +41,7 @@ class SerializadorArvoreEstados:
                     ),
                     "jogada_origem": dados_jogada,
                     "expandido": no.esta_expandido(),
+                    "jogada_voltada": no.representa_jogada_voltada(),
                 }
             )
 
@@ -86,6 +87,9 @@ class SerializadorArvoreEstados:
 
             if dados_no.get("expandido") is True:
                 novo_no.marcar_como_expandido()
+
+            if dados_no.get("jogada_voltada") is True:
+                novo_no.marcar_como_jogada_voltada()
 
             nos_restaurados.append(novo_no)
 
@@ -162,6 +166,14 @@ class SerializadorArvoreEstados:
         if not isinstance(dados_raiz.get("expandido"), bool):
             raise ValueError("A expansão do nó raiz deve ser verdadeira ou falsa.")
 
+        jogada_voltada = dados_raiz.get("jogada_voltada", False)
+
+        if not isinstance(jogada_voltada, bool):
+            raise ValueError("A marca de jogada voltada deve ser booleana.")
+
+        if jogada_voltada:
+            raise ValueError("O nó raiz não pode representar uma jogada voltada.")
+
     def _validar_dados_no(self, dados_no, indice, nos_restaurados):
         if not isinstance(dados_no, dict):
             raise ValueError("Os dados de um nó são inválidos.")
@@ -182,6 +194,11 @@ class SerializadorArvoreEstados:
 
         if not isinstance(dados_no.get("expandido"), bool):
             raise ValueError("A expansão do nó deve ser verdadeira ou falsa.")
+
+        jogada_voltada = dados_no.get("jogada_voltada", False)
+
+        if not isinstance(jogada_voltada, bool):
+            raise ValueError("A marca de jogada voltada deve ser booleana.")
 
     def _restaurar_caminho_atual(self, arvore, no_atual):
         caminho = []
