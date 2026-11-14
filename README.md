@@ -206,6 +206,45 @@ exportação para obter a versão atualizada do caminho e das próximas opções
 
 ### Salvar e carregar a árvore
 
+Cada nó agora guarda uma **avaliação heurística estática**, calculada quando o
+nó é criado. Novos nós usam o jogador 1 como referência fixa, independentemente
+de quem está no turno. Na legenda `H(J1, v1): +4004`, `J1` é a perspectiva e
+`v1` é a versão da fórmula. Um valor positivo favorece o jogador indicado;
+zero é uma estimativa neutra, não uma avaliação ausente.
+
+O JSON de cada nó inclui, por exemplo:
+
+```json
+"avaliacao_heuristica": {
+  "valor": 4004,
+  "indice_jogador": 0,
+  "versao": 1
+}
+```
+
+A nota usa `AvaliadorEstado.avaliar(estado, profundidade=0)`: ela pertence à
+posição. O valor retornado pelo Minimax é diferente, pois depende da busca,
+de seu limite e da distância até uma vitória ou derrota. Não é salvo nesse
+campo. Avaliações são metadados do nó e não entram na comparação de estados.
+
+O formato da árvore passou para a versão 2, mantendo leitura da versão 1.
+Notas da versão atual são restauradas sem recalcular. Arquivos sem esse campo
+ou com `null` recebem uma avaliação atual durante o carregamento. Se a versão
+da fórmula for diferente, o nó recalcula a nota preservando a perspectiva.
+Metadados incompletos, valores não numéricos, NaN/infinito e índices inválidos
+são rejeitados; a mensagem de erro do carregamento já é apresentada no menu.
+
+`VERSAO_HEURISTICA`, em `model/state_evaluator.py`, deve ser incrementada quando
+a fórmula ou seus pesos mudarem. A versão do formato JSON é independente da
+versão da heurística. As notas atualizadas em memória serão gravadas no próximo
+salvamento, sem reescrever o arquivo só por abri-lo.
+
+Pygame, terminal e Graphviz mostram a mesma legenda. Ela não representa a
+probabilidade de vitória. O Minimax continua avaliando suas folhas pela própria
+perspectiva e profundidade: nesta etapa, não reutiliza essas notas como uma
+tabela de resultados da busca. Também não há notas fictícias para ramos
+podados; somente os nós efetivamente existentes no histórico são serializados.
+
 A árvore é salva em JSON porque o projeto já representa estados e jogadas por
 dicionários, listas, textos e números. Esse formato é legível, faz parte da
 biblioteca padrão do Python e não exige outra dependência.
@@ -448,7 +487,7 @@ the-king-is-dead/
 
 - `_preparar_arvore(argumentos, serializador)`: carrega
   `saves/state_tree.json` quando existe `--carregar`; caso contrário, cria um
-  novo estado e sua raiz;
+  novo estado e sua raiz usando `SEMENTE_JOGO` como seed;
 - `_escolher_arvore_pelo_menu(...)`: repete a tela inicial até criar, carregar
   ou sair; se o JSON for inválido, mantém o menu aberto com uma mensagem;
 - `principal()`: prepara a pasta de salvamento, inicializa Pygame, Model, View,
@@ -457,7 +496,8 @@ the-king-is-dead/
 ### `main_tree.py`
 
 - `principal()`: cria um estado inicial reproduzível, expande somente a raiz e
-  apresenta uma amostra da árvore no terminal.
+  apresenta uma amostra da árvore no terminal, usando a mesma `SEMENTE_JOGO`
+  definida em `main.py`.
 
 ### `model/enums.py`
 
@@ -634,12 +674,27 @@ Controller da partida, evitando cópias divergentes das escolhas.
 - estados finais recebem prioridade absoluta. Vitória vale um valor muito alto
   e diminui conforme a profundidade, enquanto derrota recebe valor negativo e
   fica menos ruim quando é adiada;
-- estados não finais combinam ameaça imediata, conjuntos completos para uma
-  possível invasão, vantagem na corte para a coroação, potencial das regiões e
-  mobilidade;
-- a classe usa `GeradorJogadas` e `ExecutorJogada`, portanto não cria regras
-  paralelas para descobrir jogadas ou executar cartas. Ela apenas avalia os
-  resultados produzidos pelo Model.
+- estados não finais combinam cortes, poder atual e projetado das facções e
+  risco de invasão. A heurística lê o estado sem gerar nem executar jogadas;
+- `_pontuar_cortes(estado, faccoes)`: usa diferença da primeira facção com peso
+  1000 e da segunda com peso 20. Com até 16 seguidores por facção, a segunda
+  não supera uma vantagem unitária na primeira dentro dessa ordenação. No
+  empate, considera quem esvaziou a mão primeiro, conforme a regra existente;
+- `_obter_faccoes_projetadas(...)`: atribui 4 pontos a cada região controlada,
+  até 2 a uma liderança pendente pela margem sobre a segunda facção e mais 1
+  se for a próxima disputa. Empates de poder projetado mantêm a ordem atual;
+- `_avaliar_coroacao(estado)`: combina três vezes a nota dos cortes na ordem
+  atual com uma vez a nota na ordem projetada. A previsão tem peso menor;
+- `_avaliar_invasao(estado)`: pondera a diferença de conjuntos por 20, 100 ou
+  600 para zero, uma ou duas instabilidades. Dobra o peso se a próxima região
+  estiver empatada/vazia, e novamente se já houver um passe. Empates de conjuntos
+  consideram o último jogador que usou carta. Esses valores estimam risco,
+  sem afirmar que a invasão ocorrerá;
+- avaliações intermediárias ficam limitadas entre -100000 e 100000, abaixo
+  dos resultados finais do jogo;
+- foram removidas a enumeração exata de mobilidade e a simulação de ameaças em
+  cada folha: elas repetiam a expansão e tornavam a primeira decisão inviável.
+  O Minimax continua explorando todas as jogadas até a profundidade configurada.
 
 ### `model/minimax_agent.py`
 
@@ -678,8 +733,7 @@ cada chamada. O valor padrão é 1, pois o jogo pode gerar milhares de combinaç
 
 O limite conta transições de jogadas completas desde o estado recebido (raiz
 da busca em profundidade zero), independentemente do nível no histórico salvo.
-A heurística existente também simula ameaças imediatas nas folhas; essas
-simulações internas não entram nos contadores de nós do Minimax.
+A heurística agora avalia estaticamente as folhas, sem simular um nível extra.
 
 Para executar Minimax simples, use `usar_poda=False`. Com `True`, o mesmo
 algoritmo atualiza alfa (melhor limite do maximizador) e beta (melhor limite do
@@ -712,6 +766,15 @@ gradualmente em posições pequenas; o custo também inclui a heurística nas
 folhas. A busca não possui limite de tempo nem treinamento automático.
 
 ### `model/state_node.py`
+
+- `calcular_avaliacao_heuristica(indice_jogador=0)`: calcula a nota estática
+  sobre o estado protegido e guarda valor, jogador e versão;
+- `definir_avaliacao_heuristica(avaliacao)`: valida os dados de uma nota salva
+  e recalcula somente quando a versão é diferente;
+- `obter_avaliacao_heuristica()`: retorna uma cópia dos metadados, protegendo
+  o valor interno;
+- `__init__(..., avaliacao_heuristica=None)`: aceita uma nota salva válida
+  para evitar recálculo no carregamento; sem nota, avalia o novo estado.
 
 - `NoEstado.__init__()`: copia e protege um estado, além de guardar pai e
   jogada de origem;
@@ -758,6 +821,12 @@ a marca de jogada voltada. Dessa maneira, a apresentação diferencia caminho
 atual, alternativa nunca visitada e estado que já foi percorrido e abandonado.
 
 ### `model/state_tree_serializer.py`
+
+`serializar()` inclui `avaliacao_heuristica` em cada nó. `restaurar()` entrega
+essa nota aos construtores de `ArvoreEstados` e `NoEstado`, evitando calcular
+um valor para depois sobrescrevê-lo. A criação da raiz e `adicionar_estado()`
+aceitam a nota como argumento opcional; os demais fluxos continuam calculando
+a avaliação automaticamente na criação do nó.
 
 - `__init__()`: prepara o serializador já usado pelos estados individuais;
 - `serializar(arvore)`: converte todos os nós, incluindo a marca de jogada
@@ -832,6 +901,10 @@ Execução dos turnos da IA:
   busca, registra a jogada e só então atualiza o jogo. Respostas antigas são
   descartadas; erros pausam a IA sem alterar a posição;
 - `_obter_resumo_ia()`: formata as estatísticas da última decisão;
+- `_obter_status_ia()`: mostra cálculo com tempo decorrido, pausa com cálculo
+  ainda ativo, resposta pronta aguardando retomada/fechamento da árvore e
+  descarte de cálculo antigo. Após 10 segundos explica que muitas opções
+  podem demorar; isso é um aviso, não um limite de tempo ou porcentagem fictícia;
 - `_atualizar_turno_ia()`: consulta a fila ou inicia a busca no turno correto,
   sem aguardar o cálculo dentro do loop da janela.
 
@@ -848,6 +921,34 @@ antiga é descartada quando chegar; uma nova busca aguarda a anterior terminar.
 Ao fechar, a thread é daemon e não impede a saída; somente as jogadas já
 confirmadas são salvas. O custo de posições grandes ainda exige experimentos
 de viabilidade antes de recomendar profundidades maiores.
+
+Erros de cálculo, ausência de jogada e falhas ao registrar preservam a posição,
+pausam a IA e orientam a retomar/tentar novamente ou salvar. Não há um passe
+automático de fallback: a mensagem não deve esconder uma falha da busca.
+
+### Medição inicial após a otimização da heurística
+
+Experimento com seed 42, estado inicial completo, execução direta no ambiente
+local desta verificação (sem o desenho do Pygame). São medições pontuais, não
+uma média de partidas nem uma garantia de tempo em outros computadores.
+
+| Medição | Resultado |
+|---|---:|
+| Avaliação estática do estado inicial, média de 1000 chamadas | 0,082 ms |
+| Primeira decisão Minimax, profundidade 1 | 5,782 s |
+| Primeira decisão alfa-beta, profundidade 1 | 5,685 s |
+| Primeira jogada pelo Controller, com thread e aplicação no jogo | 5,309 s |
+| Folhas avaliadas em cada primeira decisão | 14697 |
+| Nós visitados em cada primeira decisão | 14698 |
+
+Os dois algoritmos escolheram a mesma jogada. Em profundidade 1 não houve
+cortes; a pequena diferença de tempo não comprova vantagem da poda nesse nível.
+Na verificação do Controller, o nó foi registrado e o turno passou ao jogador 2.
+Antes da alteração, uma única folha medida após o passe inicial levou 4,567 s,
+pois gerava e simulava novamente as respostas. Não foi medida uma busca
+completa com a heurística antiga. Os estados das duas medições isoladas são
+diferentes; a medida relevante de viabilidade agora é a decisão completa acima.
+Profundidades maiores e partidas completas ainda precisam de experimentos.
 
 - `__init__(...)`: recebe jogo, View, árvore e dados de salvamento, além de
   iniciar as seleções;
@@ -951,6 +1052,9 @@ preferencialmente os métodos públicos.
 
 ### `view/state_tree_view.py`
 
+- `formatar_avaliacao_heuristica(no)`: formata a nota, perspectiva e versão.
+  É reutilizada pelas três Views da árvore para evitar legendas divergentes.
+
 - `formatar(arvore, limite_filhos)`: transforma a árvore em texto indentado;
 - `mostrar(...)`: imprime o texto no terminal;
 - `_adicionar_no()`: percorre pais e filhos respeitando seus níveis;
@@ -978,6 +1082,135 @@ preferencialmente os métodos públicos.
 - `_validar_caminho(...)`: rejeita destinos vazios ou de tipo incorreto.
 
 ## Testes automatizados
+
+Os testes unitários continuam separados dos experimentos de desempenho. Para
+as baterias da terceira entrega, use o executor abaixo.
+
+### Executor de experimentos pelo terminal
+
+Na pasta do projeto, no PowerShell:
+
+```powershell
+$env:PYTHONHASHSEED = "0"
+.\.venv\Scripts\python.exe main_experiments.py
+```
+
+Esse comando executa o plano combinado: heurísticas atual e inicial, Minimax
+com e sem alfa-beta, profundidades 1, 2 e 3, três repetições, seed 42 e cenário
+inicial completo. São **36 decisões de jogada**, sequenciais e sem limite
+automático de duração. Não são 36 partidas completas nem treinamento da IA.
+As buscas profundas com a heurística antiga podem demorar horas ou muito mais.
+Você inicia e acompanha localmente; não há chamadas a serviços de IA ou APIs.
+
+`PYTHONHASHSEED=0` estabiliza a ordem dos conjuntos Python entre sessões. A seed
+do jogo estabiliza o setup, mas, sozinha, não fixa a iteração de conjuntos.
+Use a variável acima em cada terminal antes de rodar, especialmente ao retomar.
+O CSV também registra a identificação dessa ordem, separando medições feitas
+em sessões incompatíveis. Não rode duas instâncias na mesma pasta de saída.
+
+Os arquivos são gerados automaticamente:
+
+- `experiments/results.csv`: todas as tentativas, com status, tempos, contadores,
+  notas, jogadas, configuração e ambiente. Usa UTF-8 e separador `;`;
+- `experiments/DIARIO_DE_EXPERIMENTOS_<data_e_hora_UTC>.md`: um diário por
+  chamada do executor, com cenário, protocolo, resultados, jogadas, tempos,
+  comparação dos pares, erros e limitações;
+- `experiments/states/<hash>.json`: posição exata usada em cada experimento.
+
+O terminal informa o caminho do novo diário. O executor atualiza esse arquivo
+conforme as buscas da bateria começam, terminam ou são interrompidas. Cada
+chamada de `main_experiments.py`, inclusive com `--retomar`, cria seu próprio
+diário. Em uma retomada, o diário informa quantos testes já concluídos foram
+pulados. O CSV reúne o histórico completo e os diários anteriores ficam
+disponíveis para consulta.
+
+Para **interromper**, pressione `Ctrl+C` uma vez e aguarde o salvamento. A
+tentativa fica com o status `interrompido`. A seção **Resultados parciais dos
+testes interrompidos** mostra o tempo decorrido, os nós visitados, as folhas
+avaliadas e os cortes até a interrupção. As médias usam apenas testes
+concluídos. Para retomar, use o comando abaixo.
+
+```powershell
+$env:PYTHONHASHSEED = "0"
+.\.venv\Scripts\python.exe main_experiments.py --retomar
+```
+
+Use os mesmos argumentos da execução anterior. `--retomar` pula somente testes
+concluídos com mesmo código, posição, heurística, profundidade, repetição e
+ambiente. Erros e interrupções são tentados novamente. Fechar abruptamente o
+terminal pode deixar uma linha em andamento no diário daquela bateria. Na
+próxima abertura, o CSV registra a interrupção sem tempo conhecido. A
+configuração interrompida é reiniciada do começo.
+
+Para executar as baterias separadamente (18 decisões em cada comando):
+
+```powershell
+.\.venv\Scripts\python.exe main_experiments.py --bateria atual --retomar
+.\.venv\Scripts\python.exe main_experiments.py --bateria inicial --retomar
+```
+
+Para um teste inicial curto, com apenas a heurística atual e profundidade 1:
+
+```powershell
+.\.venv\Scripts\python.exe main_experiments.py --bateria atual --profundidades 1 --repeticoes 1
+```
+
+Outras opções:
+
+```powershell
+# Apenas prepara CSV e diário, sem iniciar buscas:
+.\.venv\Scripts\python.exe main_experiments.py --preparar
+
+# Outra seed, preservando os registros anteriores:
+.\.venv\Scripts\python.exe main_experiments.py --seed 7 --retomar
+
+# Estado atual de uma árvore salva, útil para posições de meio/fim da partida:
+.\.venv\Scripts\python.exe main_experiments.py --cenario salvo --arvore saves/state_tree.json --retomar
+
+# Cenário sintético pequeno de validação, em saída separada:
+.\.venv\Scripts\python.exe main_experiments.py --cenario reduzido --saida experiments/validation
+```
+
+No cenário `salvo`, o JSON deve conter uma partida em andamento, sem convocação
+pendente. A seed é registrada como não aplicável: o cenário é identificado pela
+posição arquivada e seu hash. O cenário `reduzido` tem reserva vazia, dois
+seguidores no tabuleiro e uma Assemble por jogador; não representa a dificuldade
+do início de uma partida real.
+
+O tempo mede exclusivamente a chamada de escolha da jogada, sem Pygame,
+preparação, I/O ou geração dos relatórios. Os contadores são do Minimax; não
+contabilizam a expansão extra feita internamente pela heurística histórica.
+Somente tentativas concluídas entram nas médias. O diário agrupa por estado,
+código e ambiente; não mistura as duas heurísticas como se fossem equivalentes.
+Uma diferença entre elas pode ser estratégica, pois seus pesos também mudaram.
+
+Arquivos e métodos novos:
+
+- `main_experiments.py`: `criar_argumentos()` define as flags;
+  `inteiro_positivo()` valida profundidades/repetições; `principal()` valida a
+  combinação de cenário e arquivo e inicia a bateria. Saída 0 indica conclusão,
+  1 indica erro e 130 indica interrupção;
+- `experiments/runner.py`: `criar_cenario()` prepara a posição;
+  `identificar_codigo()` calcula o hash dos fontes; `arquivar_estado()` salva
+  o snapshot; `montar_plano()` cria as combinações; `criar_registro()` reúne
+  configuração/ambiente; `chave_execucao()` identifica testes para retomada;
+  `executar_decisao()` mede e trata falhas/interrupções;
+  `executar_bateria()` coordena o plano e a gravação;
+- `experiments/report.py`: `carregar_resultados()` lê o histórico;
+  `salvar_relatorios()` grava o CSV acumulado e o diário da bateria atual por
+  arquivos temporários;
+  `gerar_diario()` produz tabelas, estatísticas e comparações;
+- `experiments/legacy_evaluator.py`: `AvaliadorInicial.avaliar()` reconstrói a
+  fórmula anterior à otimização: ameaças somadas por resultado terminal,
+  conjuntos com pesos 20/100/1000, cortes 100/10, margem regional vezes 3 e
+  mobilidade exata com peso 2. Essa versão é experimental e não muda o Pygame;
+- `AgenteMinimax(..., avaliador=None)` aceita um avaliador opcional, permitindo
+  comparar fórmulas usando a mesma busca. O padrão continua a heurística atual.
+
+Foi executada apenas a validação curta em `experiments/validation`: 36 decisões
+concluídas no cenário reduzido, 18 pares sem divergência entre os algoritmos.
+Isso valida o executor e os relatórios, não estabelece limites para o tabuleiro
+completo. A bateria longa não foi iniciada automaticamente.
 
 Execute:
 

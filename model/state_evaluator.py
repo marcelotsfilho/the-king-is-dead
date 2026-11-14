@@ -1,12 +1,10 @@
 from model.enums import Faccao
 from model.game import Jogo
 from model.game_state import EstadoJogo
-from model.legal_move_executor import ExecutorJogada
-from model.legal_move_generator import GeradorJogadas
 
 
 _VALOR_VITORIA = 1000000
-_VALOR_AMEACA_IMEDIATA = 50000
+VERSAO_HEURISTICA = 1
 
 
 class AvaliadorEstado:
@@ -23,8 +21,6 @@ class AvaliadorEstado:
             raise ValueError("O índice do jogador da IA deve ser 0 ou 1.")
 
         self._indice_jogador_ia = indice_jogador_ia
-        self._gerador = GeradorJogadas()
-        self._executor = ExecutorJogada()
 
     def avaliar(self, estado, profundidade=0):
         """Retorna uma pontuação maior quando o estado favorece a IA."""
@@ -34,17 +30,10 @@ class AvaliadorEstado:
         if estado.finalizado:
             return self._avaliar_resultado_final(estado, profundidade)
 
-        jogadas = self._gerador.gerar(estado)
-        pontuacao = 0
-        pontuacao += self._avaliar_ameacas_imediatas(
-            estado,
-            jogadas,
-        )
+        pontuacao = self._avaliar_coroacao(estado)
         pontuacao += self._avaliar_invasao(estado)
-        pontuacao += self._avaliar_coroacao(estado)
-        pontuacao += self._avaliar_potencial_das_regioes(estado)
-        pontuacao += self._avaliar_mobilidade(estado, len(jogadas))
-        return pontuacao
+        # Uma estimativa nunca deve valer mais que um resultado confirmado.
+        return max(-100000, min(100000, pontuacao))
 
     def _avaliar_resultado_final(self, estado, profundidade):
         vencedor = estado.vencedor
@@ -59,22 +48,6 @@ class AvaliadorEstado:
 
         return -_VALOR_VITORIA + profundidade
 
-    def _avaliar_ameacas_imediatas(self, estado, jogadas):
-        valor = 0
-
-        for jogada in jogadas:
-            estado_resultante = self._executor.executar(estado, jogada)
-
-            if not estado_resultante.finalizado:
-                continue
-
-            if self._ia_venceu(estado_resultante):
-                valor += _VALOR_AMEACA_IMEDIATA
-            elif self._adversario_venceu(estado_resultante):
-                valor -= _VALOR_AMEACA_IMEDIATA
-
-        return valor
-
     def _avaliar_invasao(self, estado):
         jogadores = estado.obter_jogadores()
         jogo = Jogo(estado)
@@ -88,69 +61,87 @@ class AvaliadorEstado:
 
         quantidade_instabilidades = estado.tabuleiro.quantidade_instabilidades()
 
-        if quantidade_instabilidades >= 2:
-            return diferenca * 1000
-
+        peso = 20
         if quantidade_instabilidades == 1:
-            return diferenca * 100
+            peso = 100
+        elif quantidade_instabilidades >= 2:
+            peso = 600
 
-        return diferenca * 20
+        carta = estado.trilha_disputas.obter_proxima_carta()
+        if carta is not None:
+            regiao = estado.tabuleiro.obter_regiao(carta.nome_regiao)
+            lider, margem = self._obter_lider_da_regiao(regiao)
+            if lider is None:
+                peso *= 2
+                if estado.passes_consecutivos == 1:
+                    peso *= 2
+
+        pontuacao = diferenca * peso
+        # No empate de conjuntos, a invasão usa quem jogou a última carta.
+        if diferenca == 0:
+            ultimo = estado.ultimo_jogador_que_agiu
+            if ultimo is jogadores[self._indice_jogador_ia]:
+                pontuacao += peso // 10
+            elif ultimo is jogadores[self._indice_adversario()]:
+                pontuacao -= peso // 10
+        return pontuacao
 
     def _avaliar_coroacao(self, estado):
+        faccoes = Jogo(estado).obter_faccoes_por_poder()
+        projetadas = self._obter_faccoes_projetadas(estado, faccoes)
+        # O poder já conquistado pesa três vezes mais que a previsão.
+        return (
+            3 * self._pontuar_cortes(estado, faccoes)
+            + self._pontuar_cortes(estado, projetadas)
+        )
+
+    def _pontuar_cortes(self, estado, faccoes):
         jogadores = estado.obter_jogadores()
-        jogo = Jogo(estado)
-        faccoes = jogo.obter_faccoes_por_poder()
         jogador_ia = jogadores[self._indice_jogador_ia]
         adversario = jogadores[self._indice_adversario()]
-        pontuacao = 0
-
-        if len(faccoes) >= 1:
-            pontuacao += self._diferenca_na_corte(
-                jogador_ia,
-                adversario,
-                faccoes[0],
-            ) * 100
-
-        if len(faccoes) >= 2:
-            pontuacao += self._diferenca_na_corte(
-                jogador_ia,
-                adversario,
-                faccoes[1],
-            ) * 10
-
+        primeira = self._diferenca_na_corte(jogador_ia, adversario, faccoes[0])
+        segunda = self._diferenca_na_corte(jogador_ia, adversario, faccoes[1])
+        pontuacao = primeira * 1000 + segunda * 20
+        if primeira == 0 and segunda == 0 and estado.ordem_jogadores_sem_cartas:
+            if estado.ordem_jogadores_sem_cartas[0] is jogador_ia:
+                pontuacao += 1
+            else:
+                pontuacao -= 1
         return pontuacao
 
-    def _avaliar_potencial_das_regioes(self, estado):
-        jogadores = estado.obter_jogadores()
-        jogador_ia = jogadores[self._indice_jogador_ia]
-        adversario = jogadores[self._indice_adversario()]
-        pontuacao = 0
-
+    def _obter_faccoes_projetadas(self, estado, ordem_atual):
+        """Estima poder futuro com lideranças locais, sem executar jogadas."""
+        poder = {}
+        for faccao in Faccao:
+            poder[faccao] = 0
         for regiao in estado.tabuleiro.obter_regioes().values():
+            if regiao.controlador is not None:
+                poder[regiao.controlador] += 4
+
+        proxima = True
+        for carta in estado.trilha_disputas.obter_cartas():
+            if not carta.virada_para_cima:
+                continue
+            regiao = estado.tabuleiro.obter_regiao(carta.nome_regiao)
             if regiao.esta_resolvida():
                 continue
+            lider, margem = self._obter_lider_da_regiao(regiao)
+            if lider is not None:
+                poder[lider] += min(margem, 2)
+                if proxima:
+                    poder[lider] += 1
+            proxima = False
 
-            faccao_lider, margem = self._obter_lider_da_regiao(regiao)
-
-            if faccao_lider is None:
-                continue
-
-            diferenca_corte = self._diferenca_na_corte(
-                jogador_ia,
-                adversario,
-                faccao_lider,
-            )
-            pontuacao += margem * diferenca_corte * 3
-
-        return pontuacao
-
-    def _avaliar_mobilidade(self, estado, quantidade_jogadas):
-        if estado.obter_jogador_atual() is estado.obter_jogadores()[
-            self._indice_jogador_ia
-        ]:
-            return quantidade_jogadas * 2
-
-        return quantidade_jogadas * -2
+        restantes = ordem_atual.copy()
+        ordenadas = []
+        while restantes:
+            maior = restantes[0]
+            for faccao in restantes:
+                if poder[faccao] > poder[maior]:
+                    maior = faccao
+            ordenadas.append(maior)
+            restantes.remove(maior)
+        return ordenadas
 
     def _obter_lider_da_regiao(self, regiao):
         maior_quantidade = 0
@@ -177,16 +168,6 @@ class AvaliadorEstado:
             jogador_ia.qtd_na_corte(faccao)
             - adversario.qtd_na_corte(faccao)
         )
-
-    def _ia_venceu(self, estado):
-        return estado.vencedor is estado.obter_jogadores()[
-            self._indice_jogador_ia
-        ]
-
-    def _adversario_venceu(self, estado):
-        return estado.vencedor is estado.obter_jogadores()[
-            self._indice_adversario()
-        ]
 
     def _indice_adversario(self):
         if self._indice_jogador_ia == 0:

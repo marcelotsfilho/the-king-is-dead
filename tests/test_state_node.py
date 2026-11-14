@@ -9,6 +9,7 @@ from model.legal_move_executor import ExecutorJogada
 from model.player import Jogador
 from model.state_node import NoEstado
 from model.supply import ReservaSeguidores
+from model.state_evaluator import AvaliadorEstado, VERSAO_HEURISTICA
 
 
 def criar_estado_manual():
@@ -20,6 +21,40 @@ def criar_estado_manual():
 
 
 class TesteNoEstado(unittest.TestCase):
+    def test_nota_estatica_tem_perspectiva_versao_e_copia_protegida(self):
+        estado = criar_estado_manual()
+        no = NoEstado(estado)
+        avaliacao = no.obter_avaliacao_heuristica()
+        self.assertEqual(avaliacao["valor"], AvaliadorEstado(0).avaliar(estado, 0))
+        self.assertEqual(avaliacao["indice_jogador"], 0)
+        self.assertEqual(avaliacao["versao"], VERSAO_HEURISTICA)
+        avaliacao["valor"] = 9999
+        self.assertNotEqual(no.obter_avaliacao_heuristica()["valor"], 9999)
+
+    def test_mudar_perspectiva_nao_muda_identificador_do_estado(self):
+        estado = criar_estado_manual()
+        estado.obter_jogadores()[0].adicionar_seguidor_na_corte(Faccao.ESCOCESES)
+        no = NoEstado(estado)
+        identificador = no.obter_identificador()
+        nota_jogador_um = no.obter_avaliacao_heuristica()["valor"]
+        no.calcular_avaliacao_heuristica(1)
+        self.assertEqual(no.obter_avaliacao_heuristica()["valor"], -nota_jogador_um)
+        self.assertEqual(no.obter_identificador(), identificador)
+
+    def test_rejeita_notas_invalidas_sem_alterar_a_nota_anterior(self):
+        no = NoEstado(criar_estado_manual())
+        antes = no.obter_avaliacao_heuristica()
+        for campo, valor in (
+            ("valor", True), ("valor", "10"), ("valor", float("nan")),
+            ("valor", float("inf")), ("indice_jogador", 2),
+            ("indice_jogador", True), ("versao", "1"), ("versao", 0),
+        ):
+            dados = antes.copy()
+            dados[campo] = valor
+            with self.assertRaises(ValueError):
+                no.definir_avaliacao_heuristica(dados)
+            self.assertEqual(no.obter_avaliacao_heuristica(), antes)
+
     def test_cria_no_raiz(self):
         estado = criar_estado_manual()
 

@@ -5,7 +5,7 @@ from model.legal_move import restaurar_jogada, serializar_jogada
 from model.state_tree import ArvoreEstados
 
 
-_VERSAO_DA_ARVORE = 1
+_VERSAO_DA_ARVORE = 2
 
 
 class SerializadorArvoreEstados:
@@ -42,6 +42,7 @@ class SerializadorArvoreEstados:
                     "jogada_origem": dados_jogada,
                     "expandido": no.esta_expandido(),
                     "jogada_voltada": no.representa_jogada_voltada(),
+                    "avaliacao_heuristica": no.obter_avaliacao_heuristica(),
                 }
             )
 
@@ -66,7 +67,10 @@ class SerializadorArvoreEstados:
         estado_raiz = self._serializador_estado.restaurar(
             dados_raiz["estado"]
         )
-        arvore = ArvoreEstados(estado_raiz)
+        arvore = ArvoreEstados(
+            estado_raiz,
+            avaliacao_heuristica=dados_raiz.get("avaliacao_heuristica"),
+        )
         nos_restaurados = [arvore.obter_raiz()]
 
         if dados_raiz.get("expandido") is True:
@@ -80,7 +84,10 @@ class SerializadorArvoreEstados:
                 dados_no["estado"]
             )
             jogada = restaurar_jogada(dados_no["jogada_origem"])
-            novo_no = arvore.adicionar_estado(estado, jogada, pai)
+            novo_no = arvore.adicionar_estado(
+                estado, jogada, pai,
+                avaliacao_heuristica=dados_no.get("avaliacao_heuristica"),
+            )
 
             if novo_no is None:
                 raise ValueError("O arquivo possui um estado repetido.")
@@ -141,7 +148,7 @@ class SerializadorArvoreEstados:
         if not isinstance(dados, dict):
             raise TypeError("Os dados da árvore devem estar em um dicionário.")
 
-        if dados.get("versao") != _VERSAO_DA_ARVORE:
+        if isinstance(dados.get("versao"), bool) or dados.get("versao") not in (1, _VERSAO_DA_ARVORE):
             raise ValueError("A versão do arquivo da árvore não é suportada.")
 
         if not isinstance(dados.get("nos"), list) or not dados["nos"]:

@@ -2,6 +2,7 @@ import json
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from model.action_card import CartaAcao
 from model.board import Tabuleiro
@@ -12,6 +13,7 @@ from model.player import Jogador
 from model.state_tree import ArvoreEstados
 from model.state_tree_serializer import SerializadorArvoreEstados
 from model.supply import ReservaSeguidores
+from model.state_evaluator import VERSAO_HEURISTICA
 
 
 def criar_arvore_com_tres_niveis():
@@ -33,6 +35,43 @@ def criar_arvore_com_tres_niveis():
 
 
 class TesteSerializadorArvoreEstados(unittest.TestCase):
+    def test_preserva_notas_e_perspectivas_sem_recalcular(self):
+        arvore = criar_arvore_com_tres_niveis()
+        arvore.obter_no_atual().calcular_avaliacao_heuristica(1)
+        dados = SerializadorArvoreEstados().serializar(arvore)
+        self.assertEqual(dados["versao"], 2)
+        with patch("model.state_node.AvaliadorEstado.avaliar", side_effect=AssertionError("Não deve recalcular")):
+            restaurada = SerializadorArvoreEstados().restaurar(dados)
+        for original, carregado in zip(arvore.obter_nos(), restaurada.obter_nos()):
+            self.assertEqual(original.obter_avaliacao_heuristica(), carregado.obter_avaliacao_heuristica())
+
+    def test_arquivo_antigo_sem_notas_recebe_avaliacoes_atuais(self):
+        arvore = criar_arvore_com_tres_niveis()
+        dados = SerializadorArvoreEstados().serializar(arvore)
+        dados["versao"] = 1
+        for dados_no in dados["nos"]:
+            del dados_no["avaliacao_heuristica"]
+        restaurada = SerializadorArvoreEstados().restaurar(dados)
+        for original, carregado in zip(arvore.obter_nos(), restaurada.obter_nos()):
+            self.assertEqual(original.obter_avaliacao_heuristica(), carregado.obter_avaliacao_heuristica())
+
+    def test_versao_diferente_da_heuristica_e_recalculada(self):
+        arvore = criar_arvore_com_tres_niveis()
+        dados = SerializadorArvoreEstados().serializar(arvore)
+        for dados_no in dados["nos"]:
+            dados_no["avaliacao_heuristica"]["versao"] = VERSAO_HEURISTICA + 1
+            dados_no["avaliacao_heuristica"]["valor"] = 12345
+        restaurada = SerializadorArvoreEstados().restaurar(dados)
+        for original, carregado in zip(arvore.obter_nos(), restaurada.obter_nos()):
+            self.assertEqual(original.obter_avaliacao_heuristica(), carregado.obter_avaliacao_heuristica())
+
+    def test_rejeita_metadados_incompletos_e_notas_invalidas(self):
+        for avaliacao in ({"valor": 12}, "nota", {"valor": False, "indice_jogador": 0, "versao": 1}):
+            dados = SerializadorArvoreEstados().serializar(criar_arvore_com_tres_niveis())
+            dados["nos"][0]["avaliacao_heuristica"] = avaliacao
+            with self.assertRaises(ValueError):
+                SerializadorArvoreEstados().restaurar(dados)
+
     def setUp(self):
         self.serializador = SerializadorArvoreEstados()
 
@@ -74,6 +113,8 @@ class TesteSerializadorArvoreEstados(unittest.TestCase):
             restaurada.obter_no_atual().obter_identificador(),
             arvore.obter_no_atual().obter_identificador(),
         )
+        for original, carregado in zip(arvore.obter_nos(), restaurada.obter_nos()):
+            self.assertEqual(original.obter_avaliacao_heuristica(), carregado.obter_avaliacao_heuristica())
 
     def test_preserva_marca_de_jogada_voltada(self):
         arvore = criar_arvore_com_tres_niveis()

@@ -18,6 +18,8 @@ from model.state_tree_serializer import SerializadorArvoreEstados
 from view.game_view import VisaoJogo
 
 
+SEMENTE_JOGO = 123
+
 _PASTA_DO_PROJETO = os.path.dirname(os.path.abspath(__file__))
 _PASTA_DE_SALVAMENTOS = os.path.join(_PASTA_DO_PROJETO, "saves")
 _CAMINHO_DA_ARVORE = os.path.join(
@@ -31,7 +33,7 @@ def _preparar_arvore(argumentos, serializador):
         return serializador.carregar(_CAMINHO_DA_ARVORE)
 
     # geracao da arvore com uma determinada seed
-    configuracao = ConfiguracaoJogo(semente=42)
+    configuracao = ConfiguracaoJogo(semente=SEMENTE_JOGO)
     estado = configuracao.criar_estado_inicial(
         ["Jogador 1", "Jogador 2"]
     )

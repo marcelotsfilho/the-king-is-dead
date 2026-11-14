@@ -1,4 +1,5 @@
 import pygame
+from view.state_tree_view import formatar_avaliacao_heuristica
 
 from model.enums import Faccao, FaseTurno, TipoJogador
 from view.constants import (
@@ -900,7 +901,8 @@ class VisaoJogo:
         )
         altura = retangulo.y + 29
 
-        for linha in linhas[:2]:
+        limite_linhas = 1 if retangulo.height < 80 else 2
+        for linha in linhas[:limite_linhas]:
             self._desenhar_texto(
                 linha,
                 retangulo.x + 10,
@@ -908,6 +910,13 @@ class VisaoJogo:
                 pequena=True,
             )
             altura += 18
+
+        self._desenhar_texto(
+            formatar_avaliacao_heuristica(no),
+            retangulo.x + 10,
+            retangulo.bottom - 17,
+            pequena=True,
+        )
 
     def _desenhar_caminho_da_arvore(self, arvore):
         self._desenhar_texto("Caminho percorrido", 40, 120)
@@ -1090,7 +1099,7 @@ class VisaoJogo:
         self.tela.fill(COR_DE_FUNDO)
         self._desenhar_texto("Árvore de estados", 40, 45)
         self._desenhar_texto(
-            "Azul: estado atual | Verde: caminho percorrido",
+            "Azul: atual | Verde: caminho | H: nota estática; J: jogador de referência",
             40,
             82,
             pequena=True,

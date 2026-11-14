@@ -8,8 +8,12 @@ from model.state_evaluator import AvaliadorEstado
 class AgenteMinimax:
     """Escolhe jogadas com antecipação e poda alfa-beta opcional."""
 
-    def __init__(self, indice_jogador_ia):
+    def __init__(self, indice_jogador_ia, avaliador=None):
         self._avaliador = AvaliadorEstado(indice_jogador_ia)
+        if avaliador is not None:
+            if not callable(getattr(avaliador, "avaliar", None)):
+                raise TypeError("O avaliador deve possuir o método avaliar.")
+            self._avaliador = avaliador
         self._indice_jogador_ia = indice_jogador_ia
         self._gerador = GeradorJogadas()
         self._executor = ExecutorJogada()

@@ -22,6 +22,13 @@ def criar_arvore_com_passe():
 
 
 class TesteVisaoArvoreGraphviz(unittest.TestCase):
+    def test_dot_mostra_valor_perspectiva_e_versao_da_nota(self):
+        arvore = criar_arvore_com_passe()
+        arvore.obter_no_atual().calcular_avaliacao_heuristica(1)
+        conteudo = VisaoArvoreGraphviz().gerar_dot(arvore)
+        self.assertIn("H(J1, v1):", conteudo)
+        self.assertIn("H(J2, v1):", conteudo)
+
     def test_dot_possui_todos_os_nos_e_a_ligacao(self):
         arvore = criar_arvore_com_passe()
 

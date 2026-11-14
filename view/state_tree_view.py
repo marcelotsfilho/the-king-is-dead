@@ -1,6 +1,16 @@
 from model.state_tree import ArvoreEstados
 
 
+def formatar_avaliacao_heuristica(no):
+    """Legenda comum às três visualizações, com perspectiva e versão."""
+    avaliacao = no.obter_avaliacao_heuristica()
+    return (
+        "H(J" + str(avaliacao["indice_jogador"] + 1)
+        + ", v" + str(avaliacao["versao"]) + "): "
+        + format(avaliacao["valor"], "+g")
+    )
+
+
 class VisaoArvoreEstados:
     """Produz uma apresentação textual da árvore de estados."""
 
@@ -49,7 +59,7 @@ class VisaoArvoreEstados:
             + expansao
             + ")"
         )
-        linhas.append(linha)
+        linhas.append(linha + " | " + formatar_avaliacao_heuristica(no))
         filhos = no.obter_filhos()
         quantidade_mostrada = len(filhos)
 

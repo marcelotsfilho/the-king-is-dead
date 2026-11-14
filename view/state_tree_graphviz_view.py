@@ -5,6 +5,7 @@ import subprocess
 import webbrowser
 
 from model.state_tree import ArvoreEstados
+from view.state_tree_view import formatar_avaliacao_heuristica
 
 
 class VisaoArvoreGraphviz:
@@ -230,7 +231,7 @@ class VisaoArvoreGraphviz:
         if no.representa_jogada_voltada():
             rotulo += "\\nJogada voltada"
 
-        return rotulo
+        return rotulo + "\\n" + formatar_avaliacao_heuristica(no)
 
     def _escapar_texto(self, texto):
         return texto.replace("\\", "\\\\").replace('"', '\\"')

@@ -9,14 +9,14 @@ from model.state_node import NoEstado
 class ArvoreEstados:
     """Organiza os estados conhecidos e o caminho atual da partida."""
 
-    def __init__(self, estado_inicial):
+    def __init__(self, estado_inicial, avaliacao_heuristica=None):
         if not isinstance(estado_inicial, EstadoJogo):
             raise TypeError("A árvore deve receber um EstadoJogo inicial.")
 
         self._serializador = SerializadorEstadoJogo()
         self._executor = ExecutorJogada()
         self._gerador = GeradorJogadas()
-        self._raiz = NoEstado(estado_inicial)
+        self._raiz = NoEstado(estado_inicial, avaliacao_heuristica=avaliacao_heuristica)
         self._no_atual = self._raiz
         self._nos_por_identificador = {
             self._raiz.obter_identificador(): self._raiz
@@ -48,7 +48,7 @@ class ArvoreEstados:
         """Retorna uma cópia do estado correspondente ao nó atual."""
         return self._no_atual.obter_estado()
 
-    def adicionar_estado(self, estado, jogada, pai=None):
+    def adicionar_estado(self, estado, jogada, pai=None, avaliacao_heuristica=None):
         """Cria um filho se o estado ainda não existir na árvore."""
         if not isinstance(estado, EstadoJogo):
             raise TypeError("O novo nó deve receber um EstadoJogo.")
@@ -65,7 +65,7 @@ class ArvoreEstados:
         if identificador in self._nos_por_identificador:
             return None
 
-        novo_no = NoEstado(estado, jogada, pai)
+        novo_no = NoEstado(estado, jogada, pai, avaliacao_heuristica)
         pai.adicionar_filho(novo_no)
         self._nos_por_identificador[identificador] = novo_no
         return novo_no

@@ -87,6 +87,8 @@ class ControladorJogo:
         self._fila_ia = Queue()
         self._tarefa_ia = None
         self._estado_busca_ia = None
+        self._inicio_busca_ia = None
+        self._erro_ia = ""
 
     def _possui_ia(self):
         for indice in range(2):
@@ -100,10 +102,53 @@ class ControladorJogo:
 
     def _alternar_pausa_ia(self):
         self.ia_pausada = not self.ia_pausada
+        if not self.ia_pausada:
+            self._erro_ia = ""
+        self.instrucao = self._obter_status_ia()
+        if not self.instrucao:
+            self.instrucao = "IA liberada para o próximo turno."
+
+    def _obter_status_ia(self):
+        """Descreve a situação real da busca, inclusive depois de retomar."""
+        if self._tarefa_ia is not None:
+            segundos = perf_counter() - self._inicio_busca_ia
+            tempo = format(segundos, ".1f") + " s"
+            if self.jogo.estado is not self._estado_busca_ia:
+                return (
+                    "A posição mudou. Aguardando o cálculo anterior terminar para "
+                    "descartá-lo (" + tempo + "). Ele não alterará o tabuleiro."
+                )
+            pronta = not self._fila_ia.empty()
+            if self.ia_pausada:
+                if pronta:
+                    return "IA pausada. Jogada pronta; clique em RETOMAR IA para aplicá-la."
+                return (
+                    "IA pausada. O cálculo continua (" + tempo
+                    + "), mas não será aplicado até clicar em RETOMAR IA."
+                )
+            if pronta:
+                if self.arvore_aberta:
+                    return "Jogada pronta. Feche a árvore para a partida continuar."
+                return "Jogada calculada. Aplicando o resultado..."
+            indice = self._estado_busca_ia.indice_jogador_atual
+            nome = self._estado_busca_ia.obter_jogador_atual().nome
+            tipo = self.configuracao_partida.obter_tipo_jogador(indice).value
+            profundidade = self.configuracao_partida.obter_profundidade(indice)
+            mensagem = (
+                nome + " calculando com " + tipo + ", profundidade "
+                + str(profundidade) + ". Decorrido: " + tempo + "."
+            )
+            if segundos >= 10:
+                mensagem += (
+                    " Muitas opções podem tornar a busca demorada. "
+                    "Você pode pausar a aplicação ou salvar a posição."
+                )
+            return mensagem
         if self.ia_pausada:
-            self.instrucao = "IA pausada. Clique em RETOMAR IA para continuar."
-        else:
-            self.instrucao = "IA liberada. Aguardando o próximo turno automático."
+            if self._erro_ia:
+                return self._erro_ia
+            return "IA pausada. Clique em RETOMAR IA para continuar os turnos automáticos."
+        return ""
 
     def _calcular_jogada_ia(self, estado, indice, tipo, profundidade):
         """Calcula sobre uma cópia e envia o resultado sem acessar o Pygame."""
@@ -143,6 +188,8 @@ class ControladorJogo:
         profundidade = self.configuracao_partida.obter_profundidade(indice)
         copia = SerializadorEstadoJogo().copiar(estado)
         self._estado_busca_ia = estado
+        self._inicio_busca_ia = perf_counter()
+        self._erro_ia = ""
         self._tarefa_ia = Thread(
             target=self._calcular_jogada_ia,
             args=(copia, indice, tipo, profundidade),
@@ -166,16 +213,26 @@ class ControladorJogo:
         resultado = self._fila_ia.get_nowait()
         self._tarefa_ia = None
         self._estado_busca_ia = None
+        self._inicio_busca_ia = None
         if estado_mudou:
             return
 
         if resultado["erro"] is not None:
             self.ia_pausada = True
-            self.instrucao = "Erro na IA: " + resultado["erro"] + ". IA pausada."
+            self._erro_ia = (
+                "Erro na IA: " + resultado["erro"]
+                + ". A posição foi preservada e a IA está pausada. "
+                "Use RETOMAR IA para tentar novamente ou SALVAR para guardar a partida."
+            )
+            self.instrucao = self._erro_ia
             return
         if resultado["jogada"] is None:
             self.ia_pausada = True
-            self.instrucao = "A IA não encontrou uma jogada. IA pausada."
+            self._erro_ia = (
+                "A IA não retornou uma jogada completa. Nenhuma ação foi aplicada. "
+                "IA pausada: use RETOMAR IA para tentar novamente ou SALVAR."
+            )
+            self.instrucao = self._erro_ia
             return
 
         try:
@@ -184,7 +241,11 @@ class ControladorJogo:
             )
         except (TypeError, ValueError) as erro:
             self.ia_pausada = True
-            self.instrucao = "Não foi possível registrar a jogada da IA: " + str(erro)
+            self._erro_ia = (
+                "Não foi possível registrar a jogada da IA: " + str(erro)
+                + ". A posição foi preservada. IA pausada; use RETOMAR IA para tentar novamente."
+            )
+            self.instrucao = self._erro_ia
             return
 
         self._limpar_selecao()
@@ -587,6 +648,7 @@ class ControladorJogo:
         self.instrucao = "A última jogada foi desfeita."
         self.ultima_decisao_ia = None
         if self._possui_ia():
+            self._erro_ia = ""
             self.ia_pausada = True
             self.instrucao += " IA pausada; use RETOMAR IA para continuar."
 
@@ -820,10 +882,11 @@ class ControladorJogo:
 
     def _desenhar_quadro(self):
         selecao = self._obter_selecao()
+        instrucao = self._obter_status_ia() or self.instrucao
         self.visao.desenhar(
             self.jogo.estado,
             selecao,
-            self.instrucao,
+            instrucao,
             self.arvore,
             self.arvore_aberta,
             self.pagina_arvore,

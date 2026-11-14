@@ -1,12 +1,15 @@
+from math import isfinite
+
 from model.game_state import EstadoJogo
 from model.game_state_serializer import SerializadorEstadoJogo
 from model.legal_move import Jogada
+from model.state_evaluator import AvaliadorEstado, VERSAO_HEURISTICA
 
 
 class NoEstado:
     """Representa um estado dentro da árvore de jogadas."""
 
-    def __init__(self, estado, jogada_origem=None, pai=None):
+    def __init__(self, estado, jogada_origem=None, pai=None, avaliacao_heuristica=None):
         if not isinstance(estado, EstadoJogo):
             raise TypeError("O nó deve receber uma instância de EstadoJogo.")
 
@@ -33,6 +36,46 @@ class NoEstado:
         self._visitado = False
         self._jogada_voltada = False
         self._expandido = False
+        self._avaliacao_heuristica = None
+        if avaliacao_heuristica is None:
+            self.calcular_avaliacao_heuristica()
+        else:
+            self.definir_avaliacao_heuristica(avaliacao_heuristica)
+
+    def calcular_avaliacao_heuristica(self, indice_jogador=0):
+        """Guarda a nota estática, sem a distância relativa da busca Minimax."""
+        valor = AvaliadorEstado(indice_jogador).avaliar(self._estado, profundidade=0)
+        self._avaliacao_heuristica = {
+            "valor": valor,
+            "indice_jogador": indice_jogador,
+            "versao": VERSAO_HEURISTICA,
+        }
+
+    def definir_avaliacao_heuristica(self, avaliacao):
+        """Valida a nota salva; recalcula quando sua versão não é a atual."""
+        if not isinstance(avaliacao, dict):
+            raise ValueError("A avaliação heurística deve ser um dicionário.")
+        valor = avaliacao.get("valor")
+        indice = avaliacao.get("indice_jogador")
+        versao = avaliacao.get("versao")
+        if isinstance(valor, bool) or not isinstance(valor, (int, float)):
+            raise ValueError("O valor da heurística deve ser numérico.")
+        if not isfinite(valor):
+            raise ValueError("O valor da heurística deve ser finito.")
+        if isinstance(indice, bool) or not isinstance(indice, int) or indice not in (0, 1):
+            raise ValueError("O jogador da avaliação deve ter índice 0 ou 1.")
+        if isinstance(versao, bool) or not isinstance(versao, int) or versao < 1:
+            raise ValueError("A versão da heurística deve ser um inteiro positivo.")
+        if versao != VERSAO_HEURISTICA:
+            self.calcular_avaliacao_heuristica(indice)
+            return
+        self._avaliacao_heuristica = {
+            "valor": valor, "indice_jogador": indice, "versao": versao,
+        }
+
+    def obter_avaliacao_heuristica(self):
+        """Devolve uma cópia da nota e dos dados necessários para interpretá-la."""
+        return self._avaliacao_heuristica.copy()
 
     def obter_estado(self):
         """Retorna uma cópia do estado armazenado no nó."""

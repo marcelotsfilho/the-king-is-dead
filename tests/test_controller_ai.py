@@ -29,6 +29,38 @@ def preparar_busca(controlador):
 
 
 class TesteTurnosIA(unittest.TestCase):
+    def test_retomar_busca_em_andamento_mostra_calculo_e_tempo(self):
+        controlador = criar_controlador_ia()
+        with patch("controller.game_controller.Thread.start"):
+            controlador._atualizar_turno_ia()
+        with patch("controller.game_controller.perf_counter", return_value=controlador._inicio_busca_ia + 12):
+            self.assertIn("12.0 s", controlador._obter_status_ia())
+            self.assertIn("demorada", controlador._obter_status_ia())
+            controlador._alternar_pausa_ia()
+            self.assertIn("cálculo continua", controlador._obter_status_ia())
+            controlador._alternar_pausa_ia()
+            self.assertIn("calculando", controlador.instrucao)
+            self.assertNotIn("Aguardando o próximo turno", controlador.instrucao)
+
+    def test_resposta_pronta_informa_como_continuar(self):
+        controlador = criar_controlador_ia()
+        preparar_busca(controlador)
+        controlador.ia_pausada = True
+        self.assertIn("Jogada pronta", controlador._obter_status_ia())
+        self.assertIn("RETOMAR IA", controlador._obter_status_ia())
+        controlador.ia_pausada = False
+        controlador.arvore_aberta = True
+        self.assertIn("Feche a árvore", controlador._obter_status_ia())
+
+    def test_falha_da_ia_tem_instrucao_de_recuperacao(self):
+        controlador = criar_controlador_ia()
+        with patch("controller.game_controller.AgenteMinimax", side_effect=RuntimeError("falha")):
+            preparar_busca(controlador)
+        controlador._atualizar_turno_ia()
+        self.assertIn("preservada", controlador._obter_status_ia())
+        self.assertIn("RETOMAR IA", controlador._obter_status_ia())
+        self.assertIn("SALVAR", controlador._obter_status_ia())
+
     def test_thread_real_mantem_loop_livre_e_envia_resultado_pela_fila(self):
         controlador = criar_controlador_ia()
         iniciou = Event()

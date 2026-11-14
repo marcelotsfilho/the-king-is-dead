@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch
 
 import main
+import main_tree
 from model.enums import TipoJogada, TipoJogador
 from model.game_setup import ConfiguracaoJogo
 from model.legal_move import Jogada
@@ -63,6 +64,16 @@ class TesteInicializacaoPrincipal(unittest.TestCase):
 
         self.assertTrue(arvore.obter_no_atual().eh_raiz())
         self.assertEqual(arvore.quantidade_nos(), 1)
+
+    def test_main_tree_usa_seed_configurada_em_main(self):
+        with patch("main.SEMENTE_JOGO", 99):
+            with patch("main_tree.ConfiguracaoJogo") as criar_configuracao:
+                with patch("main_tree.ArvoreEstados") as criar_arvore:
+                    with patch("main_tree.VisaoArvoreEstados"):
+                        main_tree.principal()
+
+        criar_configuracao.assert_called_once_with(semente=99)
+        criar_arvore.assert_called_once()
 
     def test_argumento_carregar_restaura_arvore_salva(self):
         estado = ConfiguracaoJogo(42).criar_estado_inicial(

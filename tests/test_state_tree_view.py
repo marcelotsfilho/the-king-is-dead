@@ -42,6 +42,7 @@ class TesteVisaoArvoreEstados(unittest.TestCase):
         self.assertIn("[CAMINHO] Nível 0 - Estado inicial", texto)
         self.assertIn("[CAMINHO] Nível 1 - Passar.", texto)
         self.assertIn("[ATUAL] Nível 2 - Passar.", texto)
+        self.assertIn("H(J1, v1):", texto)
 
     def test_mostra_quais_nos_estao_expandidos(self):
         arvore = criar_arvore_com_tres_niveis()
