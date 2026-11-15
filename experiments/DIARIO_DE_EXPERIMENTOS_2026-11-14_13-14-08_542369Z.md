@@ -31,7 +31,7 @@ Os contadores do Minimax não incluem simulações internas da heurística antig
 |---|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|
 | 1 | inicial | atual | minimax | 1 | 1 | concluido | 5.212043 | 17928 | 17927 | 0 | 4040 |
 | 2 | inicial | atual | alfa_beta | 1 | 1 | concluido | 4.820211 | 17928 | 17927 | 0 | 4040 |
-| 3 | inicial | atual | minimax | 2 | 1 | em_andamento |  |  |  |  |  |
+| 3 | inicial | atual | minimax | 2 | 1 | interrompido | 27257.411951 | 37635567 | 37633310 | 0 |  |
 
 ## Jogadas escolhidas
 
@@ -45,7 +45,12 @@ Os contadores do Minimax não incluem simulações internas da heurística antig
 
 ## Resultados parciais dos testes interrompidos
 
-Nenhum teste interrompido nesta bateria.
+Os valores mostram o progresso até a interrupção. As médias usam apenas testes concluídos.
+O traço indica uma medição indisponível.
+
+| Nº | Heurística | Algoritmo | Prof. | Rep. | Tempo parcial (s) | Nós visitados | Folhas avaliadas | Cortes |
+|---|---|---|---:|---:|---:|---:|---:|---:|
+| 3 | atual | minimax | 2 | 1 | 27257.411951 | 37635567 | 37633310 | 0 |
 
 ## Comparação e limites
 
@@ -62,7 +67,7 @@ definir o tempo aceitável para o usuário e analisar outras posições e seeds.
 
 ## Erros e interrupções
 
-Nenhum erro ou interrupção registrado.
+- Execução 3: Interrupção solicitada pelo usuário (Ctrl+C).
 
 As posições são arquivadas em states/<estado_sha256>.json.
 O hash do código identifica os fontes usados, inclusive alterações sem commit.

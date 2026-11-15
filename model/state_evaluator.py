@@ -4,7 +4,10 @@ from model.game_state import EstadoJogo
 
 
 _VALOR_VITORIA = 1000000
-VERSAO_HEURISTICA = 1
+_VALOR_ULTIMA_CARTA = 4500
+_DESCONTO_POR_CARTA_ABUNDANTE = 150
+_DESCONTO_POR_DISPUTA_RESOLVIDA = 100
+VERSAO_HEURISTICA = 3
 
 
 class AvaliadorEstado:
@@ -32,8 +35,36 @@ class AvaliadorEstado:
 
         pontuacao = self._avaliar_coroacao(estado)
         pontuacao += self._avaliar_invasao(estado)
+        pontuacao += self._avaliar_cartas_restantes(estado)
         # Uma estimativa nunca deve valer mais que um resultado confirmado.
         return max(-100000, min(100000, pontuacao))
+
+    def _avaliar_cartas_restantes(self, estado):
+        """Valoriza mais as últimas opções e reduz o peso perto do fim."""
+        jogadores = estado.obter_jogadores()
+        cartas_ia = jogadores[self._indice_jogador_ia].quantidade_cartas()
+        cartas_adversario = (
+            jogadores[self._indice_adversario()].quantidade_cartas()
+        )
+        disputas_resolvidas = (
+            estado.trilha_disputas.quantidade_resolvida()
+        )
+        return self._valor_da_mao(cartas_ia, disputas_resolvidas) - (
+            self._valor_da_mao(cartas_adversario, disputas_resolvidas)
+        )
+
+    def _valor_da_mao(self, quantidade, disputas_resolvidas):
+        valor_ultima = (
+            _VALOR_ULTIMA_CARTA
+            - _DESCONTO_POR_DISPUTA_RESOLVIDA * disputas_resolvidas
+        )
+        desconto_abundancia = (
+            _DESCONTO_POR_CARTA_ABUNDANTE
+            * quantidade
+            * (quantidade - 1)
+            // 2
+        )
+        return quantidade * valor_ultima - desconto_abundancia
 
     def _avaliar_resultado_final(self, estado, profundidade):
         vencedor = estado.vencedor

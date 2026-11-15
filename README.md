@@ -208,7 +208,7 @@ exportação para obter a versão atualizada do caminho e das próximas opções
 
 Cada nó agora guarda uma **avaliação heurística estática**, calculada quando o
 nó é criado. Novos nós usam o jogador 1 como referência fixa, independentemente
-de quem está no turno. Na legenda `H(J1, v1): +4004`, `J1` é a perspectiva e
+de quem está no turno. Na legenda `H(J1, v3): +4004`, `J1` é a perspectiva e
 `v1` é a versão da fórmula. Um valor positivo favorece o jogador indicado;
 zero é uma estimativa neutra, não uma avaliação ausente.
 
@@ -676,6 +676,11 @@ Controller da partida, evitando cópias divergentes das escolhas.
   fica menos ruim quando é adiada;
 - estados não finais combinam cortes, poder atual e projetado das facções e
   risco de invasão. A heurística lê o estado sem gerar nem executar jogadas;
+- `_avaliar_cartas_restantes(estado)`: compara o potencial das mãos. A última
+  carta vale inicialmente 4500 pontos; cada carta adicional vale 150 pontos a
+  menos que a anterior, representando a menor urgência de uma mão abundante.
+  Cada disputa resolvida reduz em 100 pontos o valor de todas as cartas. Assim,
+  a IA preserva opções escassas sem tratar toda carta como igualmente valiosa;
 - `_pontuar_cortes(estado, faccoes)`: usa diferença da primeira facção com peso
   1000 e da segunda com peso 20. Com até 16 seguidores por facção, a segunda
   não supera uma vantagem unitária na primeira dentro dessa ordenação. No

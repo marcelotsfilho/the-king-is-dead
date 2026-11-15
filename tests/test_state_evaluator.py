@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from model.game_setup import ConfiguracaoJogo
 from model.enums import Faccao
+from model.game import Jogo
 from model.state_evaluator import AvaliadorEstado
 from model.game_state_serializer import SerializadorEstadoJogo
 from tests.test_minimax_agent import criar_estado as criar_estado_manual
@@ -69,6 +70,54 @@ class TesteAvaliadorEstado(unittest.TestCase):
         estado.ultimo_jogador_que_agiu = estado.obter_jogadores()[0]
         self.assertGreater(AvaliadorEstado(0)._avaliar_invasao(estado), 0)
         self.assertLess(AvaliadorEstado(1)._avaliar_invasao(estado), 0)
+
+    def test_cartas_restantes_favorecem_quem_preservou_mais_opcoes(self):
+        estado = criar_estado()
+        jogador_2 = estado.obter_jogadores()[1]
+        jogador_2.usar_carta(jogador_2.obter_mao()[0])
+
+        nota_jogador_1 = AvaliadorEstado(0)._avaliar_cartas_restantes(estado)
+        nota_jogador_2 = AvaliadorEstado(1)._avaliar_cartas_restantes(estado)
+
+        self.assertGreater(nota_jogador_1, 0)
+        self.assertEqual(nota_jogador_1, -nota_jogador_2)
+
+    def test_valor_das_cartas_diminui_com_disputas_resolvidas(self):
+        estado = criar_estado()
+        jogador_2 = estado.obter_jogadores()[1]
+        jogador_2.usar_carta(jogador_2.obter_mao()[0])
+        avaliador = AvaliadorEstado(0)
+        valor_inicial = avaliador._avaliar_cartas_restantes(estado)
+
+        Jogo(estado).resolver_proxima_disputa()
+
+        valor_reduzido = avaliador._avaliar_cartas_restantes(estado)
+        self.assertGreater(valor_inicial, valor_reduzido)
+        self.assertGreater(valor_reduzido, 0)
+        self.assertEqual(
+            valor_reduzido,
+            -AvaliadorEstado(1)._avaliar_cartas_restantes(estado),
+        )
+
+    def test_ultimas_cartas_valem_mais_que_cartas_abundantes(self):
+        estado_abundante = criar_estado()
+        jogador_2 = estado_abundante.obter_jogadores()[1]
+        jogador_2.usar_carta(jogador_2.obter_mao()[0])
+        valor_oitava = AvaliadorEstado(0)._avaliar_cartas_restantes(
+            estado_abundante
+        )
+
+        estado_escasso = criar_estado()
+        jogadores = estado_escasso.obter_jogadores()
+        for _ in range(7):
+            jogadores[0].usar_carta(jogadores[0].obter_mao()[0])
+        for _ in range(8):
+            jogadores[1].usar_carta(jogadores[1].obter_mao()[0])
+        valor_ultima = AvaliadorEstado(0)._avaliar_cartas_restantes(
+            estado_escasso
+        )
+
+        self.assertGreater(valor_ultima, valor_oitava)
 
     def test_estimativa_fica_abaixo_do_valor_terminal(self):
         estado = criar_estado_manual()

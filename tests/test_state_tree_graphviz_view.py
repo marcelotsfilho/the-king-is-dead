@@ -8,6 +8,7 @@ from model.game_setup import ConfiguracaoJogo
 from model.game_state_serializer import SerializadorEstadoJogo
 from model.legal_move import Jogada
 from model.legal_move_executor import ExecutorJogada
+from model.state_evaluator import VERSAO_HEURISTICA
 from model.state_tree import ArvoreEstados
 from view.state_tree_graphviz_view import VisaoArvoreGraphviz
 
@@ -26,8 +27,9 @@ class TesteVisaoArvoreGraphviz(unittest.TestCase):
         arvore = criar_arvore_com_passe()
         arvore.obter_no_atual().calcular_avaliacao_heuristica(1)
         conteudo = VisaoArvoreGraphviz().gerar_dot(arvore)
-        self.assertIn("H(J1, v1):", conteudo)
-        self.assertIn("H(J2, v1):", conteudo)
+        versao = str(VERSAO_HEURISTICA)
+        self.assertIn("H(J1, v" + versao + "):", conteudo)
+        self.assertIn("H(J2, v" + versao + "):", conteudo)
 
     def test_dot_possui_todos_os_nos_e_a_ligacao(self):
         arvore = criar_arvore_com_passe()

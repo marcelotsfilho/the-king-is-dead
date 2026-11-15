@@ -198,6 +198,18 @@ class TesteAgenteMinimax(unittest.TestCase):
             ExecutorJogada().executar(estado, com_poda)
             self.assertEqual(serializador.serializar(estado), dados_antes)
 
+    def test_preserva_carta_quando_nao_existe_vantagem_para_joga_la(self):
+        estado = criar_estado()
+        estado.tabuleiro.obter_regiao("Moray").adicionar_seguidores(
+            Faccao.ESCOCESES
+        )
+        for jogador in estado.obter_jogadores():
+            jogador.adicionar_carta_mao(CartaAcao(TipoCartaAcao.REUNIR))
+
+        jogada = AgenteMinimax(0).escolher_jogada(estado, 1, False)
+
+        self.assertTrue(jogada.eh_passe())
+
 
 if __name__ == "__main__":
     unittest.main()

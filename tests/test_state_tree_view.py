@@ -4,6 +4,7 @@ from model.board import Tabuleiro
 from model.dispute_track import TrilhaDisputas
 from model.game_state import EstadoJogo
 from model.player import Jogador
+from model.state_evaluator import VERSAO_HEURISTICA
 from model.state_tree import ArvoreEstados
 from model.supply import ReservaSeguidores
 from view.state_tree_view import VisaoArvoreEstados
@@ -42,7 +43,7 @@ class TesteVisaoArvoreEstados(unittest.TestCase):
         self.assertIn("[CAMINHO] Nível 0 - Estado inicial", texto)
         self.assertIn("[CAMINHO] Nível 1 - Passar.", texto)
         self.assertIn("[ATUAL] Nível 2 - Passar.", texto)
-        self.assertIn("H(J1, v1):", texto)
+        self.assertIn("H(J1, v" + str(VERSAO_HEURISTICA) + "):", texto)
 
     def test_mostra_quais_nos_estao_expandidos(self):
         arvore = criar_arvore_com_tres_niveis()
