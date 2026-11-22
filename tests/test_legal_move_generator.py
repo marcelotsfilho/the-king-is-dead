@@ -1,10 +1,14 @@
 import unittest
+from random import Random
+from unittest.mock import patch
 
 from model.action_card import CartaAcao
 from model.board import Tabuleiro
 from model.dispute_track import TrilhaDisputas
 from model.enums import Faccao, FaseTurno, TipoCartaAcao
+from model.game import Jogo
 from model.game_state import EstadoJogo
+from model.game_state_serializer import SerializadorEstadoJogo
 from model.legal_move_executor import ExecutorJogada
 from model.legal_move_generator import GeradorJogadas
 from model.player import Jogador
@@ -78,6 +82,32 @@ class TesteGeradorJogadas(unittest.TestCase):
             resultado = self.executor.executar(estado, jogada)
             self.assertIsNot(resultado, estado)
 
+    def test_geracao_com_estados_reusa_resultados_legais(self):
+        estado = criar_estado_manual(2)
+        jogador = estado.obter_jogador_atual()
+        jogador.adicionar_carta_mao(
+            CartaAcao(TipoCartaAcao.APOIO_ESCOCES)
+        )
+        estado.reserva.retirar(Faccao.ESCOCESES)
+        estado.tabuleiro.obter_regiao("Moray").adicionar_seguidores(
+            Faccao.ESCOCESES
+        )
+
+        pares = list(self.gerador.gerar_com_estados(estado))
+        jogadas = self.gerador.gerar(estado)
+
+        self.assertEqual(len(pares), len(jogadas))
+        for (jogada_com_estado, _), jogada in zip(pares, jogadas):
+            self.assertTrue(jogada_com_estado.possui_mesmos_dados(jogada))
+        for jogada, estado_resultante in pares:
+            esperado = self.executor.executar(estado, jogada)
+            self.assertTrue(
+                SerializadorEstadoJogo().possuem_mesmo_estado(
+                    estado_resultante,
+                    esperado,
+                )
+            )
+
     def test_cartas_repetidas_nao_duplicam_as_jogadas(self):
         estado = criar_estado_manual()
         jogador = estado.obter_jogador_atual()
@@ -95,6 +125,36 @@ class TesteGeradorJogadas(unittest.TestCase):
                 jogadas_reunir.append(jogada)
 
         self.assertEqual(len(jogadas_reunir), 1)
+
+    def test_convocacoes_reaproveitam_o_efeito_da_carta_em_estados_independentes(self):
+        estado = criar_estado_manual()
+        jogador = estado.obter_jogador_atual()
+        jogador.adicionar_carta_mao(CartaAcao(TipoCartaAcao.REUNIR))
+        moray = estado.tabuleiro.obter_regiao("Moray")
+        gwynedd = estado.tabuleiro.obter_regiao("Gwynedd")
+        moray.adicionar_seguidores(Faccao.ESCOCESES)
+        gwynedd.adicionar_seguidores(Faccao.GALESES)
+        serializador = SerializadorEstadoJogo()
+        original = serializador.serializar(estado)
+
+        with patch.object(
+            Jogo, "jogar_carta", autospec=True, side_effect=Jogo.jogar_carta
+        ) as jogar:
+            pares = list(self.gerador.gerar_com_estados(estado))
+        self.assertEqual(len(pares), 3)
+        jogar.assert_called_once()
+
+        sorteada, resultado_sorteado = self.gerador.sortear_com_estado(
+            estado, Random(0)
+        )
+        self.assertTrue(sorteada.eh_carta())
+        pares.append((sorteada, resultado_sorteado))
+        for jogada, resultado in pares:
+            esperado = self.executor.executar(estado, jogada)
+            self.assertEqual(
+                serializador.serializar(resultado), serializador.serializar(esperado)
+            )
+        self.assertEqual(serializador.serializar(estado), original)
 
     def test_negociar_sem_efeito_nao_exige_disco_disponivel(self):
         estado = criar_estado_manual()

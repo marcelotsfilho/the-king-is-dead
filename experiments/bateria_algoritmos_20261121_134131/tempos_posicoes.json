@@ -1,0 +1,110 @@
+[
+  {
+    "position": "opening_seed42",
+    "algorithm": "minimax1",
+    "seconds": 4.521293199999491,
+    "nodes": 14698,
+    "leaves": 14697,
+    "simulations": 0,
+    "move": "Jogar Scottish Support em Strathclyde e convocar escoceses de Moray."
+  },
+  {
+    "position": "opening_seed42",
+    "algorithm": "mc100",
+    "seconds": 1.4682119000062812,
+    "nodes": 3443,
+    "leaves": 100,
+    "simulations": 100,
+    "move": "Jogar Assemble colocando escoceses em Warwick, galeses em Lancaster, ingleses em Essex e convocar galeses de Essex."
+  },
+  {
+    "position": "opening_seed42",
+    "algorithm": "mc300",
+    "seconds": 4.214891899988288,
+    "nodes": 10295,
+    "leaves": 300,
+    "simulations": 300,
+    "move": "Jogar Outmanoeuvre trocando ingleses de Warwick por galeses de Lancaster e convocar escoceses de Devon."
+  },
+  {
+    "position": "opening_seed42",
+    "algorithm": "mc1000",
+    "seconds": 11.022209299990209,
+    "nodes": 34501,
+    "leaves": 1000,
+    "simulations": 1000,
+    "move": "Jogar Outmanoeuvre trocando escoceses de Northumbria por escoceses de Warwick e convocar escoceses de Warwick."
+  },
+  {
+    "position": "seed0_turn8",
+    "algorithm": "minimax1",
+    "seconds": 0.8312257000070531,
+    "nodes": 2844,
+    "leaves": 2843,
+    "simulations": 0,
+    "move": "Jogar Manoeuvre trocando ingleses de Moray por galeses de Strathclyde e convocar escoceses de Strathclyde."
+  },
+  {
+    "position": "seed0_turn8",
+    "algorithm": "mc100",
+    "seconds": 0.9348239999962971,
+    "nodes": 2617,
+    "leaves": 100,
+    "simulations": 100,
+    "move": "Jogar Assemble colocando galeses em Gwynedd e convocar ingleses de Northumbria."
+  },
+  {
+    "position": "seed0_turn8",
+    "algorithm": "mc300",
+    "seconds": 2.2486271999950986,
+    "nodes": 7959,
+    "leaves": 300,
+    "simulations": 300,
+    "move": "Jogar Assemble colocando galeses em Gwynedd e convocar galeses de Gwynedd."
+  },
+  {
+    "position": "seed0_turn8",
+    "algorithm": "mc1000",
+    "seconds": 6.858486699988134,
+    "nodes": 26194,
+    "leaves": 1000,
+    "simulations": 1000,
+    "move": "Jogar Assemble colocando galeses em Strathclyde e convocar escoceses de Strathclyde."
+  },
+  {
+    "position": "seed0_turn16",
+    "algorithm": "minimax1",
+    "seconds": 0.00027019999106414616,
+    "nodes": 2,
+    "leaves": 1,
+    "simulations": 0,
+    "move": "Passar."
+  },
+  {
+    "position": "seed0_turn16",
+    "algorithm": "mc100",
+    "seconds": 0.35658459999831393,
+    "nodes": 1852,
+    "leaves": 100,
+    "simulations": 100,
+    "move": "Passar."
+  },
+  {
+    "position": "seed0_turn16",
+    "algorithm": "mc300",
+    "seconds": 0.9895455000223592,
+    "nodes": 5548,
+    "leaves": 300,
+    "simulations": 300,
+    "move": "Passar."
+  },
+  {
+    "position": "seed0_turn16",
+    "algorithm": "mc1000",
+    "seconds": 3.6132044999976642,
+    "nodes": 18599,
+    "leaves": 1000,
+    "simulations": 1000,
+    "move": "Passar."
+  }
+]

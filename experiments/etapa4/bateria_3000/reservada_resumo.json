@@ -1,0 +1,34 @@
+{
+  "selecionada": {
+    "resultados": {
+      "vitoria": 124,
+      "derrota": 75,
+      "empate": 1
+    },
+    "sementes": 100,
+    "taxa_vitoria": 0.62,
+    "intervalo95": [
+      0.555,
+      0.685
+    ]
+  },
+  "anterior": {
+    "resultados": {
+      "derrota": 104,
+      "vitoria": 96
+    },
+    "sementes": 100,
+    "taxa_vitoria": 0.48,
+    "intervalo95": [
+      0.415,
+      0.545
+    ]
+  },
+  "diferenca_selecionada_menos_anterior": {
+    "taxa_vitoria": 0.14,
+    "intervalo95": [
+      0.05,
+      0.23
+    ]
+  }
+}

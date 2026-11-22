@@ -1,0 +1,191 @@
+{
+  "versao": 1,
+  "tabuleiro": {
+    "regioes": [
+      {
+        "nome": "Moray",
+        "seguidores": {
+          "ESCOCESES": 2,
+          "GALESES": 2,
+          "INGLESES": 0
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Strathclyde",
+        "seguidores": {
+          "ESCOCESES": 1,
+          "GALESES": 0,
+          "INGLESES": 3
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Northumbria",
+        "seguidores": {
+          "ESCOCESES": 1,
+          "GALESES": 0,
+          "INGLESES": 3
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Lancaster",
+        "seguidores": {
+          "ESCOCESES": 1,
+          "GALESES": 2,
+          "INGLESES": 1
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Gwynedd",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 4,
+          "INGLESES": 0
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Warwick",
+        "seguidores": {
+          "ESCOCESES": 1,
+          "GALESES": 1,
+          "INGLESES": 2
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Essex",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 2,
+          "INGLESES": 2
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Devon",
+        "seguidores": {
+          "ESCOCESES": 1,
+          "GALESES": 0,
+          "INGLESES": 3
+        },
+        "controlador": null,
+        "instavel": false
+      }
+    ]
+  },
+  "trilha_disputas": {
+    "cartas": [
+      {
+        "nome_regiao": "Lancaster",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Warwick",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Devon",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Gwynedd",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Moray",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Northumbria",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Strathclyde",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Essex",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      }
+    ]
+  },
+  "jogadores": [
+    {
+      "nome": "Jogador 1",
+      "mao": [
+        "APOIO_ESCOCES",
+        "APOIO_GALES",
+        "APOIO_INGLES",
+        "NEGOCIAR",
+        "MANOBRAR",
+        "SUPERAR_MANOBRA",
+        "REUNIR",
+        "REUNIR"
+      ],
+      "descarte": [],
+      "corte": {
+        "ESCOCESES": 0,
+        "GALESES": 1,
+        "INGLESES": 1
+      },
+      "disco_negociacao_disponivel": true
+    },
+    {
+      "nome": "Jogador 2",
+      "mao": [
+        "APOIO_ESCOCES",
+        "APOIO_GALES",
+        "APOIO_INGLES",
+        "NEGOCIAR",
+        "MANOBRAR",
+        "SUPERAR_MANOBRA",
+        "REUNIR",
+        "REUNIR"
+      ],
+      "descarte": [],
+      "corte": {
+        "ESCOCESES": 2,
+        "GALESES": 0,
+        "INGLESES": 0
+      },
+      "disco_negociacao_disponivel": true
+    }
+  ],
+  "reserva": {
+    "ESCOCESES": 7,
+    "GALESES": 4,
+    "INGLESES": 1
+  },
+  "indice_jogador_atual": 0,
+  "passes_consecutivos": 0,
+  "historico_vitorias_faccoes": [],
+  "ultima_acao": null,
+  "ultimo_jogador_que_agiu": null,
+  "ordem_jogadores_sem_cartas": [],
+  "fase_turno": "ESCOLHER_ACAO",
+  "carta_em_execucao": null,
+  "finalizado": false,
+  "vencedor": null,
+  "faccao_vencedora": null,
+  "motivo_encerramento": null,
+  "ultima_mensagem": "Partida iniciada."
+}

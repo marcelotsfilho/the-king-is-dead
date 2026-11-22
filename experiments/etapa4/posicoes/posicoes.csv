@@ -1,0 +1,17 @@
+cenario,algoritmo,acao,jogada,descricao,pontuacao,resultado
+passe_favoravel,jogada_legal,passe,"{""tipo"": ""PASSE""}",Passar.,,vitoria
+passe_favoravel,jogada_legal,carta,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar galeses de Devon.,,vitoria
+passe_favoravel,jogada_legal,carta,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar ingleses de Devon.,,vitoria
+passe_favoravel,minimax,passe,"{""tipo"": ""PASSE""}",Passar.,999999,vitoria
+passe_favoravel,alfa_beta,passe,"{""tipo"": ""PASSE""}",Passar.,999999,vitoria
+passe_favoravel,monte_carlo_3000,carta,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar ingleses de Devon.,1.0,vitoria
+passe_favoravel,politica_inicial,passe,"{""tipo"": ""PASSE""}",Passar.,0.0,vitoria
+passe_favoravel,q_learning,passe,"{""tipo"": ""PASSE""}",Passar.,0.0,vitoria
+carta_necessaria,jogada_legal,passe,"{""tipo"": ""PASSE""}",Passar.,,derrota
+carta_necessaria,jogada_legal,carta,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar galeses de Devon.,,derrota
+carta_necessaria,jogada_legal,carta,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar ingleses de Devon.,,vitoria
+carta_necessaria,minimax,carta,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar ingleses de Devon.,82,vitoria
+carta_necessaria,alfa_beta,carta,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar ingleses de Devon.,82,vitoria
+carta_necessaria,monte_carlo_3000,carta,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar ingleses de Devon.,1.0,vitoria
+carta_necessaria,politica_inicial,carta,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar ingleses de Devon.,0.0,vitoria
+carta_necessaria,q_learning,carta,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",Jogar English Support em Devon e convocar ingleses de Devon.,0.0,vitoria

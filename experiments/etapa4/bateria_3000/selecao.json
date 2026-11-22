@@ -1,0 +1,238 @@
+{
+  "criterio_sustentado": true,
+  "escolhido": {
+    "semente": 30000,
+    "treinadas": 500,
+    "partidas": 200,
+    "vitorias": 126,
+    "derrotas": 74,
+    "empates": 0,
+    "interrompidas": 0
+  },
+  "origem_tabela": "semente_30000/checkpoints/00500.json",
+  "execucoes": [
+    {
+      "semente": 20000,
+      "primeiro_sustentado": null,
+      "pontos": [
+        {
+          "semente": 20000,
+          "treinadas": 0,
+          "partidas": 200,
+          "vitorias": 99,
+          "derrotas": 99,
+          "empates": 2,
+          "interrompidas": 0
+        },
+        {
+          "semente": 20000,
+          "treinadas": 500,
+          "partidas": 200,
+          "vitorias": 105,
+          "derrotas": 95,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 20000,
+          "treinadas": 1000,
+          "partidas": 200,
+          "vitorias": 106,
+          "derrotas": 94,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 20000,
+          "treinadas": 1500,
+          "partidas": 200,
+          "vitorias": 110,
+          "derrotas": 90,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 20000,
+          "treinadas": 2000,
+          "partidas": 200,
+          "vitorias": 116,
+          "derrotas": 84,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 20000,
+          "treinadas": 2500,
+          "partidas": 200,
+          "vitorias": 109,
+          "derrotas": 91,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 20000,
+          "treinadas": 3000,
+          "partidas": 200,
+          "vitorias": 101,
+          "derrotas": 99,
+          "empates": 0,
+          "interrompidas": 0
+        }
+      ]
+    },
+    {
+      "semente": 30000,
+      "primeiro_sustentado": {
+        "semente": 30000,
+        "treinadas": 500,
+        "partidas": 200,
+        "vitorias": 126,
+        "derrotas": 74,
+        "empates": 0,
+        "interrompidas": 0
+      },
+      "pontos": [
+        {
+          "semente": 30000,
+          "treinadas": 0,
+          "partidas": 200,
+          "vitorias": 99,
+          "derrotas": 99,
+          "empates": 2,
+          "interrompidas": 0
+        },
+        {
+          "semente": 30000,
+          "treinadas": 500,
+          "partidas": 200,
+          "vitorias": 126,
+          "derrotas": 74,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 30000,
+          "treinadas": 1000,
+          "partidas": 200,
+          "vitorias": 115,
+          "derrotas": 85,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 30000,
+          "treinadas": 1500,
+          "partidas": 200,
+          "vitorias": 113,
+          "derrotas": 87,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 30000,
+          "treinadas": 2000,
+          "partidas": 200,
+          "vitorias": 118,
+          "derrotas": 82,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 30000,
+          "treinadas": 2500,
+          "partidas": 200,
+          "vitorias": 123,
+          "derrotas": 77,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 30000,
+          "treinadas": 3000,
+          "partidas": 200,
+          "vitorias": 108,
+          "derrotas": 92,
+          "empates": 0,
+          "interrompidas": 0
+        }
+      ]
+    },
+    {
+      "semente": 40000,
+      "primeiro_sustentado": {
+        "semente": 40000,
+        "treinadas": 500,
+        "partidas": 200,
+        "vitorias": 112,
+        "derrotas": 88,
+        "empates": 0,
+        "interrompidas": 0
+      },
+      "pontos": [
+        {
+          "semente": 40000,
+          "treinadas": 0,
+          "partidas": 200,
+          "vitorias": 99,
+          "derrotas": 99,
+          "empates": 2,
+          "interrompidas": 0
+        },
+        {
+          "semente": 40000,
+          "treinadas": 500,
+          "partidas": 200,
+          "vitorias": 112,
+          "derrotas": 88,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 40000,
+          "treinadas": 1000,
+          "partidas": 200,
+          "vitorias": 113,
+          "derrotas": 87,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 40000,
+          "treinadas": 1500,
+          "partidas": 200,
+          "vitorias": 115,
+          "derrotas": 84,
+          "empates": 1,
+          "interrompidas": 0
+        },
+        {
+          "semente": 40000,
+          "treinadas": 2000,
+          "partidas": 200,
+          "vitorias": 120,
+          "derrotas": 80,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 40000,
+          "treinadas": 2500,
+          "partidas": 200,
+          "vitorias": 113,
+          "derrotas": 87,
+          "empates": 0,
+          "interrompidas": 0
+        },
+        {
+          "semente": 40000,
+          "treinadas": 3000,
+          "partidas": 200,
+          "vitorias": 134,
+          "derrotas": 66,
+          "empates": 0,
+          "interrompidas": 0
+        }
+      ]
+    }
+  ]
+}

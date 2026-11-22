@@ -1,0 +1,62 @@
+[
+  {
+    "depth": 1,
+    "algorithm": "minimax",
+    "seconds": 0.0014310000115074217,
+    "nodes": 4,
+    "leaves": 3,
+    "cuts": 0,
+    "score": 0,
+    "move": "Passar."
+  },
+  {
+    "depth": 1,
+    "algorithm": "alfa-beta",
+    "seconds": 0.0016958999913185835,
+    "nodes": 4,
+    "leaves": 3,
+    "cuts": 0,
+    "score": 0,
+    "move": "Passar."
+  },
+  {
+    "depth": 2,
+    "algorithm": "minimax",
+    "seconds": 0.0026935999921988696,
+    "nodes": 11,
+    "leaves": 7,
+    "cuts": 0,
+    "score": 0,
+    "move": "Passar."
+  },
+  {
+    "depth": 2,
+    "algorithm": "alfa-beta",
+    "seconds": 0.0023193999950308353,
+    "nodes": 9,
+    "leaves": 5,
+    "cuts": 2,
+    "score": 0,
+    "move": "Passar."
+  },
+  {
+    "depth": 3,
+    "algorithm": "minimax",
+    "seconds": 0.00717239998630248,
+    "nodes": 34,
+    "leaves": 23,
+    "cuts": 0,
+    "score": 0,
+    "move": "Passar."
+  },
+  {
+    "depth": 3,
+    "algorithm": "alfa-beta",
+    "seconds": 0.00408469999092631,
+    "nodes": 28,
+    "leaves": 19,
+    "cuts": 4,
+    "score": 0,
+    "move": "Passar."
+  }
+]

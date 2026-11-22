@@ -46,6 +46,13 @@ class Tabuleiro:
         """Retorna uma cópia do catálogo de regiões."""
         return self._regioes.copy()
 
+    def obter_regioes_com_seguidores(self):
+        """Retorna as regiões em disputa que possuem seguidores."""
+        return [
+            regiao for regiao in self._regioes.values()
+            if not regiao.esta_resolvida() and regiao.total_de_seguidores() > 0
+        ]
+
     def obter_nomes_das_regioes(self):
         """Retorna os nomes das oito regiões, sem indicar ordem de disputa."""
         nomes = []

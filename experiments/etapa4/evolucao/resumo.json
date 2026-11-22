@@ -1,0 +1,98 @@
+{
+  "posicoes": {
+    "inedita/alfa_beta_3": {
+      "otimas": 22,
+      "mudancas": 0,
+      "limites": 0,
+      "n": 24,
+      "p95_ms": 582.994,
+      "max_ms": 968.411
+    },
+    "inedita/q": {
+      "otimas": 15,
+      "mudancas": 0,
+      "limites": 0,
+      "n": 24,
+      "p95_ms": 3.076,
+      "max_ms": 3.594
+    },
+    "inedita/q_com_busca": {
+      "otimas": 24,
+      "mudancas": 9,
+      "limites": 0,
+      "n": 24,
+      "p95_ms": 34.403,
+      "max_ms": 88.253
+    },
+    "regressao/alfa_beta_3": {
+      "otimas": 10,
+      "mudancas": 0,
+      "limites": 0,
+      "n": 11,
+      "p95_ms": 18.244,
+      "max_ms": 18.244
+    },
+    "regressao/q": {
+      "otimas": 8,
+      "mudancas": 0,
+      "limites": 0,
+      "n": 11,
+      "p95_ms": 1.208,
+      "max_ms": 1.208
+    },
+    "regressao/q_com_busca": {
+      "otimas": 11,
+      "mudancas": 3,
+      "limites": 0,
+      "n": 11,
+      "p95_ms": 6.353,
+      "max_ms": 6.353
+    }
+  },
+  "partidas_politica_inicial": {
+    "q": {
+      "resultados": {
+        "derrota": 76,
+        "vitoria": 124
+      },
+      "mudancas": 0,
+      "n": 3963,
+      "p95_ms": 8.249,
+      "max_ms": 11.964
+    },
+    "q_com_busca": {
+      "resultados": {
+        "derrota": 76,
+        "vitoria": 124
+      },
+      "mudancas": 2,
+      "n": 3964,
+      "p95_ms": 8.135,
+      "max_ms": 60.617
+    },
+    "mudancas_de_resultado": {}
+  },
+  "partidas_alfa_beta": {
+    "q": {
+      "resultados": {
+        "vitoria": 4,
+        "derrota": 4
+      },
+      "mudancas": 0,
+      "n": 158,
+      "p95_ms": 11.14,
+      "max_ms": 27.945
+    },
+    "q_com_busca": {
+      "resultados": {
+        "vitoria": 4,
+        "derrota": 4
+      },
+      "mudancas": 0,
+      "n": 158,
+      "p95_ms": 6.824,
+      "max_ms": 27.095
+    },
+    "mudancas_de_resultado": {}
+  }
+}

@@ -1,21 +1,13 @@
 import pygame
-from view.state_tree_view import formatar_avaliacao_heuristica
-
-from model.enums import Faccao, FaseTurno, TipoJogador
+from model.action_card import eh_carta_de_apoio, obter_dados_da_carta_de_apoio
+from model.enums import Faccao, FaseTurno, TipoCartaAcao, TipoJogador
+from model.match_settings import SIMULACOES_MONTE_CARLO_DISPONIVEIS
 from view.constants import (
     ALTURA_CARTA_ACAO,
     ALTURA_JANELA,
     ALTURA_REGIAO,
     CORES_FACCOES,
-    COR_BORDA,
-    COR_BOTAO,
-    COR_BOTAO_DESATIVADO,
-    COR_BRANCA,
-    COR_DE_FUNDO,
     COR_FRONTEIRA,
-    COR_INSTABILIDADE,
-    COR_PAINEL,
-    COR_TEXTO,
     ESPACO_ENTRE_CARTAS,
     LARGURA_CARTA_ACAO,
     LARGURA_JANELA,
@@ -26,12 +18,26 @@ from view.constants import (
     ROTAS_FRONTEIRAS,
     TITULO_JANELA,
 )
+from view.medieval_theme import FUNDO, MARFIM, OURO, OURO_ESCURO, TINTA, TemaMedieval
+from view.state_tree_view import formatar_avaliacao_heuristica
 
 
 _FILHOS_POR_PAGINA_ARVORE = 7
 _ACAO_NOVO_JOGO = "novo_jogo"
 _ACAO_CONTINUAR_JOGO = "continuar_jogo"
 _ACAO_SAIR = "sair"
+_MARCAS_FACCOES = {
+    Faccao.ESCOCESES: "✕",
+    Faccao.GALESES: "⚜",
+    Faccao.INGLESES: "♛",
+}
+_SIMBOLOS_CARTAS = {
+    TipoCartaAcao.NEGOCIAR: "⇄",
+    TipoCartaAcao.MANOBRAR: "♞",
+    TipoCartaAcao.SUPERAR_MANOBRA: "↟",
+    TipoCartaAcao.REUNIR: "♜",
+}
+_MAPA = pygame.Rect(14, 68, 895, 386)
 
 
 class VisaoJogo:
@@ -42,48 +48,39 @@ class VisaoJogo:
         self.janela = pygame.display.set_mode(tamanho_janela, pygame.RESIZABLE)
         self.tela = pygame.Surface((LARGURA_JANELA, ALTURA_JANELA))
         pygame.display.set_caption(TITULO_JANELA)
-        self.fonte_titulo = pygame.font.Font(None, 38)
-        self.fonte_titulo_menu = pygame.font.Font(None, 64)
-        self.fonte_normal = pygame.font.Font(None, 26)
-        self.fonte_pequena = pygame.font.Font(None, 20)
-        self.retangulo_novo_jogo = pygame.Rect(420, 410, 360, 70)
-        self.retangulo_continuar_jogo = pygame.Rect(420, 510, 360, 70)
-        self.retangulo_sair = pygame.Rect(420, 610, 360, 70)
-        self.retangulo_iniciar_partida = pygame.Rect(420, 650, 360, 70)
-        self.retangulo_voltar_menu = pygame.Rect(420, 750, 360, 70)
-        self.retangulo_pausar_ia = pygame.Rect(650, 35, 240, 45)
-        self.retangulo_botao_passar = pygame.Rect(930, 680, 240, 52)
-        self.retangulo_botao_cancelar = pygame.Rect(930, 750, 115, 45)
-        self.retangulo_botao_sem_efeito = pygame.Rect(1055, 750, 115, 45)
-        self.retangulo_botao_salvar = pygame.Rect(805, 925, 110, 45)
-        self.retangulo_botao_arvore = pygame.Rect(930, 925, 115, 45)
-        self.retangulo_botao_voltar_jogada = pygame.Rect(
-            1055,
-            925,
-            115,
-            45,
-        )
-        self.retangulo_fechar_arvore = pygame.Rect(1030, 45, 120, 45)
-        self.retangulo_exportar_graphviz = pygame.Rect(800, 45, 210, 45)
-        self.retangulo_gerar_opcoes = pygame.Rect(40, 940, 220, 50)
-        self.retangulo_campo_pagina = pygame.Rect(650, 940, 55, 50)
-        self.retangulo_ir_pagina = pygame.Rect(715, 940, 55, 50)
-        self.retangulo_pagina_anterior = pygame.Rect(
-            785,
-            940,
-            120,
-            50,
-        )
-        self.retangulo_proxima_pagina = pygame.Rect(
-            920,
-            940,
-            120,
-            50,
-        )
+        self.tema = TemaMedieval()
+        serifada = "georgia,dejavuserif,liberationserif"
+        self.fonte_titulo = pygame.font.SysFont(serifada, 36, bold=True)
+        self.fonte_titulo_menu = pygame.font.SysFont(serifada, 72, bold=True)
+        self.fonte_normal = pygame.font.SysFont(serifada, 24, bold=True)
+        self.fonte_pequena = pygame.font.SysFont("arial,dejavusans,liberationsans", 17)
+        self.fonte_legenda = pygame.font.SysFont(serifada, 23, italic=True)
+        self.fonte_rotulo = pygame.font.SysFont(serifada, 19, bold=True)
+        self.fonte_botao_menu = pygame.font.SysFont(serifada, 29, bold=True)
+        self.fonte_simbolo = pygame.font.SysFont("segoeuisymbol,dejavusans", 33)
+        self.retangulo_novo_jogo = pygame.Rect(327, 465, 546, 83)
+        self.retangulo_continuar_jogo = pygame.Rect(327, 575, 546, 83)
+        self.retangulo_sair = pygame.Rect(327, 685, 546, 83)
+        self.retangulo_iniciar_partida = pygame.Rect(345, 730, 510, 76)
+        self.retangulo_voltar_menu = pygame.Rect(345, 824, 510, 64)
+        self.retangulo_pausar_ia = pygame.Rect(922, 567, 262, 43)
+        self.retangulo_botao_passar = pygame.Rect(922, 620, 262, 56)
+        self.retangulo_botao_cancelar = pygame.Rect(922, 686, 125, 45)
+        self.retangulo_botao_sem_efeito = pygame.Rect(1055, 686, 129, 45)
+        self.retangulo_botao_salvar = pygame.Rect(746, 929, 137, 52)
+        self.retangulo_botao_arvore = pygame.Rect(894, 929, 137, 52)
+        self.retangulo_botao_voltar_jogada = pygame.Rect(1042, 929, 137, 52)
+        self.retangulo_fechar_arvore = pygame.Rect(1043, 85, 137, 51)
+        self.retangulo_exportar_graphviz = pygame.Rect(798, 85, 230, 51)
+        self.retangulo_gerar_opcoes = pygame.Rect(21, 948, 237, 57)
+        self.retangulo_campo_pagina = pygame.Rect(666, 951, 70, 51)
+        self.retangulo_ir_pagina = pygame.Rect(745, 951, 56, 51)
+        self.retangulo_pagina_anterior = pygame.Rect(813, 951, 170, 51)
+        self.retangulo_proxima_pagina = pygame.Rect(995, 951, 184, 51)
         self.retangulos_faccoes = {
-            Faccao.ESCOCESES: pygame.Rect(40, 925, 180, 45),
-            Faccao.GALESES: pygame.Rect(235, 925, 180, 45),
-            Faccao.INGLESES: pygame.Rect(430, 925, 180, 45),
+            Faccao.ESCOCESES: pygame.Rect(21, 929, 205, 52),
+            Faccao.GALESES: pygame.Rect(237, 929, 205, 52),
+            Faccao.INGLESES: pygame.Rect(453, 929, 205, 52),
         }
 
     def _calcular_tamanho_inicial_da_janela(self):
@@ -133,7 +130,7 @@ class VisaoJogo:
             (largura, altura),
         )
 
-        self.janela.fill(COR_DE_FUNDO)
+        self.janela.fill(FUNDO)
         self.janela.blit(tela_redimensionada, (deslocamento_x, deslocamento_y))
 
     def _converter_para_posicao_logica(self, posicao):
@@ -223,11 +220,11 @@ class VisaoJogo:
 
     def _obter_controles_configuracao(self, indice):
         """Compartilha as mesmas áreas entre desenho e leitura dos cliques."""
-        posicao_x = 200 + indice * 440
+        posicao_x = 101 + indice * 544
         return {
-            "tipo": pygame.Rect(posicao_x, 365, 360, 55),
-            "diminuir": pygame.Rect(posicao_x + 35, 475, 55, 45),
-            "aumentar": pygame.Rect(posicao_x + 270, 475, 55, 45),
+            "tipo": pygame.Rect(posicao_x, 338, 454, 64),
+            "diminuir": pygame.Rect(posicao_x + 43, 473, 66, 51),
+            "aumentar": pygame.Rect(posicao_x + 345, 473, 66, 51),
         }
 
     def obter_acao_configuracao(self, posicao):
@@ -297,8 +294,7 @@ class VisaoJogo:
     def obter_posicao_trilha_clicada(self, posicao):
         posicao_logica = self._converter_para_posicao_logica(posicao)
         for indice in range(8):
-            retangulo = pygame.Rect(40 + indice * 110, 490, 102, 62)
-            if retangulo.collidepoint(posicao_logica):
+            if self._retangulo_trilha(indice).collidepoint(posicao_logica):
                 return indice + 1
         return None
 
@@ -308,10 +304,6 @@ class VisaoJogo:
             if self.retangulos_faccoes[faccao].collidepoint(posicao_logica):
                 return faccao
         return None
-
-    def _desenhar_titulo(self):
-        texto = self.fonte_titulo.render(TITULO_JANELA, True, COR_TEXTO)
-        self.tela.blit(texto, (40, 35))
 
     def _obter_fronteiras_sem_repeticao(self, tabuleiro):
         """Obtém cada fronteira uma vez, apesar de ela ser bidirecional."""
@@ -378,13 +370,6 @@ class VisaoJogo:
 
         return [ponto_origem] + pontos_intermediarios + [ponto_destino]
 
-    def _calcular_ponto_na_borda(self, nome_origem, nome_destino):
-        """Encontra onde a linha entre duas regiões toca a primeira caixa."""
-        centro_destino = self._obter_centro_regiao(nome_destino)
-        return self._calcular_ponto_na_borda_em_direcao(
-            nome_origem, centro_destino
-        )
-
     def _desenhar_ponta_de_seta(self, ponta, origem):
         """Desenha uma pequena ponta triangular voltada para uma região."""
         diferenca_x = origem[0] - ponta[0]
@@ -417,6 +402,7 @@ class VisaoJogo:
                 nome_origem, nome_destino
             )
 
+            pygame.draw.lines(self.tela, (49, 41, 27), False, pontos, 6)
             pygame.draw.lines(
                 self.tela,
                 COR_FRONTEIRA,
@@ -446,673 +432,440 @@ class VisaoJogo:
         return None
 
     def _quebrar_texto(self, conteudo, largura):
-        palavras = conteudo.split()
         linhas = []
         linha = ""
-
-        for palavra in palavras:
-            tentativa = palavra if not linha else linha + " " + palavra
-            if self.fonte_pequena.size(tentativa)[0] <= largura:
-                linha = tentativa
-            else:
+        for palavra in conteudo.split():
+            tentativa = f"{linha} {palavra}" if linha else palavra
+            if linha and self.fonte_pequena.size(tentativa)[0] > largura:
                 linhas.append(linha)
                 linha = palavra
+            else:
+                linha = tentativa
         if linha:
             linhas.append(linha)
         return linhas
 
-    def _desenhar_texto_centralizado(
-        self, conteudo, retangulo, cor, pequena=False
-    ):
-        fonte = self.fonte_pequena if pequena else self.fonte_normal
+    def _texto(self, conteudo, posicao, fonte, cor, alinhamento="topleft", largura=None):
         texto = fonte.render(conteudo, True, cor)
-        centro = texto.get_rect(center=retangulo.center)
-        self.tela.blit(texto, centro)
+        if largura and texto.get_width() > largura:
+            texto = pygame.transform.smoothscale(texto, (largura, texto.get_height()))
+        self.tela.blit(texto, texto.get_rect(**{alinhamento: posicao}))
 
-    def _desenhar_botao_menu(self, retangulo, texto, ativo=True):
-        cor = COR_BOTAO if ativo else COR_BOTAO_DESATIVADO
-        pygame.draw.rect(self.tela, cor, retangulo)
-        pygame.draw.rect(self.tela, COR_BORDA, retangulo, 3)
-        self._desenhar_texto_centralizado(
-            texto,
-            retangulo,
-            COR_BRANCA,
-        )
+    def _centralizar(self, conteudo, centro, fonte=None, cor=MARFIM, largura=None):
+        self._texto(conteudo, centro, fonte or self.fonte_normal, cor, "center", largura)
+
+    def _simbolo(self, simbolo, centro, cor=OURO):
+        self._centralizar(simbolo, centro, self.fonte_simbolo, cor)
+
+    def _coroa(self, centro, largura):
+        x, y = centro
+        escala = largura / 64
+        pontos = [(0, 12), (10, 18), (19, 25), (27, 18), (24, 12),
+                  (32, 1), (40, 12), (37, 18), (45, 25), (54, 18),
+                  (64, 12), (56, 38), (8, 38)]
+        forma = [(x + (px - 32) * escala, y + (py - 22) * escala)
+                 for px, py in pontos]
+        pygame.draw.polygon(self.tela, OURO, forma)
+        pygame.draw.lines(self.tela, MARFIM, False, forma[:11], 1)
+        base = pygame.Rect(x - 24 * escala, y + 20 * escala, 48 * escala, 4 * escala)
+        pygame.draw.rect(self.tela, OURO, base, border_radius=2)
+
+    def _filete(self, x1, x2, y, cor=OURO_ESCURO):
+        pygame.draw.line(self.tela, cor, (x1, y), (x2, y))
+
+    def _pergaminho(self, caixa, borda=OURO_ESCURO, tonalidade=None, escuro=False):
+        pygame.draw.rect(self.tela, (14, 17, 18), caixa.move(0, 4), border_radius=9)
+        self.tela.blit(self.tema.placa(caixa.size, tonalidade, escuro), caixa)
+        pygame.draw.rect(self.tela, borda, caixa, 2, border_radius=9)
+        pygame.draw.rect(self.tela, OURO_ESCURO, caixa.inflate(-9, -9), 1, border_radius=6)
+
+    def _botao(self, caixa, texto, ativo=True, estilo="vinho", icone=None, fonte=None):
+        estilo = estilo if ativo else "inativo"
+        realce = ativo and caixa.collidepoint(self.posicao_mouse)
+        pygame.draw.rect(self.tela, (12, 15, 16), caixa.move(0, 4), border_radius=12)
+        self.tela.blit(self.tema.relevo(caixa.size, estilo, realce), caixa)
+        fonte = fonte or self.fonte_rotulo
+        cor = MARFIM if ativo else (196, 190, 173)
+        if icone:
+            if caixa.width >= 400:
+                self._simbolo(icone, (caixa.x + 62, caixa.centery), cor)
+                pygame.draw.line(self.tela, OURO_ESCURO, (caixa.x + 111, caixa.y + 16),
+                                 (caixa.x + 111, caixa.bottom - 16))
+                self._texto(texto, (caixa.x + 138, caixa.centery), fonte, cor,
+                            "midleft", caixa.width - 155)
+            else:
+                self._simbolo(icone, (caixa.x + 30, caixa.centery), cor)
+                self._centralizar(texto, (caixa.centerx + 15, caixa.centery),
+                                  fonte, cor, caixa.width - 58)
+        else:
+            self._centralizar(texto, caixa.center, fonte, cor, caixa.width - 16)
+
+    def _estandartes(self, x, largura, altura):
+        for indice, faccao in enumerate(Faccao):
+            px = x + indice * (largura + 9)
+            ponta = largura // 4
+            pontos = [(px, 5), (px + largura, 5), (px + largura, altura - ponta),
+                      (px + largura // 2, altura), (px, altura - ponta)]
+            cor = CORES_FACCOES[faccao.value]
+            pygame.draw.polygon(self.tela, tuple(int(canal * .75) for canal in cor), pontos)
+            pygame.draw.lines(self.tela, OURO, True, pontos, 2)
+            centro = (px + largura // 2, (altura - ponta) // 2 + 4)
+            self._simbolo(_MARCAS_FACCOES[faccao], centro, MARFIM)
+
+    def _fundo(self, destaque=False):
+        self.posicao_mouse = self._converter_para_posicao_logica(pygame.mouse.get_pos())
+        arte = "ambiente" if destaque else "ardosia"
+        self.tela.blit(self.tema.ajustar_arte(arte, self.tela.get_size()), (0, 0))
+        caixa = self.tela.get_rect().inflate(-4, -4)
+        pygame.draw.rect(self.tela, OURO_ESCURO, caixa, 3, border_radius=18)
+        pygame.draw.rect(self.tela, OURO, caixa.inflate(-6, -6), 1, border_radius=14)
+
+    def _cabecalho(self):
+        self.tela.fill(FUNDO, pygame.Rect(4, 4, LARGURA_JANELA - 8, 59))
+        paisagem = self.tema.ajustar_arte("ambiente", (620, 350))
+        self.tela.blit(paisagem, (530, 5), pygame.Rect(0, 6, 620, 56))
+        self._filete(4, LARGURA_JANELA - 5, 63, OURO)
+        self._coroa((53, 33), 42)
+        self._texto(TITULO_JANELA, (83, 33), self.fonte_titulo, MARFIM, "midleft")
+        pygame.draw.line(self.tela, OURO_ESCURO, (472, 13), (472, 52))
+        self._estandartes(977, 52, 77)
 
     def _desenhar_configuracao_jogadores(self, configuracao):
         for indice in range(2):
             controles = self._obter_controles_configuracao(indice)
-            posicao_x = controles["tipo"].x
-            painel = pygame.Rect(posicao_x - 20, 290, 400, 290)
-            pygame.draw.rect(self.tela, COR_PAINEL, painel)
-            pygame.draw.rect(self.tela, COR_BORDA, painel, 2)
-            self._desenhar_texto("Jogador " + str(indice + 1), posicao_x, 315)
+            seletor = controles["tipo"]
+            painel = pygame.Rect(seletor.x - 29, 254, 512, 378)
+            self._pergaminho(painel, OURO)
+            self._simbolo("♟", (painel.x + 48, 294), TINTA)
+            self._texto(f"Jogador {indice + 1}", (painel.x + 77, 294), self.fonte_titulo, TINTA, "midleft")
             tipo = configuracao.obter_tipo_jogador(indice)
-            self._desenhar_botao_menu(controles["tipo"], tipo.value)
-            self._desenhar_texto("Antecipação (jogadas completas)", posicao_x, 440)
-            eh_ia = tipo != TipoJogador.HUMANO
-            profundidade = configuracao.obter_profundidade(indice)
-            self._desenhar_botao_menu(
-                controles["diminuir"], "-", eh_ia and profundidade > 1
-            )
-            self._desenhar_botao_menu(controles["aumentar"], "+", eh_ia)
-            texto = str(profundidade) if eh_ia else "Não se aplica"
-            self._desenhar_texto_centralizado(
-                texto, pygame.Rect(posicao_x + 95, 475, 170, 45), COR_TEXTO
-            )
-            self._desenhar_texto(
-                "Clique no tipo para alternar.", posicao_x, 545, pequena=True
-            )
+            self._botao(seletor, tipo.value, fonte=self.fonte_normal)
+            self._simbolo("‹", (seletor.x + 25, seletor.centery), MARFIM)
+            self._simbolo("›", (seletor.right - 25, seletor.centery), MARFIM)
+            self._filete(seletor.x, seletor.right, 426)
+
+            if tipo == TipoJogador.MONTE_CARLO:
+                rotulo = "Simulações Monte Carlo"
+                valor = configuracao.obter_simulacoes_monte_carlo(indice)
+                opcoes = SIMULACOES_MONTE_CARLO_DISPONIVEIS
+                pode_diminuir = valor > opcoes[0]
+                pode_aumentar = valor < opcoes[-1]
+            elif tipo == TipoJogador.Q_LEARNING:
+                rotulo = "Modelo treinado"
+                valor = "Tabela Q"
+                pode_aumentar = pode_diminuir = False
+            else:
+                rotulo = "Antecipação (jogadas completas)"
+                profundidade = configuracao.obter_profundidade(indice)
+                pode_aumentar = tipo != TipoJogador.HUMANO
+                pode_diminuir = pode_aumentar and profundidade > 1
+                valor = profundidade if pode_aumentar else "Não se aplica"
+
+            self._centralizar(rotulo, (painel.centerx, 450), cor=TINTA)
+            self._botao(controles["diminuir"], "−", pode_diminuir, "couro", fonte=self.fonte_normal)
+            self._botao(controles["aumentar"], "+", pode_aumentar, "couro", fonte=self.fonte_normal)
+            visor = pygame.Rect(seletor.x + 118, 473, 218, 51)
+            self._pergaminho(visor)
+            self._centralizar(str(valor), visor.center, cor=TINTA)
+            self._centralizar("Clique no tipo para alternar.", (painel.centerx, 556), self.fonte_legenda, TINTA)
 
     def desenhar_tela_configuracao(self, configuracao_partida):
-        """Apresenta as escolhas exclusivas da criação de uma partida."""
-        self.tela.fill(COR_DE_FUNDO)
-        titulo = self.fonte_titulo_menu.render("Configurar novo jogo", True, COR_TEXTO)
-        self.tela.blit(titulo, titulo.get_rect(center=(LARGURA_JANELA // 2, 150)))
-        self._desenhar_texto_centralizado(
-            "Escolha o controle e a antecipação de cada jogador.",
-            pygame.Rect(150, 210, 900, 30), COR_TEXTO,
-        )
+        self._fundo(destaque=True)
+        self._cabecalho()
+        self._filete(428, 562, 106, OURO)
+        self._filete(638, 772, 106, OURO)
+        self._coroa((600, 105), 51)
+        self._centralizar("Configurar novo jogo", (600, 157), self.fonte_titulo)
+        self._centralizar("Escolha o tipo de controle de cada jogador.", (600, 205), self.fonte_legenda)
         self._desenhar_configuracao_jogadores(configuracao_partida)
-        self._desenhar_texto_centralizado(
-            "A IA joga automaticamente. Você pode pausá-la durante a partida.",
-            pygame.Rect(150, 605, 900, 25), COR_TEXTO, True,
-        )
-        self._desenhar_botao_menu(self.retangulo_iniciar_partida, "INICIAR PARTIDA")
-        self._desenhar_botao_menu(self.retangulo_voltar_menu, "VOLTAR AO MENU")
+        self._centralizar("A IA joga automaticamente. Você pode pausá-la durante a partida.",
+                          (600, 676), self.fonte_legenda)
+        self._botao(self.retangulo_iniciar_partida, "INICIAR PARTIDA", icone="▶", fonte=self.fonte_normal)
+        self._botao(self.retangulo_voltar_menu, "VOLTAR AO MENU", estilo="couro", icone="←", fonte=self.fonte_normal)
         self._apresentar_tela_redimensionada()
         pygame.display.flip()
 
-    def desenhar_menu_inicial(
-        self,
-        salvamento_disponivel,
-        mensagem="",
-    ):
-        """Desenha as opções exibidas antes do início da partida."""
-        self.tela.fill(COR_DE_FUNDO)
-        titulo = self.fonte_titulo_menu.render(
-            TITULO_JANELA,
-            True,
-            COR_TEXTO,
-        )
-        titulo_centralizado = titulo.get_rect(
-            center=(LARGURA_JANELA // 2, 225)
-        )
-        self.tela.blit(titulo, titulo_centralizado)
+    def desenhar_menu_inicial(self, salvamento_disponivel, mensagem=""):
+        self._fundo(destaque=True)
+        self._estandartes(495, 64, 109)
+        self._filete(317, 554, 170, OURO)
+        self._filete(646, 883, 170, OURO)
+        self._coroa((600, 164), 80)
+        self._centralizar(TITULO_JANELA, (600, 246), self.fonte_titulo_menu)
 
-        subtitulo = "Escolha como deseja iniciar"
-        texto_subtitulo = self.fonte_normal.render(
-            subtitulo,
-            True,
-            COR_TEXTO,
-        )
-        subtitulo_centralizado = texto_subtitulo.get_rect(
-            center=(LARGURA_JANELA // 2, 300)
-        )
-        self.tela.blit(texto_subtitulo, subtitulo_centralizado)
-
-        self._desenhar_botao_menu(
-            self.retangulo_novo_jogo,
-            "NOVO JOGO",
-        )
-        self._desenhar_botao_menu(
-            self.retangulo_continuar_jogo,
-            "CONTINUAR JOGO",
-            salvamento_disponivel,
-        )
-        self._desenhar_botao_menu(
-            self.retangulo_sair,
-            "SAIR",
-        )
-
+        faixa = pygame.Rect(288, 327, 624, 71)
+        pygame.draw.polygon(self.tela, (165, 126, 69),
+                            [(250, 342), (301, 342), (301, 387), (250, 387), (265, 365)])
+        pygame.draw.polygon(self.tela, (165, 126, 69),
+                            [(899, 342), (950, 342), (935, 365), (950, 387), (899, 387)])
+        self._pergaminho(faixa, OURO)
+        self._centralizar("Escolha como deseja iniciar", faixa.center, self.fonte_legenda, TINTA)
+        self._botao(self.retangulo_novo_jogo, "NOVO JOGO", icone="♛", fonte=self.fonte_botao_menu)
+        self._botao(self.retangulo_continuar_jogo, "CONTINUAR JOGO", salvamento_disponivel,
+                    icone="▤", fonte=self.fonte_botao_menu)
+        self._botao(self.retangulo_sair, "SAIR", icone="↪", fonte=self.fonte_botao_menu)
         if not salvamento_disponivel:
-            aviso = "Nenhuma partida salva foi encontrada."
-            self._desenhar_texto_centralizado(
-                aviso,
-                pygame.Rect(350, 585, 500, 20),
-                COR_TEXTO,
-                True,
-            )
-
-        if mensagem:
-            linhas = self._quebrar_texto(mensagem, 700)
-            altura = 735
-
-            for linha in linhas[:3]:
-                self._desenhar_texto_centralizado(
-                    linha,
-                    pygame.Rect(250, altura, 700, 24),
-                    COR_BOTAO,
-                    True,
-                )
-                altura += 24
+            self._centralizar("Nenhuma partida salva foi encontrada.", (600, 671), self.fonte_pequena)
+        for indice, linha in enumerate(self._quebrar_texto(mensagem, 700)[:3]):
+            self._centralizar(linha, (600, 795 + indice * 23), self.fonte_pequena)
 
         self._apresentar_tela_redimensionada()
         pygame.display.flip()
 
     def _desenhar_botoes_de_faccao(self):
-        for faccao in Faccao:
-            retangulo = self.retangulos_faccoes[faccao]
-            pygame.draw.rect(self.tela, CORES_FACCOES[faccao.value], retangulo)
-            pygame.draw.rect(self.tela, COR_BORDA, retangulo, 2)
-            texto = faccao.value.upper()
-            self._desenhar_texto_centralizado(texto, retangulo, COR_BRANCA, True)
+        for faccao, caixa in self.retangulos_faccoes.items():
+            self._botao(caixa, faccao.value.upper(), estilo=faccao.value, icone=_MARCAS_FACCOES[faccao])
 
-    def _desenhar_botoes(self, estado, arvore):
+    def _desenhar_botoes(self, estado, arvore, selecao):
         pode_passar = (
             not estado.finalizado
             and estado.fase_turno == FaseTurno.ESCOLHER_ACAO
         )
-        cor_passar = COR_BOTAO if pode_passar else COR_BOTAO_DESATIVADO
-        pygame.draw.rect(self.tela, cor_passar, self.retangulo_botao_passar)
-        pygame.draw.rect(self.tela, COR_BORDA, self.retangulo_botao_passar, 2)
-        self._desenhar_texto_centralizado(
-            "PASSAR", self.retangulo_botao_passar, COR_BRANCA
-        )
-
-        pygame.draw.rect(self.tela, COR_BOTAO_DESATIVADO, self.retangulo_botao_cancelar)
-        pygame.draw.rect(self.tela, COR_BORDA, self.retangulo_botao_cancelar, 2)
-        self._desenhar_texto_centralizado(
-            "CANCELAR", self.retangulo_botao_cancelar, COR_BRANCA, True
-        )
-
-        pygame.draw.rect(self.tela, COR_BOTAO, self.retangulo_botao_sem_efeito)
-        pygame.draw.rect(self.tela, COR_BORDA, self.retangulo_botao_sem_efeito, 2)
-        self._desenhar_texto_centralizado(
-            "SEM EFEITO", self.retangulo_botao_sem_efeito, COR_BRANCA, True
-        )
-
-        pygame.draw.rect(
-            self.tela,
-            COR_BOTAO,
-            self.retangulo_botao_salvar,
-        )
-        pygame.draw.rect(
-            self.tela,
-            COR_BORDA,
-            self.retangulo_botao_salvar,
-            2,
-        )
-        self._desenhar_texto_centralizado(
-            "SALVAR",
-            self.retangulo_botao_salvar,
-            COR_BRANCA,
-            True,
-        )
-
-        pygame.draw.rect(
-            self.tela,
-            COR_BOTAO,
-            self.retangulo_botao_arvore,
-        )
-        pygame.draw.rect(
-            self.tela,
-            COR_BORDA,
-            self.retangulo_botao_arvore,
-            2,
-        )
-        self._desenhar_texto_centralizado(
-            "ÁRVORE",
-            self.retangulo_botao_arvore,
-            COR_BRANCA,
-            True,
-        )
-
+        pode_usar_carta = pode_passar and selecao.get("carta") is not None
         pode_voltar = (
             arvore is not None
             and not arvore.obter_no_atual().eh_raiz()
             and estado.fase_turno != FaseTurno.CONVOCAR_SEGUIDOR
         )
-        cor_voltar = (
-            COR_BOTAO if pode_voltar else COR_BOTAO_DESATIVADO
-        )
-        pygame.draw.rect(
-            self.tela,
-            cor_voltar,
-            self.retangulo_botao_voltar_jogada,
-        )
-        pygame.draw.rect(
-            self.tela,
-            COR_BORDA,
-            self.retangulo_botao_voltar_jogada,
-            2,
-        )
-        self._desenhar_texto_centralizado(
-            "VOLTAR",
-            self.retangulo_botao_voltar_jogada,
-            COR_BRANCA,
-            True,
-        )
+        self._botao(self.retangulo_botao_passar, "PASSAR", pode_passar, icone="»")
+        self._botao(self.retangulo_botao_cancelar, "CANCELAR", pode_passar, "ardosia")
+        self._botao(self.retangulo_botao_sem_efeito, "SEM EFEITO", pode_usar_carta, "couro")
+        self._botao(self.retangulo_botao_salvar, "SALVAR", estilo="couro")
+        self._botao(self.retangulo_botao_arvore, "ÁRVORE", estilo="couro")
+        self._botao(self.retangulo_botao_voltar_jogada, "VOLTAR", pode_voltar, "ardosia")
+    def _lista_faccoes(self, obter_quantidade, x, y, passo, cor):
+        for indice, faccao in enumerate(Faccao):
+            altura = y + indice * passo
+            pygame.draw.rect(self.tela, CORES_FACCOES[faccao.value],
+                             pygame.Rect(x, altura + 4, 11, 11), border_radius=2)
+            self._texto(f"{faccao.value.capitalize()}: {obter_quantidade(faccao)}",
+                        (x + 18, altura), self.fonte_pequena, cor)
 
-    def _desenhar_texto(
-        self, conteudo, posicao_x, posicao_y, cor=COR_TEXTO, pequena=False
-    ):
-        fonte = self.fonte_pequena if pequena else self.fonte_normal
-        texto = fonte.render(conteudo, True, cor)
-        self.tela.blit(texto, (posicao_x, posicao_y))
     def _desenhar_regiao(self, regiao, posicao, selecionada):
-        retangulo = pygame.Rect(
-            posicao[0], posicao[1], LARGURA_REGIAO, ALTURA_REGIAO
-        )
-        pygame.draw.rect(self.tela, COR_PAINEL, retangulo)
-
-        cor_borda = COR_BORDA
-        espessura = 4
-
-        if regiao.instavel:
-            cor_borda = COR_INSTABILIDADE
-        elif regiao.controlador is not None:
-            cor_borda = CORES_FACCOES[regiao.controlador.value]
-
+        caixa = pygame.Rect(*posicao, LARGURA_REGIAO, ALTURA_REGIAO)
+        lider, _ = regiao.obter_lideranca()
+        faccao = regiao.controlador or lider
+        tonalidade = CORES_FACCOES[faccao.value] if faccao else None
+        self.tela.blit(self.tema.placa(caixa.size, tonalidade, regiao.instavel, True),
+                       caixa)
         if selecionada:
-            cor_borda = COR_BOTAO
-            espessura = 7
+            pygame.draw.rect(self.tela, (255, 217, 110), caixa.inflate(4, 4), 4, border_radius=11)
+        elif caixa.collidepoint(self.posicao_mouse):
+            pygame.draw.rect(self.tela, OURO, caixa, 2, border_radius=11)
 
-        pygame.draw.rect(self.tela, cor_borda, retangulo, espessura)
-        self._desenhar_texto(regiao.nome, posicao[0] + 10, posicao[1] + 8)
+        self._centralizar(regiao.nome, (caixa.centerx, caixa.y + 19), self.fonte_rotulo, TINTA)
+        self._lista_faccoes(regiao.quantidade_de_seguidores, caixa.x + 32, caixa.y + 34, 18, TINTA)
 
-        deslocamento = 38
-        for faccao in Faccao:
-            quantidade = regiao.quantidade_de_seguidores(faccao)
-            texto = faccao.value.capitalize() + ": " + str(quantidade)
-            self._desenhar_texto(
-                texto,
-                posicao[0] + 10,
-                posicao[1] + deslocamento,
-                CORES_FACCOES[faccao.value],
-                pequena=True,
-            )
-            deslocamento += 22
-
+        situacao = "Em disputa"
+        estilo = "couro"
         if regiao.instavel:
-            situacao = "INSTÁVEL"
+            situacao = "Instável"
+            estilo = "ardosia"
         elif regiao.controlador is not None:
-            situacao = "Controle: " + regiao.controlador.value
-        else:
-            situacao = "Em disputa"
-        self._desenhar_texto(
-            situacao, posicao[0] + 10, posicao[1] + 108, pequena=True
-        )
+            situacao = f"Controle: {regiao.controlador.value}"
+            estilo = regiao.controlador.value
+        selo = pygame.Rect(caixa.x + 12, caixa.bottom - 35, caixa.width - 24, 24)
+        self.tela.blit(self.tema.relevo(selo.size, estilo, False), selo)
+        self._centralizar(situacao, selo.center, self.fonte_pequena)
 
     def _desenhar_regioes(self, estado, selecao):
-        selecionadas = selecao.get("regioes_troca", []).copy()
-        regiao_convocacao = selecao.get("regiao_convocacao")
-        if regiao_convocacao is not None:
-            selecionadas.append(regiao_convocacao)
-
-        for nome in POSICOES_REGIOES:
+        selecionadas = set(selecao.get("regioes_troca", []))
+        selecionadas.update(selecao.get("destinos_assemble", {}).values())
+        selecionadas.add(selecao.get("regiao_convocacao"))
+        for nome, posicao in POSICOES_REGIOES.items():
             regiao = estado.tabuleiro.obter_regiao(nome)
-            selecionada = nome in selecionadas
-            self._desenhar_regiao(regiao, POSICOES_REGIOES[nome], selecionada)
+            self._desenhar_regiao(regiao, posicao, nome in selecionadas)
 
     def _desenhar_painel_lateral(self, estado):
-        painel = pygame.Rect(930, 30, 240, 620)
-        pygame.draw.rect(self.tela, COR_PAINEL, painel)
-        pygame.draw.rect(self.tela, COR_BORDA, painel, 3)
+        painel = pygame.Rect(922, 81, 262, 474)
+        pygame.draw.rect(self.tela, (27, 36, 39), painel, border_radius=13)
+        pygame.draw.rect(self.tela, OURO, painel, 2, border_radius=13)
 
         jogador_atual = estado.obter_jogador_atual()
-        self._desenhar_texto("Turno", 955, 55)
-        self._desenhar_texto(jogador_atual.nome, 955, 85)
-        self._desenhar_texto(
-            "Cartas: " + str(jogador_atual.quantidade_cartas()),
-            955,
-            115,
-            pequena=True,
-        )
-        self._desenhar_texto(
-            "Passes: " + str(estado.passes_consecutivos), 955, 138, pequena=True
-        )
+        self._texto("Turno", (940, 94), self.fonte_rotulo, OURO)
+        self._texto(jogador_atual.nome, (940, 123), self.fonte_normal, MARFIM, largura=225)
+        faixa = pygame.Rect(938, 159, 230, 29)
+        pygame.draw.rect(self.tela, (47, 57, 59), faixa, border_radius=5)
+        resumo = f"Cartas: {jogador_atual.quantidade_cartas()}       Passes: {estado.passes_consecutivos}"
+        self._centralizar(resumo, faixa.center, self.fonte_pequena)
 
-        self._desenhar_texto("Reserva", 955, 175)
-        altura = 205
-        for faccao in Faccao:
-            quantidade = estado.reserva.quantidade(faccao)
-            texto = faccao.value.capitalize() + ": " + str(quantidade)
-            self._desenhar_texto(
-                texto, 955, altura, CORES_FACCOES[faccao.value], pequena=True
-            )
-            altura += 25
+        grupos = [("Reserva", estado.reserva.quantidade)]
+        grupos.extend((f"Corte de {jogador.nome}", jogador.qtd_na_corte) for jogador in estado.obter_jogadores())
+        for indice, (titulo, obter_quantidade) in enumerate(grupos):
+            y = 200 + indice * 91
+            self._texto(titulo, (941, y), self.fonte_rotulo, MARFIM, largura=224)
+            self._filete(940, 1166, y + 23)
+            self._lista_faccoes(obter_quantidade, 956, y + 26, 18, MARFIM)
 
-        altura = 300
-        for jogador in estado.obter_jogadores():
-            self._desenhar_texto("Corte de " + jogador.nome, 955, altura)
-            altura += 28
-            for faccao in Faccao:
-                quantidade = jogador.qtd_na_corte(faccao)
-                texto = faccao.value.capitalize() + ": " + str(quantidade)
-                self._desenhar_texto(
-                    texto,
-                    965,
-                    altura,
-                    CORES_FACCOES[faccao.value],
-                    pequena=True,
-                )
-                altura += 22
-            altura += 18
-
-        self._desenhar_texto(
-            "Disputas: "
-            + str(estado.trilha_disputas.quantidade_resolvida())
-            + "/8",
-            955,
-            555,
-            pequena=True,
-        )
-        self._desenhar_texto(
-            "Instabilidades: "
-            + str(estado.tabuleiro.quantidade_instabilidades())
-            + "/3",
-            955,
-            580,
-            pequena=True,
-        )
+        self._filete(940, 1166, 475)
+        disputas = estado.trilha_disputas.quantidade_resolvida()
+        instabilidades = estado.tabuleiro.quantidade_instabilidades()
+        self._texto(f"Disputas: {disputas}/8", (941, 481), self.fonte_pequena, MARFIM)
+        self._texto(f"Instabilidades: {instabilidades}/3", (941, 501), self.fonte_pequena, MARFIM)
         if estado.finalizado:
-            self._desenhar_texto("PARTIDA ENCERRADA", 955, 615, COR_BOTAO)
+            self._texto("PARTIDA ENCERRADA", (941, 524), self.fonte_rotulo, OURO)
+
+    @staticmethod
+    def _retangulo_trilha(indice):
+        return pygame.Rect(193 + indice * 88, 476, 84, 42)
 
     def _desenhar_trilha(self, estado, selecao):
-        self._desenhar_texto("Ordem das disputas", 40, 455)
-        cartas = estado.trilha_disputas.obter_cartas()
-        posicoes_selecionadas = selecao.get("posicoes_trilha", [])
-
-        for indice in range(len(cartas)):
-            carta = cartas[indice]
-            posicao_x = 40 + indice * 110
-            retangulo = pygame.Rect(posicao_x, 490, 102, 62)
-            cor_carta = COR_PAINEL if carta.virada_para_cima else (175, 170, 160)
-            pygame.draw.rect(self.tela, cor_carta, retangulo)
-            espessura = 5 if indice + 1 in posicoes_selecionadas else 2
-            pygame.draw.rect(self.tela, COR_BORDA, retangulo, espessura)
-            self._desenhar_texto(
-                str(indice + 1) + ".",
-                posicao_x + 5,
-                497,
-                pequena=True,
-            )
-            self._desenhar_texto(carta.nome_regiao, posicao_x + 5, 523, pequena=True)
+        faixa = pygame.Rect(14, 466, 895, 61)
+        pygame.draw.rect(self.tela, OURO_ESCURO, faixa, 2, border_radius=9)
+        self._texto("Ordem das disputas", (24, faixa.centery), self.fonte_rotulo, OURO,
+                    "midleft", largura=159)
+        posicoes = selecao.get("posicoes_trilha", [])
+        for indice, carta in enumerate(estado.trilha_disputas.obter_cartas()):
+            caixa = self._retangulo_trilha(indice)
+            selecionada = indice + 1 in posicoes
+            self._pergaminho(caixa, OURO if selecionada else OURO_ESCURO,
+                             escuro=not carta.virada_para_cima)
+            if selecionada or caixa.collidepoint(self.posicao_mouse):
+                pygame.draw.rect(self.tela, OURO, caixa, 3 if selecionada else 2, border_radius=8)
+            self._centralizar(f"{indice + 1}. {carta.nome_regiao}", caixa.center,
+                              self.fonte_pequena, TINTA, largura=caixa.width - 9)
             if carta.possui_disco_negociacao:
-                pygame.draw.circle(self.tela, COR_BOTAO, (posicao_x + 88, 503), 7)
+                pygame.draw.circle(self.tela, (142, 40, 33), (caixa.right - 10, caixa.y + 8), 5)
 
     def _desenhar_mao(self, estado, selecao):
         jogador = estado.obter_jogador_atual()
-        self._desenhar_texto("Cartas de " + jogador.nome, 40, 785)
-        mao = jogador.obter_mao()
-        selecionada = selecao.get("carta")
-
-        for indice in range(len(mao)):
-            carta = mao[indice]
-            retangulo = self._obter_retangulo_carta(indice)
-            pygame.draw.rect(self.tela, COR_PAINEL, retangulo)
-            espessura = 6 if carta is selecionada else 2
-            pygame.draw.rect(self.tela, COR_BORDA, retangulo, espessura)
-            linhas = self._quebrar_texto(carta.nome, LARGURA_CARTA_ACAO - 12)
-            altura = POSICAO_Y_MAO + 12
-            for linha in linhas:
-                self._desenhar_texto(
-                    linha, retangulo.x + 6, altura, pequena=True
-                )
-                altura += 20
-
-    def _desenhar_texto_quebrado(self, conteudo, x, y, largura):
-        linhas = self._quebrar_texto(conteudo, largura)
-        for linha in linhas[:2]:
-            self._desenhar_texto(linha, x, y, pequena=True)
-            y += 22
+        self._texto(f"Cartas de {jogador.nome}", (23, 739), self.fonte_normal, MARFIM)
+        self._filete(21, 1179, 768)
+        for indice, carta in enumerate(jogador.obter_mao()):
+            caixa = self._obter_retangulo_carta(indice)
+            selecionada = carta is selecao.get("carta")
+            realce = selecionada or caixa.collidepoint(self.posicao_mouse)
+            self._pergaminho(caixa, OURO if realce else OURO_ESCURO)
+            if selecionada:
+                pygame.draw.rect(self.tela, (154, 63, 35), caixa, 4, border_radius=9)
+            if eh_carta_de_apoio(carta.tipo):
+                faccao, _ = obter_dados_da_carta_de_apoio(carta.tipo)
+                simbolo = _MARCAS_FACCOES[faccao]
+                cor = tuple(round(canal * .66) for canal in CORES_FACCOES[faccao.value])
+            else:
+                simbolo = _SIMBOLOS_CARTAS[carta.tipo]
+                cor = TINTA
+            self._simbolo(simbolo, (caixa.centerx, caixa.y + 35), cor)
+            for numero, linha in enumerate(carta.nome.split()):
+                self._centralizar(linha, (caixa.centerx, caixa.y + 72 + 23 * numero),
+                                  self.fonte_rotulo, TINTA, largura=caixa.width - 14)
 
     def _desenhar_mensagem(self, estado, instrucao):
-        caixa = pygame.Rect(40, 585, 850, 190)
-        pygame.draw.rect(self.tela, COR_PAINEL, caixa)
-        pygame.draw.rect(self.tela, COR_BORDA, caixa, 2)
-        self._desenhar_texto("Último acontecimento", 60, 605)
-        self._desenhar_texto_quebrado(estado.ultima_mensagem, 60, 640, 790)
-        if estado.finalizado:
-            self._desenhar_texto("Resultado", 60, 690)
-            motivo = "Motivo: " + estado.motivo_encerramento
-            self._desenhar_texto(motivo, 60, 722, pequena=True)
+        caixa = pygame.Rect(14, 539, 895, 192)
+        self._pergaminho(caixa, OURO)
+        titulo = "Resultado" if estado.finalizado else "O que fazer agora"
+        mensagem = f"Motivo: {estado.motivo_encerramento}" if estado.finalizado else instrucao
+        secoes = [("Último acontecimento", estado.ultima_mensagem, "▤"),
+                  (titulo, mensagem, "◎")]
+        for indice, (rotulo, conteudo, icone) in enumerate(secoes):
+            y = 550 + indice * 87
+            self._simbolo(icone, (48, y + 21), TINTA)
+            self._texto(rotulo, (77, y), self.fonte_rotulo, TINTA)
+            for linha, texto in enumerate(self._quebrar_texto(conteudo, 806)[:3]):
+                self._texto(texto, (77, y + 25 + linha * 18), self.fonte_pequena, TINTA, largura=806)
+        self._filete(77, 883, 630)
+
+    def _desenhar_no_da_arvore(self, no, caixa, cor_borda, titulo, numero=None):
+        self._pergaminho(caixa, cor_borda)
+        if numero is None:
+            x = caixa.x + 13
         else:
-            self._desenhar_texto("O que fazer agora", 60, 690)
-            self._desenhar_texto_quebrado(instrucao, 60, 722, 790)
-
-    def _desenhar_no_da_arvore(
-        self,
-        no,
-        retangulo,
-        cor_borda,
-        titulo,
-    ):
-        pygame.draw.rect(self.tela, COR_PAINEL, retangulo)
-        pygame.draw.rect(self.tela, cor_borda, retangulo, 3)
-        self._desenhar_texto(
-            titulo,
-            retangulo.x + 10,
-            retangulo.y + 7,
-            cor_borda,
-            pequena=True,
-        )
-
+            x = caixa.x + 68
+            fita = pygame.Rect(caixa.x + 12, caixa.y + 12, 38, 48)
+            pontos = [fita.topleft, fita.topright, fita.bottomright,
+                      (fita.centerx, fita.bottom - 8), fita.bottomleft]
+            pygame.draw.polygon(self.tela, (112, 40, 30), pontos)
+            pygame.draw.lines(self.tela, OURO_ESCURO, True, pontos, 1)
+            self._centralizar(str(numero), fita.move(0, -3).center, largura=fita.width - 6)
+        nota = formatar_avaliacao_heuristica(no)
+        self._texto(nota, (caixa.right - 12, caixa.y + 7), self.fonte_pequena, TINTA, "topright")
+        largura_titulo = caixa.right - x - self.fonte_pequena.size(nota)[0] - 22
+        self._texto(titulo, (x, caixa.y + 5), self.fonte_rotulo, cor_borda, largura=largura_titulo)
         jogada = no.obter_jogada_origem()
-        descricao = "Estado inicial"
-
-        if jogada is not None:
-            descricao = jogada.descrever()
-
-        linhas = self._quebrar_texto(
-            descricao,
-            retangulo.width - 20,
-        )
-        altura = retangulo.y + 29
-
-        limite_linhas = 1 if retangulo.height < 80 else 2
-        for linha in linhas[:limite_linhas]:
-            self._desenhar_texto(
-                linha,
-                retangulo.x + 10,
-                altura,
-                pequena=True,
-            )
-            altura += 18
-
-        self._desenhar_texto(
-            formatar_avaliacao_heuristica(no),
-            retangulo.x + 10,
-            retangulo.bottom - 17,
-            pequena=True,
-        )
+        descricao = jogada.descrever() if jogada is not None else "Estado inicial"
+        largura = caixa.right - x - 13
+        linhas = self._quebrar_texto(descricao, largura)
+        limite = 3 if numero is not None else 2
+        for indice, linha in enumerate(linhas[:limite]):
+            if indice == limite - 1 and len(linhas) > limite:
+                linha = linha.rstrip() + "…"
+            self._texto(linha, (x, caixa.y + 27 + indice * 17), self.fonte_pequena, TINTA, largura=largura)
 
     def _desenhar_caminho_da_arvore(self, arvore):
-        self._desenhar_texto("Caminho percorrido", 40, 120)
+        painel = pygame.Rect(19, 185, 358, 734)
+        self._pergaminho(painel, OURO)
+        faixa = pygame.Rect(19, 185, 358, 55)
+        self.tela.blit(self.tema.relevo(faixa.size, "ardosia", False), faixa)
+        self._centralizar("Caminho percorrido", faixa.center)
         caminho = arvore.obter_caminho_atual()
-        primeiro_indice = max(0, len(caminho) - 10)
-
-        if primeiro_indice > 0:
-            self._desenhar_texto(
-                "... níveis anteriores omitidos",
-                40,
-                148,
-                pequena=True,
-            )
-
-        nos_visiveis = caminho[primeiro_indice:]
-
-        for indice in range(len(nos_visiveis)):
-            no = nos_visiveis[indice]
-            posicao_y = 175 + indice * 72
-            retangulo = pygame.Rect(40, posicao_y, 430, 60)
-            cor = (80, 140, 90)
-            titulo = "Nível " + str(no.obter_nivel())
-
-            if no is arvore.obter_no_atual():
-                cor = CORES_FACCOES[Faccao.ESCOCESES.value]
-                titulo += " - ESTADO ATUAL"
-
-            self._desenhar_no_da_arvore(
-                no,
-                retangulo,
-                cor,
-                titulo,
-            )
+        nos_visiveis = caminho[-10:]
+        if len(caminho) > len(nos_visiveis):
+            self._texto("Níveis anteriores omitidos", (31, 246), self.fonte_pequena, TINTA)
+        for indice, no in enumerate(nos_visiveis):
+            atual = no is arvore.obter_no_atual()
+            cor = (28, 75, 142) if atual else (37, 90, 57)
+            titulo = f"Nível {no.obter_nivel()}"
+            if atual:
+                titulo += " · ESTADO ATUAL"
+            caixa = pygame.Rect(30, 269 + indice * 64, 336, 62)
+            self._desenhar_no_da_arvore(no, caixa, cor, titulo)
 
     def _desenhar_filhos_da_arvore(self, arvore, pagina):
         no_atual = arvore.obter_no_atual()
-        filhos = no_atual.obter_filhos()
         total_paginas = self.obter_quantidade_paginas_arvore(arvore)
-        pagina = min(pagina, total_paginas - 1)
+        pagina = max(0, min(pagina, total_paginas - 1))
         inicio = pagina * _FILHOS_POR_PAGINA_ARVORE
-        fim = inicio + _FILHOS_POR_PAGINA_ARVORE
-        filhos_visiveis = filhos[inicio:fim]
-
-        titulo = "Próximas jogadas"
-        titulo += " - página " + str(pagina + 1)
-        titulo += " de " + str(total_paginas)
-        self._desenhar_texto(titulo, 510, 120)
+        filhos_visiveis = no_atual.obter_filhos()[inicio:inicio + _FILHOS_POR_PAGINA_ARVORE]
+        titulo = f"Próximas jogadas – página {pagina + 1} de {total_paginas}"
+        self._texto(titulo, (407, 229), self.fonte_normal, MARFIM, largura=760)
 
         if not filhos_visiveis:
             mensagem = "Nenhuma opção foi gerada para este estado."
-
             if no_atual.esta_expandido():
                 mensagem = "Este estado não possui próximas jogadas."
-
-            self._desenhar_texto(
-                mensagem,
-                510,
-                175,
-                pequena=True,
-            )
+            caixa = pygame.Rect(399, 269, 780, 80)
+            self._pergaminho(caixa, OURO)
+            self._texto(mensagem, (420, caixa.centery), self.fonte_pequena, TINTA, "midleft")
             return
 
-        for indice in range(len(filhos_visiveis)):
-            no = filhos_visiveis[indice]
-            posicao_y = 160 + indice * 105
-            retangulo = pygame.Rect(510, posicao_y, 640, 88)
+        for indice, no in enumerate(filhos_visiveis):
             numero = inicio + indice + 1
-            titulo_no = (
-                "Opção "
-                + str(numero)
-                + " - nível "
-                + str(no.obter_nivel())
-            )
-            self._desenhar_no_da_arvore(
-                no,
-                retangulo,
-                COR_BORDA,
-                titulo_no,
-            )
+            caixa = pygame.Rect(399, 269 + indice * 92, 780, 80)
+            titulo_no = f"Opção {numero} · nível {no.obter_nivel()}"
+            self._desenhar_no_da_arvore(no, caixa, (104, 62, 31), titulo_no, numero)
 
-    def _desenhar_controles_da_arvore(
-        self,
-        arvore,
-        pagina,
-        mensagem,
-        texto_pagina,
-        campo_pagina_ativo,
-    ):
-        botoes = [
-            (self.retangulo_fechar_arvore, "FECHAR", COR_BOTAO),
-            (
-                self.retangulo_exportar_graphviz,
-                "ABRIR GRAPHVIZ",
-                COR_BOTAO,
-            ),
-            (
-                self.retangulo_gerar_opcoes,
-                "GERAR OPÇÕES",
-                COR_BOTAO,
-            ),
-            (
-                self.retangulo_ir_pagina,
-                "IR",
-                COR_BOTAO,
-            ),
-            (
-                self.retangulo_pagina_anterior,
-                "ANTERIOR",
-                COR_BOTAO,
-            ),
-            (
-                self.retangulo_proxima_pagina,
-                "PRÓXIMA",
-                COR_BOTAO,
-            ),
-        ]
+    def _desenhar_controles_da_arvore(self, arvore, pagina, texto_pagina, campo_pagina_ativo):
+        total = self.obter_quantidade_paginas_arvore(arvore)
+        self._botao(self.retangulo_fechar_arvore, "FECHAR", estilo="ardosia", icone="×")
+        self._botao(self.retangulo_exportar_graphviz, "ABRIR GRAPHVIZ")
+        self._botao(self.retangulo_gerar_opcoes, "GERAR OPÇÕES", icone="⚙")
+        self._botao(self.retangulo_ir_pagina, "IR")
+        self._botao(self.retangulo_pagina_anterior, "‹  ANTERIOR", pagina > 0, "couro")
+        self._botao(self.retangulo_proxima_pagina, "PRÓXIMA  ›", pagina < total - 1, "couro")
+        borda = (38, 101, 174) if campo_pagina_ativo else OURO
+        campo = self.retangulo_campo_pagina
+        self._pergaminho(campo, borda)
+        self._centralizar(texto_pagina, campo.center, cor=TINTA, largura=campo.width - 12)
+        nivel = arvore.obter_no_atual().obter_nivel()
+        resumo = f"Nós: {arvore.quantidade_nos()}    |    Nível atual: {nivel}    |    Páginas: {total}"
+        self._texto(resumo, (274, 976), self.fonte_pequena, MARFIM, "midleft", largura=376)
 
-        for retangulo, texto, cor in botoes:
-            pygame.draw.rect(self.tela, cor, retangulo)
-            pygame.draw.rect(self.tela, COR_BORDA, retangulo, 2)
-            self._desenhar_texto_centralizado(
-                texto,
-                retangulo,
-                COR_BRANCA,
-                True,
-            )
-
-        cor_borda_campo = COR_BORDA
-
-        if campo_pagina_ativo:
-            cor_borda_campo = CORES_FACCOES[Faccao.ESCOCESES.value]
-
-        pygame.draw.rect(
-            self.tela,
-            COR_PAINEL,
-            self.retangulo_campo_pagina,
-        )
-        pygame.draw.rect(
-            self.tela,
-            cor_borda_campo,
-            self.retangulo_campo_pagina,
-            3,
-        )
-        self._desenhar_texto_centralizado(
-            texto_pagina,
-            self.retangulo_campo_pagina,
-            COR_TEXTO,
-            True,
-        )
-        self._desenhar_texto("PÁG.", 605, 955, pequena=True)
-
-        total_paginas = self.obter_quantidade_paginas_arvore(arvore)
-        resumo = (
-            "Nós: "
-            + str(arvore.quantidade_nos())
-            + " | Nível atual: "
-            + str(arvore.obter_no_atual().obter_nivel())
-            + " | Total de páginas: "
-            + str(total_paginas)
-        )
-        self._desenhar_texto(resumo, 285, 955, pequena=True)
+    def _desenhar_arvore(self, arvore, pagina, mensagem, texto_pagina, campo_pagina_ativo):
+        self._fundo()
+        self._cabecalho()
+        self._texto("Árvore de estados", (25, 83), self.fonte_titulo, MARFIM)
+        legenda = "Azul: atual  |  Verde: caminho  |  H: nota estática  |  J: jogador de referência"
+        self._texto(legenda, (26, 131), self.fonte_pequena, MARFIM)
+        self._filete(20, 1180, 166, OURO)
+        self._filete(20, 1180, 932, OURO)
 
         if mensagem:
-            self._desenhar_texto(
-                mensagem,
-                510,
-                95,
-                COR_BOTAO,
-                pequena=True,
-            )
+            for indice, linha in enumerate(self._quebrar_texto(mensagem, 754)[:2]):
+                self._texto(linha, (407, 181 + indice * 18), self.fonte_pequena, OURO, largura=754)
 
-    def _desenhar_arvore(
-        self,
-        arvore,
-        pagina,
-        mensagem,
-        texto_pagina,
-        campo_pagina_ativo,
-    ):
-        self.tela.fill(COR_DE_FUNDO)
-        self._desenhar_texto("Árvore de estados", 40, 45)
-        self._desenhar_texto(
-            "Azul: atual | Verde: caminho | H: nota estática; J: jogador de referência",
-            40,
-            82,
-            pequena=True,
-        )
         self._desenhar_caminho_da_arvore(arvore)
         self._desenhar_filhos_da_arvore(arvore, pagina)
-        self._desenhar_controles_da_arvore(
-            arvore,
-            pagina,
-            mensagem,
-            texto_pagina,
-            campo_pagina_ativo,
-        )
+        self._desenhar_controles_da_arvore(arvore, pagina, texto_pagina, campo_pagina_ativo)
 
     def desenhar(
         self,
@@ -1130,33 +883,29 @@ class VisaoJogo:
         resumo_ia="",
     ):
         """Desenha e apresenta um quadro da aplicação."""
-        if selecao is None:
-            selecao = {}
-
-        self.tela.fill(COR_DE_FUNDO)
-        self._desenhar_titulo()
-        if resumo_ia:
-            self._desenhar_texto(resumo_ia, 40, 990, pequena=True)
-        self._desenhar_fronteiras(estado.tabuleiro)
-        self._desenhar_regioes(estado, selecao)
-        self._desenhar_painel_lateral(estado)
-        self._desenhar_trilha(estado, selecao)
-        self._desenhar_mensagem(estado, instrucao)
-        self._desenhar_mao(estado, selecao)
-        self._desenhar_botoes_de_faccao()
-        self._desenhar_botoes(estado, arvore)
-        if possui_ia and not estado.finalizado:
-            texto = "RETOMAR IA" if ia_pausada else "PAUSAR IA"
-            self._desenhar_botao_menu(self.retangulo_pausar_ia, texto)
-
         if arvore_aberta and arvore is not None:
-            self._desenhar_arvore(
-                arvore,
-                pagina_arvore,
-                mensagem_arvore,
-                texto_pagina_arvore,
-                campo_pagina_arvore_ativo,
-            )
+            self._desenhar_arvore(arvore, pagina_arvore, mensagem_arvore,
+                                 texto_pagina_arvore, campo_pagina_arvore_ativo)
+        else:
+            selecao = selecao or {}
+            self._fundo()
+            self._cabecalho()
+            self.tela.blit(self.tema.ajustar_arte("mapa", _MAPA.size), _MAPA)
+            pygame.draw.rect(self.tela, OURO_ESCURO, _MAPA, 2, border_radius=10)
+            self._desenhar_fronteiras(estado.tabuleiro)
+            self._desenhar_regioes(estado, selecao)
+            self._desenhar_painel_lateral(estado)
+            self._desenhar_trilha(estado, selecao)
+            self._desenhar_mensagem(estado, instrucao)
+            self._desenhar_mao(estado, selecao)
+            self._filete(21, 1179, 917, OURO)
+            self._desenhar_botoes_de_faccao()
+            self._desenhar_botoes(estado, arvore, selecao)
+            if possui_ia and not estado.finalizado:
+                texto = "RETOMAR IA" if ia_pausada else "PAUSAR IA"
+                self._botao(self.retangulo_pausar_ia, texto, icone="▶" if ia_pausada else "Ⅱ")
+            if resumo_ia:
+                self._texto(resumo_ia, (22, 993), self.fonte_pequena, MARFIM, largura=1155)
 
         self._apresentar_tela_redimensionada()
         pygame.display.flip()

@@ -45,12 +45,11 @@ def preparar_arvore_controlada(agente, notas):
         estados[nome].nome_teste = nome
 
     agente._gerador = Mock()
-    agente._gerador.gerar.side_effect = (
-        lambda estado: filhos.get(estado.nome_teste, [])
-    )
-    agente._executor = Mock()
-    agente._executor.executar.side_effect = (
-        lambda estado, jogada: estados[jogada]
+    agente._gerador.gerar_com_estados.side_effect = (
+        lambda estado: [
+            (jogada, estados[jogada])
+            for jogada in filhos.get(estado.nome_teste, [])
+        ]
     )
     agente._avaliador = Mock()
     agente._avaliador.avaliar.side_effect = (
@@ -101,6 +100,35 @@ class TesteAgenteMinimax(unittest.TestCase):
                 agente.escolher_jogada(estados["raiz"], 1, usar_poda), "A"
             )
 
+    def test_mantem_primeira_jogada_quando_todas_valem_menos_infinito(self):
+        nota = float("-inf")
+        agente = AgenteMinimax(0)
+        estados = preparar_arvore_controlada(agente, {"A": nota, "B": nota})
+
+        for usar_poda in (False, True):
+            with self.subTest(usar_poda=usar_poda):
+                self.assertEqual(
+                    agente.escolher_jogada(estados["raiz"], 1, usar_poda), "A"
+                )
+                self.assertEqual(agente.ultima_pontuacao, nota)
+
+    def test_poda_interrompe_geracao_dos_estados_irmaos(self):
+        agente = AgenteMinimax(0)
+        estados = preparar_arvore_controlada(
+            agente, {"A1": 3, "A2": 5, "B1": 2}
+        )
+        gerar = agente._gerador.gerar_com_estados.side_effect
+
+        def gerar_sob_demanda(estado):
+            for jogada, filho in gerar(estado):
+                if jogada == "B2":
+                    self.fail("A poda deveria evitar a geração de B2.")
+                yield jogada, filho
+
+        agente._gerador.gerar_com_estados.side_effect = gerar_sob_demanda
+        self.assertEqual(agente.escolher_jogada(estados["raiz"], 2), "A")
+        self.assertEqual(agente.ultima_pontuacao, 3)
+
     def test_nao_gera_filhos_de_estado_final(self):
         estado = criar_estado()
         estado.finalizado = True
@@ -109,7 +137,7 @@ class TesteAgenteMinimax(unittest.TestCase):
         agente._gerador = Mock()
 
         self.assertIsNone(agente.escolher_jogada(estado, 3))
-        agente._gerador.gerar.assert_not_called()
+        agente._gerador.gerar_com_estados.assert_not_called()
         self.assertEqual(agente.ultima_pontuacao, 1000000)
 
     def test_prefere_vitoria_rapida_e_adia_derrota_inevitavel(self):
@@ -133,7 +161,7 @@ class TesteAgenteMinimax(unittest.TestCase):
     def test_sem_jogadas_avalia_o_estado(self):
         agente = AgenteMinimax(0)
         agente._gerador = Mock()
-        agente._gerador.gerar.return_value = []
+        agente._gerador.gerar_com_estados.return_value = []
         agente._avaliador = Mock()
         agente._avaliador.avaliar.return_value = 12
 

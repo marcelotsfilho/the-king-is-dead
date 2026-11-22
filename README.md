@@ -60,9 +60,10 @@ O jogo começa em uma tela inicial com três opções:
 Ao clicar em **NOVO JOGO**, uma segunda tela mostra os painéis **Jogador 1** e
 **Jogador 2**, que permitem configurar
 cada lado independentemente. Clique no tipo para alternar entre **Humano**,
-**Minimax** e **Minimax com alfa-beta**. Use `+` e `-` para ajustar a antecipação
-de cada IA, com mínimo de 1 jogada completa. Para Humano, esses botões ficam
-desativados. Ao trocar entre os tipos, a profundidade escolhida é mantida.
+**Minimax**, **Minimax com alfa-beta**, **Monte Carlo** e **Q-learning**. Use
+`+` e `-` para ajustar a antecipação do Minimax (mínimo de uma jogada completa)
+ou a quantidade de simulações do Monte Carlo. O Q-learning carrega a tabela
+treinada ao calcular seu primeiro turno.
 
 Clique em **INICIAR PARTIDA** para confirmar. **VOLTAR AO MENU** descarta a
 edição e retorna à tela inicial, sem criar uma partida ou alterar o salvamento.
@@ -126,6 +127,25 @@ A posição inicial possui muitas combinações completas. Por isso, a geração
 primeiro nível pode levar alguns segundos. A demonstração mostra vinte filhos
 e informa quantos foram omitidos da impressão, mas todos permanecem registrados
 na árvore.
+
+## Etapa 4 — Q-learning
+
+- [x] Implementar o agente e selecionar Q-learning no menu pelo fluxo MVC.
+- [x] Treinar por partidas completas e medir o desempenho em checkpoints com a tabela congelada.
+- [x] Registrar a quantidade treinada, verificar o critério de bom treino e guardar os dados para o relatório final.
+- [x] Gerar o gráfico de partidas jogadas e vitórias do Q-learning.
+- [x] Salvar a tabela treinada e carregar o arquivo para jogar sem repetir o treino.
+- [x] Confrontar a mesma tabela com Minimax simples e Minimax com poda alfa-beta.
+- [x] Testar posições em que passar favorece o jogador ou causa derrota. Registrar as cartas na mão no primeiro passe e a taxa de vitória nas partidas completas com os agentes avaliados.
+- [ ] Montar o `.zip` de entrega quando o relatório final estiver incorporado.
+
+Para demonstrar, selecione **Q-learning** em um dos lados e **Minimax** ou
+**Minimax com alfa-beta** no outro. O jogo usa a tabela selecionada após 500
+partidas e verifica as decisões nos finais pequenos. A tabela está em
+`experiments/etapa4/bateria_3000/tabela_selecionada.json`. O [relatório de
+evolução e guia de apresentação](experiments/etapa4/evolucao/README.md) explica
+o funcionamento atual. O [registro experimental](experiments/etapa4/README.md)
+preserva as baterias de treino, os gráficos e os comandos de reprodução.
 
 ## Segunda entrega — árvore de estados
 
@@ -524,6 +544,8 @@ the-king-is-dead/
   sem aceitar valores inválidos ou regiões resolvidas;
 - `remover_todos_os_seguidores()`: esvazia a região e informa o que saiu;
 - `total_de_seguidores()`: soma as três facções;
+- `obter_lideranca()`: informa a facção líder e sua vantagem, usadas na
+  resolução das disputas e na avaliação heurística;
 - `definir_controlador(faccao)`: registra uma vitória regional;
 - `marcar_como_instavel()`: resolve a região sem controlador;
 - `esta_resolvida()`: informa se a região já saiu do jogo;
@@ -534,6 +556,7 @@ the-king-is-dead/
 - `Tabuleiro.__init__()`: cria as oito regiões e o grafo de fronteiras;
 - `obter_regioes()` e `obter_nomes_das_regioes()`: consultam o catálogo;
 - `obter_regiao(nome)`: encontra o objeto de uma região;
+- `obter_regioes_com_seguidores()`: lista as regiões em disputa com peças;
 - `regioes_adjacentes(nome)`: retorna suas vizinhas;
 - `sao_adjacentes(a, b)`: verifica uma fronteira;
 - `quantidade_instabilidades()`: calcula o total pelas próprias regiões;
@@ -553,6 +576,7 @@ the-king-is-dead/
 - `obter_cartas()`: retorna uma cópia da lista;
 - `obter_carta(posicao)`: consulta posições numeradas de 1 a 8;
 - `obter_proxima_carta()`: encontra a próxima disputa ativa;
+- `obter_posicoes_negociaveis()`: lista as posições abertas sem disco;
 - `quantidade_resolvida()`: conta cartas viradas;
 - `trocar_cartas(a, b)`: executa a mudança de ordem de Negotiate.
 
@@ -573,8 +597,8 @@ the-king-is-dead/
 
 - `ReservaSeguidores.__init__(quantidade_por_faccao)`: cria a reserva;
 - `obter_quantidades()`, `quantidade(faccao)` e `total()`: fazem consultas;
-- `retirar(...)` e `devolver(...)`: movimentam peças;
-- `_validar_quantidade()`: exige um inteiro positivo.
+- `retirar(...)` e `devolver(...)`: movimentam peças com a mesma validação de
+  quantidade positiva usada pelas regiões.
 
 ### `model/game_state.py`
 
@@ -621,32 +645,29 @@ ação do adversário.
 
 - `ExecutorJogada.executar(estado, jogada)`: copia o estado, aplica uma jogada
   completa e devolve o resultado sem modificar a partida original;
+- `ExecutorJogada.executar_carta(estado, tipo_carta, parametros)`: aplica o
+  efeito em uma cópia e deixa a convocação pendente;
+- `ExecutorJogada.executar_convocacao(estado, regiao, faccao)`: conclui uma
+  convocação pendente em uma cópia;
 - `_obter_carta_do_jogador()`: encontra na cópia a carta indicada pela jogada.
 
-Esse executor será compartilhado pela árvore e pela futura IA. Um passe inclui
-suas consequências automáticas; uma carta inclui efeito, convocação e troca de
-jogador.
+Um passe inclui suas consequências automáticas. A execução completa de uma
+carta inclui efeito, convocação e troca de jogador.
 
 ### `model/legal_move_generator.py`
 
 - `GeradorJogadas.gerar(estado)`: encontra todas as jogadas completas que o
   jogador atual pode realizar sem modificar o estado recebido;
-- os métodos `_gerar_parametros_*()`: enumeram as escolhas de cada tipo de
-  carta;
-- `_simular_carta()`: aplica temporariamente apenas o efeito da carta para
-  descobrir quais seguidores poderão ser convocados;
-- `_adicionar_se_valida()`: utiliza o executor como verificação final antes de
-  incluir uma jogada no resultado.
+- `gerar_com_estados(estado)`: gera sob demanda pares de jogada e estado
+  resultante. Cada conjunto de parâmetros aplica o efeito da carta uma vez.
+  Cada convocação possível usa sua própria cópia do estado intermediário.
+- `sortear_com_estado(estado, aleatorio)`: usa a mesma execução de cartas e
+  convocações para amostrar uma jogada nos rollouts de Monte Carlo.
 
-O gerador não substitui as regras de `Jogo`. Ele cria combinações possíveis e
-reutiliza o executor para descartar aquelas que forem rejeitadas pelo model.
-
-Cartas repetidas do mesmo tipo, como as duas Assemble, são processadas uma única
-vez porque produzem as mesmas escolhas.
-
-Como uma única carta pode gerar muitas combinações, a futura árvore deverá ser
-expandida sob demanda: somente os filhos do estado que está sendo analisado
-serão criados, sem antecipar os netos de jogadas que ainda não aconteceram.
+O gerador usa as regras de `Jogo` para validar os efeitos das cartas e concluir
+cada convocação. Cartas repetidas do mesmo tipo, como as duas Assemble, são
+processadas uma vez. Em Outmanoeuvre, as regiões de destino de cada origem são
+percorridas em ordem alfabética, inclusive quando há empate na busca.
 
 ### `model/match_settings.py`
 
@@ -748,7 +769,7 @@ a mesma profundidade e ordem de jogadas. Em empate, mantém a primeira opção.
 
 Responsabilidades dos métodos:
 
-- `__init__(indice_jogador_ia)`: prepara avaliador, gerador e executor;
+- `__init__(indice_jogador_ia)`: prepara o avaliador e o gerador;
 - `_limpar_estatisticas()`: zera os contadores antes de cada busca;
 - `_validar_entrada(...)`: valida estado, profundidade, opção de poda e turno;
 - `_avaliar_folha(estado, profundidade)`: conta uma avaliação e chama a
@@ -759,16 +780,21 @@ Responsabilidades dos métodos:
   da busca. Retorna `None` para partidas finalizadas ou sem jogadas completas,
   incluindo uma convocação pendente. Uma chamada fora do turno da IA é rejeitada.
 
-Os estados são simulados pelo `ExecutorJogada`, que trabalha com cópias. A busca
-não insere simulações no histórico `ArvoreEstados`: esse histórico continua
-registrando as jogadas realizadas. O Controller usa o agente em uma cópia do
-estado e registra somente o resultado escolhido, após a busca terminar.
+O gerador simula cada jogada em cópias. O Controller executa a busca em uma
+cópia do estado e registra somente o resultado escolhido em `ArvoreEstados`.
 
-Esta versão mantém todas as alternativas legais, sem limitar artificialmente
-o número de filhos. A poda evita percorrer alguns ramos, mas o gerador ainda
-enumera as opções de cada estado analisado. Por isso, aumente a profundidade
-gradualmente em posições pequenas; o custo também inclui a heurística nas
-folhas. A busca não possui limite de tempo nem treinamento automático.
+O gerador produz os estados filhos sob demanda. Um corte alfa-beta interrompe
+a geração dos estados irmãos restantes. O custo também inclui a avaliação
+heurística das folhas, e a busca pode demorar em posições com muitas opções.
+
+### Monte Carlo
+
+O menu de configuração permite ajustar o orçamento do Monte Carlo com os
+botões `-` e `+`: 100, 300, 1.000, 3.000 ou 5.000 simulações por decisão.
+O valor inicial continua em 100. A duração depende do estado: na abertura,
+3.000 simulações levaram cerca de 30 segundos nesta máquina; posições mais
+avançadas podem levar menos. A interface mostra o número de simulações durante
+a busca. Esta implementação usa rollouts aleatórios, não MCTS/UCT.
 
 ### `model/state_node.py`
 
@@ -808,10 +834,10 @@ pai e a jogada completa responsável pela criação de seu estado.
 - `obter_raiz()` e `obter_no_atual()`: consultam os pontos principal e atual;
 - `adicionar_estado()`: liga um novo estado a um pai somente quando seu
   identificador ainda não estiver na árvore;
-- `expandir_no_atual()`: usa gerador e executor para criar somente o próximo
-  nível da posição atual;
-- `registrar_jogada_realizada()`: procura o estado resultante entre os filhos,
-  cria o filho quando necessário e avança o caminho atual;
+- `expandir_no_atual()`: usa os pares de jogada e estado do gerador para
+  criar somente o próximo nível da posição atual;
+- `registrar_jogada_realizada()`: consulta o registro pelo identificador do
+  estado, cria o filho quando necessário e avança o caminho atual;
 - `avancar_para()`: permite avançar apenas para um filho do nó atual;
 - `voltar()`: retorna ao pai e atualiza a marcação do caminho percorrido;
 - `obter_caminho_atual()`: lista os nós desde a raiz até a posição atual;
@@ -824,6 +850,10 @@ A raiz começa marcada como visitada. Ao avançar, o novo nó também é marcado
 qualquer marca anterior de volta é removida. Ao voltar, o nó abandonado recebe
 a marca de jogada voltada. Dessa maneira, a apresentação diferencia caminho
 atual, alternativa nunca visitada e estado que já foi percorrido e abandonado.
+
+Após desfazer uma jogada, uma alternativa pode levar a uma posição já
+registrada em outro ramo. A árvore tem um único pai por nó e rejeita esse
+registro. O controlador mantém o turno no ponto anterior à tentativa.
 
 ### `model/state_tree_serializer.py`
 
@@ -871,26 +901,25 @@ Métodos públicos, chamados pelo Controller:
   encerra o turno;
 - `resolver_proxima_disputa()`: calcula maioria, controle ou instabilidade,
   devolve peças à reserva e verifica o fim;
-- `obter_regioes_validas_para_apoio(tipo)`: calcula destinos de Support.
+- `obter_regioes_validas_para_apoio(tipo)`: calcula destinos de Support;
+- `obter_trocas_superar_manobra()`: encontra pares adjacentes elegíveis e a
+  quantidade de seguidores exigida no destino;
+- `obter_quantidade_conjuntos(jogador)` e `obter_faccoes_por_poder()`:
+  calculam os valores usados no encerramento e na avaliação heurística.
 
 Métodos internos que dividem as regras em etapas menores:
 
 - `_executar_assemble()`, `_executar_apoio()`, `_executar_negociar()`,
   `_executar_manobra()` e `_executar_superar_manobra()`: implementam os efeitos;
 - `_obter_dados_de_troca()`: valida a seleção comum às duas trocas;
-- `_obter_posicoes_validas_para_negociar()`: filtra cartas disponíveis;
-- métodos `_existe_...`: descobrem se uma execução total ou parcial é possível;
 - métodos `_validar_...nao_desfaz_acao()`: protegem a restrição de repetição;
 - `_registrar_carta_jogada()`: atualiza mão, última ação, passes e fase;
 - `_validar_carta_do_jogador()`, `_validar_convocacao_possivel()`,
   `_validar_fase()` e `_validar_partida_em_andamento()`: bloqueiam comandos
   inválidos;
-- `_determinar_faccao_controladora()`: encontra uma maioria única;
 - `_devolver_seguidores_para_reserva()`: conserva as peças;
 - métodos `_finalizar_...` e `_determinar_vencedor_...`: implementam invasão,
-  coroação e desempates;
-- métodos `_ordenar_...`, `_quantidade_...` e `_indice_...`: fazem os cálculos
-  auxiliares de pontuação.
+  coroação e desempates.
 
 ### `controller/game_controller.py`
 
@@ -983,9 +1012,10 @@ Profundidades maiores e partidas completas ainda precisam de experimentos.
 - `_obter_selecao()`: entrega à View somente o necessário para destacar itens;
 - `_desenhar_quadro()`: envia estado, seleção e informações da árvore à View.
 
-`_registrar_jogada_realizada(jogada, estado_resultante)` aceita o resultado de
-uma simulação e atualiza o jogo após a árvore aceitar a transição, preservando
-a sincronia em caso de erro de registro. O argumento é opcional no fluxo humano.
+`_registrar_jogada_realizada(jogada, estado_resultante)` atualiza o jogo
+depois que a árvore aceita a transição. Passes, convocações e jogadas da IA
+entregam um estado calculado em uma cópia, preservando o turno se o registro
+falhar.
 
 ### `controller/start_menu_controller.py`
 
@@ -1101,15 +1131,15 @@ $env:PYTHONHASHSEED = "0"
 ```
 
 Esse comando executa o plano combinado: heurísticas atual e inicial, Minimax
-com e sem alfa-beta, profundidades 1, 2 e 3, três repetições, seed 42 e cenário
-inicial completo. São **36 decisões de jogada**, sequenciais e sem limite
-automático de duração. Não são 36 partidas completas nem treinamento da IA.
-As buscas profundas com a heurística antiga podem demorar horas ou muito mais.
+com e sem alfa-beta, profundidades 1 e 2, uma repetição, seed 123 e cenário
+inicial completo. São **8 decisões de jogada**, sequenciais e sem limite
+automático de duração. As buscas com a heurística antiga podem demorar horas
+ou mais. Para reproduzir o plano histórico de 36 decisões, use
+`--profundidades 1 2 3 --repeticoes 3 --seed 42`.
 Você inicia e acompanha localmente; não há chamadas a serviços de IA ou APIs.
 
-`PYTHONHASHSEED=0` estabiliza a ordem dos conjuntos Python entre sessões. A seed
-do jogo estabiliza o setup, mas, sozinha, não fixa a iteração de conjuntos.
-Use a variável acima em cada terminal antes de rodar, especialmente ao retomar.
+`PYTHONHASHSEED=0` mantém o identificador do ambiente usado pelo executor ao
+retomar uma bateria. A opção `--seed` define a posição inicial do jogo.
 O CSV também registra a identificação dessa ordem, separando medições feitas
 em sessões incompatíveis. Não rode duas instâncias na mesma pasta de saída.
 

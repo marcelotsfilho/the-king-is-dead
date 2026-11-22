@@ -1,0 +1,13 @@
+ D experiments/DIARIO_DE_EXPERIMENTOS_2026-11-14_23-00-08_642961Z.md
+ M model/legal_move_generator.py
+ M model/minimax_agent.py
+ M relatorio_magica_overleaf.zip
+ M relatorio_magica_overleaf/README.md
+ M relatorio_magica_overleaf/main.tex
+ M relatorio_magica_overleaf/referencias.bib
+ M tests/test_legal_move_generator.py
+ M tests/test_minimax_agent.py
+?? backups/
+?? experiments/DIARIO_DE_EXPERIMENTOS_2026-11-16_18-13-20_613214Z.md
+?? experiments/results.csv.tmp
+

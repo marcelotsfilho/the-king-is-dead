@@ -1,0 +1,12 @@
+arquivo,semente,turno,cenario,melhor_passe,melhor_carta,apenas_passes
+passe_favoravel_55051.json,55051,35,passe_favoravel,1,1,1
+carta_necessaria_55114.json,55114,31,carta_necessaria,-1,1,-1
+carta_necessaria_55127.json,55127,33,carta_necessaria,-1,1,-1
+carta_necessaria_55179.json,55179,32,carta_necessaria,-1,1,-1
+carta_necessaria_55207.json,55207,34,carta_necessaria,-1,1,-1
+passe_favoravel_55264.json,55264,32,passe_favoravel,1,1,1
+passe_favoravel_55430.json,55430,32,passe_favoravel,1,1,1
+passe_favoravel_55439.json,55439,34,passe_favoravel,1,1,1
+guardar_carta_55738.json,55738,31,guardar_carta,1,-1,-1
+guardar_carta_59013.json,59013,29,guardar_carta,1,-1,-1
+guardar_carta_60577.json,60577,31,guardar_carta,1,-1,-1

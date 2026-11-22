@@ -1,0 +1,3 @@
+treinadas,partida,semente,lado_q,lado_inicial,adversario,epsilon,resultado,jogadas,cartas_primeiro_passe_q,cartas_primeiro_passe_adversario,cartas_primeira_disputa_q,cartas_primeira_disputa_adversario,turnos_q,estados_q_conhecidos,segundos,profundidade_adversario,poda_adversario,nos_adversario,podas_adversario,limite_segundos
+500,1,53010,1,1,alfa_beta,0,tempo_esgotado,,,,,,,,60,2,True,,,60
+500,2,53010,2,1,alfa_beta,0,tempo_esgotado,,,,,,,,60,2,True,,,60

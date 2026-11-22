@@ -1,3 +1,5 @@
+from collections import Counter
+
 from model.action_card import (
     CartaAcao,
     eh_carta_de_apoio,
@@ -67,64 +69,25 @@ class Jogo:
 
         return regiao_a, faccao_a, regiao_b, faccao_b
 
-    def _obter_posicoes_validas_para_negociar(self):
-        posicoes = []
-
-        for posicao in range(1, 9):
-            carta = self.estado.trilha_disputas.obter_carta(posicao)
-
-            if carta.virada_para_cima and not carta.possui_disco_negociacao:
-                posicoes.append(posicao)
-
-        return posicoes
-
-    def _existe_manobra_possivel(self):
-        regioes_com_seguidores = 0
-
-        for regiao in self.estado.tabuleiro.obter_regioes().values():
-            if not regiao.esta_resolvida() and regiao.total_de_seguidores() > 0:
-                regioes_com_seguidores += 1
-
-        return regioes_com_seguidores >= 2
-
-    def _existe_superacao_completa(self):
+    def obter_trocas_superar_manobra(self):
+        """Retorna pares ordenados pela origem e a quantidade exigida no destino."""
         tabuleiro = self.estado.tabuleiro
-
-        for nome_a in tabuleiro.obter_nomes_das_regioes():
-            regiao_a = tabuleiro.obter_regiao(nome_a)
-
-            if regiao_a.esta_resolvida() or regiao_a.total_de_seguidores() == 0:
-                continue
-
-            for nome_b in tabuleiro.regioes_adjacentes(nome_a):
-                regiao_b = tabuleiro.obter_regiao(nome_b)
-
-                if regiao_b.esta_resolvida():
+        regioes = {
+            regiao.nome: regiao
+            for regiao in tabuleiro.obter_regioes_com_seguidores()
+        }
+        pares = []
+        quantidade_destino = 0
+        for nome_a, regiao_a in regioes.items():
+            for nome_b in sorted(tabuleiro.regioes_adjacentes(nome_a)):
+                if nome_b not in regioes:
                     continue
-
-                for faccao in Faccao:
-                    if regiao_b.quantidade_de_seguidores(faccao) >= 2:
-                        return True
-
-        return False
-
-    def _existe_superacao_parcial(self):
-        tabuleiro = self.estado.tabuleiro
-
-        for nome_a in tabuleiro.obter_nomes_das_regioes():
-            regiao_a = tabuleiro.obter_regiao(nome_a)
-
-            if regiao_a.esta_resolvida() or regiao_a.total_de_seguidores() == 0:
-                continue
-
-            for nome_b in tabuleiro.regioes_adjacentes(nome_a):
-                regiao_b = tabuleiro.obter_regiao(nome_b)
-
-                if not regiao_b.esta_resolvida():
-                    if regiao_b.total_de_seguidores() > 0:
-                        return True
-
-        return False
+                regiao_b = regioes[nome_b]
+                pares.append((regiao_a, regiao_b))
+                if quantidade_destino < 2:
+                    maior_grupo = max(regiao_b.obter_seguidores().values())
+                    quantidade_destino = min(maior_grupo, 2)
+        return pares, quantidade_destino
 
     def _obter_ultima_acao_adversaria(self, tipo):
         if self.estado.ultima_acao is None:
@@ -293,7 +256,7 @@ class Jogo:
         }
 
     def _executar_negociar(self, parametros):
-        posicoes_validas = self._obter_posicoes_validas_para_negociar()
+        posicoes_validas = self.estado.trilha_disputas.obter_posicoes_negociaveis()
 
         if len(posicoes_validas) < 2:
             self._validar_convocacao_possivel(0)
@@ -337,7 +300,7 @@ class Jogo:
         }
 
     def _executar_manobra(self, parametros):
-        if not self._existe_manobra_possivel():
+        if len(self.estado.tabuleiro.obter_regioes_com_seguidores()) < 2:
             self._validar_convocacao_possivel(0)
             return {"sem_efeito": True}
 
@@ -367,10 +330,8 @@ class Jogo:
         return detalhes
 
     def _executar_superar_manobra(self, parametros):
-        existe_completa = self._existe_superacao_completa()
-        existe_parcial = self._existe_superacao_parcial()
-
-        if not existe_parcial:
+        _, quantidade_b = self.obter_trocas_superar_manobra()
+        if quantidade_b == 0:
             self._validar_convocacao_possivel(0)
             return {"sem_efeito": True}
 
@@ -382,13 +343,8 @@ class Jogo:
         if regiao_a.quantidade_de_seguidores(faccao_a) < 1:
             raise ValueError("A primeira região não possui o seguidor escolhido.")
 
-        quantidade_b = 1
-
-        if existe_completa:
-            quantidade_b = 2
-
         if regiao_b.quantidade_de_seguidores(faccao_b) < quantidade_b:
-            if existe_completa:
+            if quantidade_b == 2:
                 raise ValueError("Existe uma troca completa e ela deve ser realizada.")
             raise ValueError("A segunda região não possui o seguidor escolhido.")
 
@@ -408,24 +364,6 @@ class Jogo:
         regiao_b.adicionar_seguidores(faccao_a)
         return detalhes
 
-    def _determinar_faccao_controladora(self, regiao):
-        maior_quantidade = -1
-        faccoes_com_maior_quantidade = []
-
-        for faccao in Faccao:
-            quantidade = regiao.quantidade_de_seguidores(faccao)
-
-            if quantidade > maior_quantidade:
-                maior_quantidade = quantidade
-                faccoes_com_maior_quantidade = [faccao]
-            elif quantidade == maior_quantidade:
-                faccoes_com_maior_quantidade.append(faccao)
-
-        if maior_quantidade == 0 or len(faccoes_com_maior_quantidade) > 1:
-            return None
-
-        return faccoes_com_maior_quantidade[0]
-
     def _devolver_seguidores_para_reserva(self, seguidores_removidos):
         for faccao in Faccao:
             quantidade = seguidores_removidos[faccao]
@@ -433,25 +371,14 @@ class Jogo:
             if quantidade > 0:
                 self.estado.reserva.devolver(faccao, quantidade)
 
-    def _quantidade_conjuntos(self, jogador):
-        menor_quantidade = jogador.qtd_na_corte(Faccao.ESCOCESES)
-
-        for faccao in Faccao:
-            quantidade = jogador.qtd_na_corte(faccao)
-
-            if quantidade < menor_quantidade:
-                menor_quantidade = quantidade
-
-        return menor_quantidade
-
     def obter_quantidade_conjuntos(self, jogador):
         """Retorna quantos conjuntos completos o jogador possui na corte."""
-        return self._quantidade_conjuntos(jogador)
+        return min(jogador.qtd_na_corte(faccao) for faccao in Faccao)
 
     def _determinar_vencedor_invasao(self):
         jogadores = self.estado.obter_jogadores()
-        conjuntos_jogador_1 = self._quantidade_conjuntos(jogadores[0])
-        conjuntos_jogador_2 = self._quantidade_conjuntos(jogadores[1])
+        conjuntos_jogador_1 = self.obter_quantidade_conjuntos(jogadores[0])
+        conjuntos_jogador_2 = self.obter_quantidade_conjuntos(jogadores[1])
 
         if conjuntos_jogador_1 > conjuntos_jogador_2:
             return jogadores[0]
@@ -473,64 +400,19 @@ class Jogo:
             self.estado.ultima_mensagem += " Vencedor: "
             self.estado.ultima_mensagem += self.estado.vencedor.nome + "."
 
-    def _quantidade_regioes_controladas(self, faccao):
-        quantidade = 0
-
-        for regiao in self.estado.tabuleiro.obter_regioes().values():
-            if regiao.controlador == faccao:
-                quantidade += 1
-
-        return quantidade
-
-    def _indice_ultima_vitoria(self, faccao):
-        indice_encontrado = -1
-        indice_atual = 0
-
-        for vencedora in self.estado.historico_vitorias_faccoes:
-            if vencedora == faccao:
-                indice_encontrado = indice_atual
-
-            indice_atual += 1
-
-        return indice_encontrado
-
-    def _faccao_tem_prioridade(self, faccao_a, faccao_b):
-        controles_a = self._quantidade_regioes_controladas(faccao_a)
-        controles_b = self._quantidade_regioes_controladas(faccao_b)
-
-        if controles_a > controles_b:
-            return True
-
-        if controles_a < controles_b:
-            return False
-
-        ultima_a = self._indice_ultima_vitoria(faccao_a)
-        ultima_b = self._indice_ultima_vitoria(faccao_b)
-        return ultima_a > ultima_b
-
-    def _ordenar_faccoes_por_poder(self):
-        faccoes_restantes = []
-
-        for faccao in Faccao:
-            faccoes_restantes.append(faccao)
-
-        faccoes_ordenadas = []
-
-        while faccoes_restantes:
-            mais_poderosa = faccoes_restantes[0]
-
-            for faccao in faccoes_restantes:
-                if self._faccao_tem_prioridade(faccao, mais_poderosa):
-                    mais_poderosa = faccao
-
-            faccoes_ordenadas.append(mais_poderosa)
-            faccoes_restantes.remove(mais_poderosa)
-
-        return faccoes_ordenadas
-
     def obter_faccoes_por_poder(self):
-        """Retorna as facções na ordem usada pela coroação."""
-        return self._ordenar_faccoes_por_poder()
+        """Ordena por regiões controladas e, no empate, pela vitória mais recente."""
+        regioes = self.estado.tabuleiro.obter_regioes().values()
+        controles = Counter(regiao.controlador for regiao in regioes)
+        ultima_vitoria = {
+            faccao: indice
+            for indice, faccao in enumerate(self.estado.historico_vitorias_faccoes)
+        }
+        return sorted(
+            Faccao,
+            key=lambda faccao: (controles[faccao], ultima_vitoria.get(faccao, -1)),
+            reverse=True,
+        )
 
     def _determinar_vencedor_coroacao(self, faccoes_ordenadas):
         jogadores = self.estado.obter_jogadores()
@@ -555,7 +437,7 @@ class Jogo:
         self.estado.finalizado = True
         self.estado.fase_turno = FaseTurno.ENCERRADO
         self.estado.motivo_encerramento = "Coroação"
-        faccoes_ordenadas = self._ordenar_faccoes_por_poder()
+        faccoes_ordenadas = self.obter_faccoes_por_poder()
 
         if faccoes_ordenadas:
             self.estado.faccao_vencedora = faccoes_ordenadas[0]
@@ -672,7 +554,7 @@ class Jogo:
             return
 
         regiao = self.estado.tabuleiro.obter_regiao(carta.nome_regiao)
-        faccao_controladora = self._determinar_faccao_controladora(regiao)
+        faccao_controladora, _ = regiao.obter_lideranca()
         seguidores_removidos = regiao.remover_todos_os_seguidores()
 
         self._devolver_seguidores_para_reserva(seguidores_removidos)

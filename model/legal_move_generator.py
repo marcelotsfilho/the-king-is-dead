@@ -1,3 +1,5 @@
+from itertools import combinations
+
 from model.action_card import (
     eh_carta_de_apoio,
     obter_dados_da_carta_de_apoio,
@@ -5,7 +7,6 @@ from model.action_card import (
 from model.enums import Faccao, FaseTurno, TipoCartaAcao, TipoJogada
 from model.game import Jogo
 from model.game_state import EstadoJogo
-from model.game_state_serializer import SerializadorEstadoJogo
 from model.legal_move import Jogada
 from model.legal_move_executor import ExecutorJogada
 
@@ -14,87 +15,94 @@ class GeradorJogadas:
     """Encontra as jogadas completas permitidas em um estado."""
 
     def __init__(self):
-        self._serializador = SerializadorEstadoJogo()
         self._executor = ExecutorJogada()
 
     def gerar(self, estado):
         """Retorna todas as jogadas completas encontradas para o estado."""
+        return [jogada for jogada, _ in self.gerar_com_estados(estado)]
+
+    def gerar_com_estados(self, estado):
+        """Produz cada jogada legal junto com seu estado resultante."""
         if not isinstance(estado, EstadoJogo):
             raise TypeError("O estado deve ser uma instância de EstadoJogo.")
 
-        if estado.finalizado:
-            return []
+        if estado.finalizado or estado.fase_turno != FaseTurno.ESCOLHER_ACAO:
+            return
 
-        if estado.fase_turno != FaseTurno.ESCOLHER_ACAO:
-            return []
+        yield self._executar_passe(estado)
 
-        jogadas = []
-        passe = Jogada(TipoJogada.PASSE)
-        self._adicionar_se_valida(estado, passe, jogadas)
-
-        tipos_processados = []
-        jogador = estado.obter_jogador_atual()
-
-        for carta in jogador.obter_mao():
-            if carta.tipo in tipos_processados:
-                continue
-
-            tipos_processados.append(carta.tipo)
-            parametros_possiveis = self._gerar_parametros(
-                estado,
-                carta.tipo,
-            )
-
-            for parametros in parametros_possiveis:
-                estado_apos_carta = self._simular_carta(
-                    estado,
-                    carta.tipo,
-                    parametros,
-                )
-
-                if estado_apos_carta is None:
-                    continue
-
-                convocacoes = self._obter_convocacoes(estado_apos_carta)
-
-                for nome_regiao, faccao in convocacoes:
-                    jogada = Jogada(
-                        TipoJogada.CARTA,
-                        tipo_carta=carta.tipo,
-                        parametros=parametros,
-                        nome_regiao_convocacao=nome_regiao,
-                        faccao_convocacao=faccao,
+        for tipo_carta in self._obter_tipos_de_carta(estado):
+            opcoes = self._gerar_parametros(estado, tipo_carta)
+            for parametros, estado_apos_carta in self._simular_cartas(
+                estado, tipo_carta, opcoes
+            ):
+                for convocacao in self._obter_convocacoes(estado_apos_carta):
+                    yield self._concluir_carta(
+                        estado_apos_carta, tipo_carta, parametros, convocacao
                     )
-                    self._adicionar_se_valida(estado, jogada, jogadas)
 
-        return jogadas
-
-    def _adicionar_se_valida(self, estado, jogada, jogadas):
-        try:
-            self._executor.executar(estado, jogada)
-            jogadas.append(jogada)
-        except (TypeError, ValueError):
-            pass
-
-    def _simular_carta(self, estado, tipo_carta, parametros):
-        copia = self._serializador.copiar(estado)
-        jogador = copia.obter_jogador_atual()
-        carta_encontrada = None
-
-        for carta in jogador.obter_mao():
-            if carta.tipo == tipo_carta:
-                carta_encontrada = carta
-                break
-
-        if carta_encontrada is None:
+    def sortear_com_estado(self, estado, aleatorio):
+        """Sorteia um tipo de ação, depois parâmetros e convocação."""
+        if not isinstance(estado, EstadoJogo):
+            raise TypeError("O estado deve ser uma instância de EstadoJogo.")
+        if estado.finalizado or estado.fase_turno != FaseTurno.ESCOLHER_ACAO:
             return None
 
-        try:
-            jogo = Jogo(copia)
-            jogo.jogar_carta(carta_encontrada, parametros)
-            return copia
-        except (TypeError, ValueError):
-            return None
+        tipo_carta = aleatorio.choice([None, *self._obter_tipos_de_carta(estado)])
+        if tipo_carta is not None:
+            resultado = self.sortear_carta_com_estado(estado, tipo_carta, aleatorio)
+            if resultado is not None:
+                return resultado
+
+        return self._executar_passe(estado)
+
+    def sortear_carta_com_estado(self, estado, tipo_carta, aleatorio):
+        """Sorteia parâmetros e convocação para o tipo de carta indicado."""
+        opcoes = self._gerar_parametros(estado, tipo_carta)
+        aleatorio.shuffle(opcoes)
+        for parametros, estado_apos_carta in self._simular_cartas(
+            estado, tipo_carta, opcoes
+        ):
+            convocacoes = self._obter_convocacoes(estado_apos_carta)
+            if convocacoes:
+                return self._concluir_carta(
+                    estado_apos_carta, tipo_carta, parametros,
+                    aleatorio.choice(convocacoes),
+                )
+        return None
+
+    def _obter_tipos_de_carta(self, estado):
+        mao = estado.obter_jogador_atual().obter_mao()
+        return list(dict.fromkeys(carta.tipo for carta in mao))
+
+    def _executar_passe(self, estado):
+        passe = Jogada(TipoJogada.PASSE)
+        return passe, self._executor.executar(estado, passe)
+
+    def _simular_cartas(self, estado, tipo_carta, opcoes):
+        for parametros in opcoes:
+            try:
+                estado_apos_carta = self._executor.executar_carta(
+                    estado, tipo_carta, parametros
+                )
+            except ValueError:
+                # As regras podem rejeitar uma troca que desfaz a ação anterior.
+                continue
+            yield parametros, estado_apos_carta
+
+    def _concluir_carta(self, estado_apos_carta, tipo_carta, parametros, convocacao):
+        nome_regiao, faccao = convocacao
+        jogada = Jogada(
+            TipoJogada.CARTA,
+            tipo_carta=tipo_carta,
+            parametros=parametros,
+            nome_regiao_convocacao=nome_regiao,
+            faccao_convocacao=faccao,
+        )
+        resultado = self._executor.executar_convocacao(
+            estado_apos_carta, nome_regiao, faccao
+        )
+        return jogada, resultado
 
     def _obter_convocacoes(self, estado):
         convocacoes = []
@@ -146,170 +154,57 @@ class GeradorJogadas:
         return parametros
 
     def _gerar_parametros_negociar(self, estado):
-        posicoes = []
-
-        for posicao in range(1, 9):
-            carta = estado.trilha_disputas.obter_carta(posicao)
-
-            if carta.virada_para_cima and not carta.possui_disco_negociacao:
-                posicoes.append(posicao)
-
+        posicoes = estado.trilha_disputas.obter_posicoes_negociaveis()
         if len(posicoes) < 2:
             return [{}]
 
-        jogador = estado.obter_jogador_atual()
-
-        if not jogador.disco_negociacao_disponivel:
+        if not estado.obter_jogador_atual().disco_negociacao_disponivel:
             return []
 
         parametros = []
-
-        for indice_a in range(len(posicoes)):
-            for indice_b in range(indice_a + 1, len(posicoes)):
-                posicao_a = posicoes[indice_a]
-                posicao_b = posicoes[indice_b]
-                parametros.append(
-                    {
-                        "posicao_a": posicao_a,
-                        "posicao_b": posicao_b,
-                        "posicao_disco": posicao_a,
-                    }
-                )
-                parametros.append(
-                    {
-                        "posicao_a": posicao_a,
-                        "posicao_b": posicao_b,
-                        "posicao_disco": posicao_b,
-                    }
-                )
-
+        for posicao_a, posicao_b in combinations(posicoes, 2):
+            for posicao_disco in (posicao_a, posicao_b):
+                parametros.append({
+                    "posicao_a": posicao_a,
+                    "posicao_b": posicao_b,
+                    "posicao_disco": posicao_disco,
+                })
         return parametros
 
     def _gerar_parametros_manobrar(self, estado):
-        regioes = self._obter_regioes_com_seguidores(estado)
-
+        regioes = estado.tabuleiro.obter_regioes_com_seguidores()
         if len(regioes) < 2:
             return [{}]
 
         parametros = []
-
-        for indice_a in range(len(regioes)):
-            for indice_b in range(indice_a + 1, len(regioes)):
-                regiao_a = regioes[indice_a]
-                regiao_b = regioes[indice_b]
-
-                for faccao_a in Faccao:
-                    if regiao_a.quantidade_de_seguidores(faccao_a) == 0:
-                        continue
-
-                    for faccao_b in Faccao:
-                        if regiao_b.quantidade_de_seguidores(faccao_b) == 0:
-                            continue
-
-                        parametros.append(
-                            {
-                                "regiao_a": regiao_a.nome,
-                                "faccao_a": faccao_a,
-                                "regiao_b": regiao_b.nome,
-                                "faccao_b": faccao_b,
-                            }
-                        )
-
+        for regiao_a, regiao_b in combinations(regioes, 2):
+            parametros.extend(self._gerar_trocas(regiao_a, regiao_b, 1))
         return parametros
-
-    def _obter_regioes_com_seguidores(self, estado):
-        regioes = []
-
-        for regiao in estado.tabuleiro.obter_regioes().values():
-            if regiao.esta_resolvida():
-                continue
-
-            if regiao.total_de_seguidores() > 0:
-                regioes.append(regiao)
-
-        return regioes
 
     def _gerar_parametros_superar_manobra(self, estado):
-        existe_troca_com_dois = self._existe_troca_com_dois(estado)
-        quantidade_destino = 1
-
-        if existe_troca_com_dois:
-            quantidade_destino = 2
-
-        parametros = []
-        tabuleiro = estado.tabuleiro
-
-        for nome_a in tabuleiro.obter_nomes_das_regioes():
-            regiao_a = tabuleiro.obter_regiao(nome_a)
-
-            if regiao_a.esta_resolvida():
-                continue
-
-            for nome_b in tabuleiro.regioes_adjacentes(nome_a):
-                regiao_b = tabuleiro.obter_regiao(nome_b)
-
-                if regiao_b.esta_resolvida():
-                    continue
-
-                self._adicionar_trocas_superar_manobra(
-                    parametros,
-                    regiao_a,
-                    regiao_b,
-                    quantidade_destino,
-                )
-
-        if not parametros:
+        pares, quantidade_destino = Jogo(estado).obter_trocas_superar_manobra()
+        if quantidade_destino == 0:
             return [{}]
 
+        parametros = []
+        for regiao_a, regiao_b in pares:
+            parametros.extend(self._gerar_trocas(
+                regiao_a, regiao_b, quantidade_destino
+            ))
         return parametros
 
-    def _existe_troca_com_dois(self, estado):
-        tabuleiro = estado.tabuleiro
-
-        for nome_a in tabuleiro.obter_nomes_das_regioes():
-            regiao_a = tabuleiro.obter_regiao(nome_a)
-
-            if regiao_a.esta_resolvida():
-                continue
-
-            if regiao_a.total_de_seguidores() == 0:
-                continue
-
-            for nome_b in tabuleiro.regioes_adjacentes(nome_a):
-                regiao_b = tabuleiro.obter_regiao(nome_b)
-
-                if regiao_b.esta_resolvida():
-                    continue
-
-                for faccao in Faccao:
-                    if regiao_b.quantidade_de_seguidores(faccao) >= 2:
-                        return True
-
-        return False
-
-    def _adicionar_trocas_superar_manobra(
-        self,
-        parametros,
-        regiao_a,
-        regiao_b,
-        quantidade_destino,
-    ):
+    def _gerar_trocas(self, regiao_a, regiao_b, quantidade_destino):
         for faccao_a in Faccao:
             if regiao_a.quantidade_de_seguidores(faccao_a) == 0:
                 continue
-
             for faccao_b in Faccao:
-                quantidade = regiao_b.quantidade_de_seguidores(faccao_b)
-
-                if quantidade >= quantidade_destino:
-                    parametros.append(
-                        {
-                            "regiao_a": regiao_a.nome,
-                            "faccao_a": faccao_a,
-                            "regiao_b": regiao_b.nome,
-                            "faccao_b": faccao_b,
-                        }
-                    )
+                if regiao_b.quantidade_de_seguidores(faccao_b) >= quantidade_destino:
+                    yield {
+                        "regiao_a": regiao_a.nome,
+                        "faccao_a": faccao_a,
+                        "regiao_b": regiao_b.nome,
+                        "faccao_b": faccao_b,
+                    }
 
     def _gerar_parametros_reunir(self, estado):
         regioes = []

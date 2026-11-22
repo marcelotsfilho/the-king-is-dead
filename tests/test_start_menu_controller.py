@@ -17,7 +17,13 @@ class VisaoFalsa:
 class TesteControladorMenuInicial(unittest.TestCase):
     def test_alterna_tipos_e_retorna_ao_humano(self):
         controlador = ControladorMenuInicial(VisaoFalsa(), "nao_existe.json")
-        for tipo in (TipoJogador.MINIMAX, TipoJogador.ALFA_BETA, TipoJogador.HUMANO):
+        for tipo in (
+            TipoJogador.MINIMAX,
+            TipoJogador.ALFA_BETA,
+            TipoJogador.MONTE_CARLO,
+            TipoJogador.Q_LEARNING,
+            TipoJogador.HUMANO,
+        ):
             controlador._alterar_configuracao("tipo", 1)
             self.assertEqual(controlador.configuracao_partida.obter_tipo_jogador(1), tipo)
         self.assertEqual(controlador.configuracao_partida.obter_tipo_jogador(0), TipoJogador.HUMANO)
@@ -37,6 +43,18 @@ class TesteControladorMenuInicial(unittest.TestCase):
         controlador._alterar_configuracao("diminuir", 0)
         self.assertEqual(configuracao.obter_profundidade(0), 1)
 
+    def test_monte_carlo_permite_ajustar_simulacoes_nas_opcoes(self):
+        controlador = ControladorMenuInicial(VisaoFalsa(), "nao_existe.json")
+        configuracao = controlador.configuracao_partida
+        for _ in range(3):
+            controlador._alterar_configuracao("tipo", 0)
+        controlador._alterar_configuracao("aumentar", 0)
+        self.assertEqual(configuracao.obter_simulacoes_monte_carlo(0), 300)
+        controlador._alterar_configuracao("aumentar", 0)
+        self.assertEqual(configuracao.obter_simulacoes_monte_carlo(0), 1000)
+        controlador._alterar_configuracao("diminuir", 0)
+        self.assertEqual(configuracao.obter_simulacoes_monte_carlo(0), 300)
+
     def test_loop_recebe_selecao_e_preserva_configuracao_ao_iniciar(self):
         visao = Mock()
         visao.obter_acao_configuracao.side_effect = [("tipo", 0), ("aumentar", 0), None]
@@ -50,6 +68,21 @@ class TesteControladorMenuInicial(unittest.TestCase):
         self.assertIs(controlador.configuracao_partida, configuracao)
         self.assertEqual(configuracao.obter_tipo_jogador(0), TipoJogador.MINIMAX)
         self.assertEqual(configuracao.obter_profundidade(0), 2)
+
+    def test_loop_preserva_orcamento_monte_carlo_ao_iniciar(self):
+        visao = Mock()
+        visao.obter_acao_configuracao.side_effect = [
+            ("tipo", 0), ("tipo", 0), ("tipo", 0), ("aumentar", 0), None,
+        ]
+        visao.obter_acao_menu_inicial.return_value = "novo_jogo"
+        visao.obter_acao_tela_configuracao.return_value = "iniciar"
+        configuracao = ConfiguracaoPartida()
+        controlador = ControladorMenuInicial(visao, "nao_existe.json", configuracao)
+        clique = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(0, 0))
+        with patch("pygame.event.get", return_value=[clique] * 6):
+            self.assertEqual(controlador.executar(), "novo_jogo")
+        self.assertEqual(configuracao.obter_tipo_jogador(0), TipoJogador.MONTE_CARLO)
+        self.assertEqual(configuracao.obter_simulacoes_monte_carlo(0), 300)
 
     def test_voltar_descarta_edicao_e_continuar_nao_abre_configuracao(self):
         visao = Mock()

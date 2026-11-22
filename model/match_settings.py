@@ -1,12 +1,16 @@
 from model.enums import TipoJogador
 
 
+SIMULACOES_MONTE_CARLO_DISPONIVEIS = (100, 300, 1000, 3000, 5000)
+
+
 class ConfiguracaoPartida:
     """Guarda tipo e profundidade de cada jogador, separados das regras."""
 
     def __init__(self):
         self._tipos = [TipoJogador.HUMANO, TipoJogador.HUMANO]
         self._profundidades = [1, 1]
+        self._simulacoes_monte_carlo = [100, 100]
 
     def _validar_indice(self, indice):
         if isinstance(indice, bool) or not isinstance(indice, int):
@@ -35,3 +39,15 @@ class ConfiguracaoPartida:
         if profundidade < 1:
             raise ValueError("A profundidade mínima é 1.")
         self._profundidades[indice] = profundidade
+
+    def obter_simulacoes_monte_carlo(self, indice):
+        self._validar_indice(indice)
+        return self._simulacoes_monte_carlo[indice]
+
+    def definir_simulacoes_monte_carlo(self, indice, quantidade):
+        self._validar_indice(indice)
+        if isinstance(quantidade, bool) or not isinstance(quantidade, int):
+            raise TypeError("A quantidade de simulações deve ser inteira.")
+        if quantidade not in SIMULACOES_MONTE_CARLO_DISPONIVEIS:
+            raise ValueError("A quantidade de simulações não está disponível.")
+        self._simulacoes_monte_carlo[indice] = quantidade

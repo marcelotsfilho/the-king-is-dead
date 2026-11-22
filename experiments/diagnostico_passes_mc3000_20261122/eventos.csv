@@ -1,0 +1,368 @@
+﻿seed,ply,actor,algorithm,action,description,pass_streak_before,pass_streak_after,pass_pair_completed,region_resolved,region_name,resolved_regions_before,resolved_regions_after,mc_cards_before,ab_cards_before,mc_cards_after,ab_cards_after,both_hands_nonempty_after,last_message
+0,1,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando escoceses de Strathclyde por escoceses de Essex e convocar galeses de Gwynedd.,0,0,False,False,,0,0,8,8,7,8,True,Monte Carlo convocou um seguidor galeses de Gwynedd.
+0,2,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 1 e 2, com disco na posição 1 e convocar escoceses de Strathclyde.",0,0,False,False,,0,0,7,8,7,7,True,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+0,3,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Lancaster, galeses em Northumbria, ingleses em Strathclyde e convocar ingleses de Devon.",0,0,False,False,,0,0,7,7,6,7,True,Monte Carlo convocou um seguidor ingleses de Devon.
+0,4,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando escoceses de Strathclyde por galeses de Northumbria e convocar escoceses de Moray.,0,0,False,False,,0,0,6,7,6,6,True,Alfa-beta convocou um seguidor escoceses de Moray.
+0,5,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Essex, galeses em Northumbria, ingleses em Northumbria e convocar ingleses de Warwick.",0,0,False,False,,0,0,6,6,5,6,True,Monte Carlo convocou um seguidor ingleses de Warwick.
+0,6,Alfa-beta,Alfa-beta,card,Jogar Scottish Support em Strathclyde e convocar escoceses de Strathclyde.,0,0,False,False,,0,0,5,6,5,5,True,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+0,7,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 5 e 7, com disco na posição 7 e convocar escoceses de Gwynedd.",0,0,False,False,,0,0,5,5,4,5,True,Monte Carlo convocou um seguidor escoceses de Gwynedd.
+0,8,Alfa-beta,Alfa-beta,card,Jogar English Support em Devon e convocar escoceses de Strathclyde.,0,0,False,False,,0,0,4,5,4,4,True,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+0,9,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando galeses de Warwick por galeses de Gwynedd e convocar galeses de Devon.,0,0,False,False,,0,0,4,4,3,4,True,Monte Carlo convocou um seguidor galeses de Devon.
+0,10,Alfa-beta,Alfa-beta,card,Jogar Welsh Support em Lancaster e convocar escoceses de Lancaster.,0,0,False,False,,0,0,3,4,3,3,True,Alfa-beta convocou um seguidor escoceses de Lancaster.
+0,11,Monte Carlo,Monte Carlo,card,Jogar Scottish Support em Northumbria e convocar escoceses de Essex.,0,0,False,False,,0,0,3,3,2,3,True,Monte Carlo convocou um seguidor escoceses de Essex.
+0,12,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,2,3,2,3,True,Alfa-beta passou.
+0,13,Monte Carlo,Monte Carlo,card,Jogar Welsh Support sem efeito e convocar ingleses de Strathclyde.,1,0,False,False,,0,0,2,3,1,3,True,Monte Carlo convocou um seguidor ingleses de Strathclyde.
+0,14,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,1,3,1,3,True,Alfa-beta passou.
+0,15,Monte Carlo,Monte Carlo,card,Jogar English Support sem efeito e convocar escoceses de Warwick.,1,0,False,False,,0,0,1,3,0,3,False,Monte Carlo convocou um seguidor escoceses de Warwick.
+0,16,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando galeses de Strathclyde por escoceses de Moray e convocar escoceses de Northumbria.,0,0,False,False,,0,0,0,3,0,2,False,Alfa-beta convocou um seguidor escoceses de Northumbria.
+0,17,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,0,0,0,2,0,2,False,Monte Carlo passou.
+0,18,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Strathclyde,0,1,0,2,0,2,False,Strathclyde foi controlada pelos escoceses.
+0,19,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,2,0,2,False,Monte Carlo passou.
+0,20,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Moray, galeses em Northumbria, ingleses em Moray e convocar escoceses de Moray.",1,0,False,False,,1,1,0,2,0,1,False,Alfa-beta convocou um seguidor escoceses de Moray.
+0,21,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,1,0,1,False,Monte Carlo passou.
+0,22,Alfa-beta,Alfa-beta,card,Jogar Assemble colocando escoceses em Moray e convocar escoceses de Moray.,1,0,False,False,,1,1,0,1,0,0,False,Alfa-beta convocou um seguidor escoceses de Moray.
+0,23,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,0,0,0,False,Monte Carlo passou.
+0,24,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,1,2,0,0,0,0,False,Gwynedd foi controlada pelos galeses.
+0,25,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,0,0,0,False,Monte Carlo passou.
+0,26,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,2,3,0,0,0,0,False,Warwick foi controlada pelos galeses.
+0,27,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,0,0,0,False,Monte Carlo passou.
+0,28,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Northumbria,3,4,0,0,0,0,False,Northumbria ficou instável.
+0,29,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Monte Carlo passou.
+0,30,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Devon,4,5,0,0,0,0,False,Devon foi controlada pelos ingleses.
+0,31,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Monte Carlo passou.
+0,32,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Lancaster,5,6,0,0,0,0,False,Lancaster ficou instável.
+0,33,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Monte Carlo passou.
+0,34,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Moray,6,7,0,0,0,0,False,Moray foi controlada pelos ingleses.
+0,35,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Monte Carlo passou.
+0,36,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Essex,7,8,0,0,0,0,False,Essex foi controlada pelos ingleses. Vencedor: Monte Carlo.
+1,1,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,8,8,8,8,True,Monte Carlo passou.
+1,2,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 3 e 5, com disco na posição 3 e convocar ingleses de Northumbria.",1,0,False,False,,0,0,8,8,7,8,True,Alfa-beta convocou um seguidor ingleses de Northumbria.
+1,3,Alfa-beta,Alfa-beta,card,Jogar Scottish Support em Strathclyde e convocar escoceses de Lancaster.,0,0,False,False,,0,0,7,8,7,7,True,Monte Carlo convocou um seguidor escoceses de Lancaster.
+1,4,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando ingleses de Devon por ingleses de Essex e convocar galeses de Essex.,0,0,False,False,,0,0,7,7,6,7,True,Alfa-beta convocou um seguidor galeses de Essex.
+1,5,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,6,7,6,7,True,Monte Carlo passou.
+1,6,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Strathclyde, galeses em Northumbria, ingleses em Warwick e convocar ingleses de Essex.",1,0,False,False,,0,0,6,7,5,7,True,Alfa-beta convocou um seguidor ingleses de Essex.
+1,7,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 1 e 3, com disco na posição 1 e convocar escoceses de Lancaster.",0,0,False,False,,0,0,5,7,5,6,True,Monte Carlo convocou um seguidor escoceses de Lancaster.
+1,8,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando galeses de Warwick por ingleses de Essex e convocar galeses de Gwynedd.,0,0,False,False,,0,0,5,6,4,6,True,Alfa-beta convocou um seguidor galeses de Gwynedd.
+1,9,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando ingleses de Moray por escoceses de Devon e convocar escoceses de Moray.,0,0,False,False,,0,0,4,6,4,5,True,Monte Carlo convocou um seguidor escoceses de Moray.
+1,10,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando galeses em Strathclyde, ingleses em Gwynedd e convocar ingleses de Gwynedd.",0,0,False,False,,0,0,4,5,3,5,True,Alfa-beta convocou um seguidor ingleses de Gwynedd.
+1,11,Alfa-beta,Alfa-beta,card,Jogar Welsh Support em Lancaster e convocar escoceses de Moray.,0,0,False,False,,0,0,3,5,3,4,True,Monte Carlo convocou um seguidor escoceses de Moray.
+1,12,Monte Carlo,Monte Carlo,card,Jogar Welsh Support em Warwick e convocar escoceses de Gwynedd.,0,0,False,False,,0,0,3,4,2,4,True,Alfa-beta convocou um seguidor escoceses de Gwynedd.
+1,13,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando ingleses de Northumbria por ingleses de Strathclyde e convocar escoceses de Gwynedd.,0,0,False,False,,0,0,2,4,2,3,True,Monte Carlo convocou um seguidor escoceses de Gwynedd.
+1,14,Monte Carlo,Monte Carlo,card,Jogar English Support em Northumbria e convocar escoceses de Northumbria.,0,0,False,False,,0,0,2,3,1,3,True,Alfa-beta convocou um seguidor escoceses de Northumbria.
+1,15,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,1,3,1,3,True,Monte Carlo passou.
+1,16,Monte Carlo,Monte Carlo,card,Jogar Scottish Support sem efeito e convocar galeses de Northumbria.,1,0,False,False,,0,0,1,3,0,3,False,Alfa-beta convocou um seguidor galeses de Northumbria.
+1,17,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,0,3,0,3,False,Monte Carlo passou.
+1,18,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Devon,0,1,0,3,0,3,False,Devon foi controlada pelos ingleses.
+1,19,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,1,1,0,3,0,3,False,Monte Carlo passou.
+1,20,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Essex,1,2,0,3,0,3,False,Essex foi controlada pelos galeses.
+1,21,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,2,2,0,3,0,3,False,Monte Carlo passou.
+1,22,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Lancaster,2,3,0,3,0,3,False,Lancaster foi controlada pelos galeses.
+1,23,Alfa-beta,Alfa-beta,card,Jogar English Support em Warwick e convocar galeses de Strathclyde.,0,0,False,False,,3,3,0,3,0,2,False,Monte Carlo convocou um seguidor galeses de Strathclyde.
+1,24,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,2,0,2,False,Alfa-beta passou.
+1,25,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando galeses em Moray, ingleses em Moray e convocar galeses de Moray.",1,0,False,False,,3,3,0,2,0,1,False,Monte Carlo convocou um seguidor galeses de Moray.
+1,26,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,1,0,1,False,Alfa-beta passou.
+1,27,Alfa-beta,Alfa-beta,card,Jogar Assemble colocando galeses em Moray e convocar galeses de Moray.,1,0,False,False,,3,3,0,1,0,0,False,Monte Carlo convocou um seguidor galeses de Moray.
+1,28,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,0,0,0,False,Alfa-beta passou.
+1,29,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,3,4,0,0,0,0,False,Warwick foi controlada pelos ingleses.
+1,30,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Alfa-beta passou.
+1,31,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Strathclyde,4,5,0,0,0,0,False,Strathclyde foi controlada pelos escoceses.
+1,32,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Alfa-beta passou.
+1,33,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Moray,5,6,0,0,0,0,False,Moray foi controlada pelos escoceses.
+1,34,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Alfa-beta passou.
+1,35,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,6,7,0,0,0,0,False,Gwynedd foi controlada pelos galeses.
+1,36,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Alfa-beta passou.
+1,37,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Northumbria,7,8,0,0,0,0,False,Northumbria foi controlada pelos ingleses. Vencedor: Alfa-beta.
+2,1,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando galeses de Lancaster por escoceses de Warwick e convocar escoceses de Moray.,0,0,False,False,,0,0,8,8,8,7,True,Alfa-beta convocou um seguidor escoceses de Moray.
+2,2,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 3 e 5, com disco na posição 5 e convocar galeses de Lancaster.",0,0,False,False,,0,0,8,7,7,7,True,Monte Carlo convocou um seguidor galeses de Lancaster.
+2,3,Alfa-beta,Alfa-beta,card,Jogar Scottish Support em Strathclyde e convocar escoceses de Moray.,0,0,False,False,,0,0,7,7,7,6,True,Alfa-beta convocou um seguidor escoceses de Moray.
+2,4,Monte Carlo,Monte Carlo,card,Jogar Welsh Support em Devon e convocar escoceses de Strathclyde.,0,0,False,False,,0,0,7,6,6,6,True,Monte Carlo convocou um seguidor escoceses de Strathclyde.
+2,5,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando galeses de Gwynedd por escoceses de Devon e convocar escoceses de Strathclyde.,0,0,False,False,,0,0,6,6,6,5,True,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+2,6,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Northumbria, galeses em Gwynedd, ingleses em Strathclyde e convocar ingleses de Essex.",0,0,False,False,,0,0,6,5,5,5,True,Monte Carlo convocou um seguidor ingleses de Essex.
+2,7,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Gwynedd, ingleses em Warwick e convocar escoceses de Lancaster.",0,0,False,False,,0,0,5,5,5,4,True,Alfa-beta convocou um seguidor escoceses de Lancaster.
+2,8,Monte Carlo,Monte Carlo,card,Jogar Assemble colocando ingleses em Devon e convocar ingleses de Strathclyde.,0,0,False,False,,0,0,5,4,4,4,True,Monte Carlo convocou um seguidor ingleses de Strathclyde.
+2,9,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,4,4,4,4,True,Alfa-beta passou.
+2,10,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando escoceses de Lancaster por ingleses de Northumbria e convocar galeses de Gwynedd.,1,0,False,False,,0,0,4,4,3,4,True,Monte Carlo convocou um seguidor galeses de Gwynedd.
+2,11,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 1 e 7, com disco na posição 1 e convocar escoceses de Essex.",0,0,False,False,,0,0,3,4,3,3,True,Alfa-beta convocou um seguidor escoceses de Essex.
+2,12,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando galeses de Gwynedd por galeses de Warwick e convocar galeses de Warwick.,0,0,False,False,,0,0,3,3,2,3,True,Monte Carlo convocou um seguidor galeses de Warwick.
+2,13,Alfa-beta,Alfa-beta,card,Jogar Welsh Support sem efeito e convocar galeses de Gwynedd.,0,0,False,False,,0,0,2,3,2,2,True,Alfa-beta convocou um seguidor galeses de Gwynedd.
+2,14,Monte Carlo,Monte Carlo,card,Jogar English Support em Northumbria e convocar escoceses de Northumbria.,0,0,False,False,,0,0,2,2,1,2,True,Monte Carlo convocou um seguidor escoceses de Northumbria.
+2,15,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,1,2,1,2,True,Alfa-beta passou.
+2,16,Monte Carlo,Monte Carlo,card,Jogar Scottish Support sem efeito e convocar galeses de Devon.,1,0,False,False,,0,0,1,2,0,2,False,Monte Carlo convocou um seguidor galeses de Devon.
+2,17,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,0,2,0,2,False,Alfa-beta passou.
+2,18,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Devon,0,1,0,2,0,2,False,Devon foi controlada pelos galeses.
+2,19,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,1,1,0,2,0,2,False,Alfa-beta passou.
+2,20,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Lancaster,1,2,0,2,0,2,False,Lancaster foi controlada pelos ingleses.
+2,21,Alfa-beta,Alfa-beta,card,Jogar English Support em Strathclyde e convocar ingleses de Northumbria.,0,0,False,False,,2,2,0,2,0,1,False,Alfa-beta convocou um seguidor ingleses de Northumbria.
+2,22,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,1,0,1,False,Monte Carlo passou.
+2,23,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Northumbria,2,3,0,1,0,1,False,Northumbria foi controlada pelos escoceses.
+2,24,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,1,0,1,False,Monte Carlo passou.
+2,25,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Moray, galeses em Warwick, ingleses em Moray e convocar ingleses de Warwick.",1,0,False,False,,3,3,0,1,0,0,False,Alfa-beta convocou um seguidor ingleses de Warwick.
+2,26,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,0,0,0,False,Monte Carlo passou.
+2,27,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Strathclyde,3,4,0,0,0,0,False,Strathclyde foi controlada pelos ingleses.
+2,28,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Monte Carlo passou.
+2,29,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,4,5,0,0,0,0,False,Gwynedd foi controlada pelos escoceses.
+2,30,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Monte Carlo passou.
+2,31,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Essex,5,6,0,0,0,0,False,Essex ficou instável.
+2,32,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Monte Carlo passou.
+2,33,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,6,7,0,0,0,0,False,Warwick ficou instável.
+2,34,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Monte Carlo passou.
+2,35,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Moray,7,8,0,0,0,0,False,Moray foi controlada pelos escoceses. Vencedor: Alfa-beta.
+3,1,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 2 e 7, com disco na posição 2 e convocar ingleses de Strathclyde.",0,0,False,False,,0,0,8,8,7,8,True,Alfa-beta convocou um seguidor ingleses de Strathclyde.
+3,2,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 1 e 4, com disco na posição 1 e convocar escoceses de Moray.",0,0,False,False,,0,0,7,8,7,7,True,Monte Carlo convocou um seguidor escoceses de Moray.
+3,3,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Northumbria, galeses em Strathclyde, ingleses em Devon e convocar escoceses de Essex.",0,0,False,False,,0,0,7,7,6,7,True,Alfa-beta convocou um seguidor escoceses de Essex.
+3,4,Alfa-beta,Alfa-beta,card,Jogar Scottish Support em Strathclyde e convocar escoceses de Moray.,0,0,False,False,,0,0,6,7,6,6,True,Monte Carlo convocou um seguidor escoceses de Moray.
+3,5,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Essex, galeses em Northumbria, ingleses em Northumbria e convocar galeses de Essex.",0,0,False,False,,0,0,6,6,5,6,True,Alfa-beta convocou um seguidor galeses de Essex.
+3,6,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando ingleses de Moray por escoceses de Northumbria e convocar escoceses de Moray.,0,0,False,False,,0,0,5,6,5,5,True,Monte Carlo convocou um seguidor escoceses de Moray.
+3,7,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando ingleses de Lancaster por ingleses de Devon e convocar escoceses de Strathclyde.,0,0,False,False,,0,0,5,5,4,5,True,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+3,8,Alfa-beta,Alfa-beta,card,Jogar English Support em Devon e convocar escoceses de Strathclyde.,0,0,False,False,,0,0,4,5,4,4,True,Monte Carlo convocou um seguidor escoceses de Strathclyde.
+3,9,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando galeses de Gwynedd por escoceses de Warwick e convocar ingleses de Northumbria.,0,0,False,False,,0,0,4,4,3,4,True,Alfa-beta convocou um seguidor ingleses de Northumbria.
+3,10,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,3,4,3,4,True,Monte Carlo passou.
+3,11,Monte Carlo,Monte Carlo,card,Jogar Welsh Support em Warwick e convocar galeses de Devon.,1,0,False,False,,0,0,3,4,2,4,True,Alfa-beta convocou um seguidor galeses de Devon.
+3,12,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando escoceses de Devon por galeses de Warwick e convocar escoceses de Essex.,0,0,False,False,,0,0,2,4,2,3,True,Monte Carlo convocou um seguidor escoceses de Essex.
+3,13,Monte Carlo,Monte Carlo,card,Jogar English Support sem efeito e convocar escoceses de Moray.,0,0,False,False,,0,0,2,3,1,3,True,Alfa-beta convocou um seguidor escoceses de Moray.
+3,14,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,1,3,1,3,True,Monte Carlo passou.
+3,15,Monte Carlo,Monte Carlo,card,Jogar Scottish Support sem efeito e convocar galeses de Strathclyde.,1,0,False,False,,0,0,1,3,0,3,False,Alfa-beta convocou um seguidor galeses de Strathclyde.
+3,16,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,0,3,0,3,False,Monte Carlo passou.
+3,17,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Northumbria,0,1,0,3,0,3,False,Northumbria ficou instável.
+3,18,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando galeses em Strathclyde, ingleses em Moray e convocar escoceses de Lancaster.",0,0,False,False,,1,1,0,3,0,2,False,Monte Carlo convocou um seguidor escoceses de Lancaster.
+3,19,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,2,0,2,False,Alfa-beta passou.
+3,20,Alfa-beta,Alfa-beta,card,Jogar Welsh Support em Lancaster e convocar escoceses de Warwick.,1,0,False,False,,1,1,0,2,0,1,False,Monte Carlo convocou um seguidor escoceses de Warwick.
+3,21,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,1,0,1,False,Alfa-beta passou.
+3,22,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando galeses em Moray, ingleses em Moray e convocar escoceses de Warwick.",1,0,False,False,,1,1,0,1,0,0,False,Monte Carlo convocou um seguidor escoceses de Warwick.
+3,23,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,0,0,0,False,Alfa-beta passou.
+3,24,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,1,2,0,0,0,0,False,Gwynedd foi controlada pelos galeses.
+3,25,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,0,0,0,False,Alfa-beta passou.
+3,26,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Devon,2,3,0,0,0,0,False,Devon foi controlada pelos ingleses.
+3,27,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,0,0,0,False,Alfa-beta passou.
+3,28,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Moray,3,4,0,0,0,0,False,Moray foi controlada pelos ingleses.
+3,29,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Alfa-beta passou.
+3,30,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Strathclyde,4,5,0,0,0,0,False,Strathclyde foi controlada pelos galeses.
+3,31,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Alfa-beta passou.
+3,32,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Essex,5,6,0,0,0,0,False,Essex foi controlada pelos ingleses.
+3,33,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Alfa-beta passou.
+3,34,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,6,7,0,0,0,0,False,Warwick ficou instável.
+3,35,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Alfa-beta passou.
+3,36,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Lancaster,7,8,0,0,0,0,False,Lancaster ficou instável. Vencedor: Alfa-beta.
+4,1,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando escoceses de Lancaster por galeses de Warwick e convocar escoceses de Northumbria.,0,0,False,False,,0,0,8,8,7,8,True,Monte Carlo convocou um seguidor escoceses de Northumbria.
+4,2,Alfa-beta,Alfa-beta,card,Jogar English Support em Northumbria e convocar escoceses de Moray.,0,0,False,False,,0,0,7,8,7,7,True,Alfa-beta convocou um seguidor escoceses de Moray.
+4,3,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Warwick, galeses em Northumbria, ingleses em Gwynedd e convocar ingleses de Gwynedd.",0,0,False,False,,0,0,7,7,6,7,True,Monte Carlo convocou um seguidor ingleses de Gwynedd.
+4,4,Alfa-beta,Alfa-beta,card,Jogar Welsh Support em Warwick e convocar escoceses de Moray.,0,0,False,False,,0,0,6,7,6,6,True,Alfa-beta convocou um seguidor escoceses de Moray.
+4,5,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 4 e 8, com disco na posição 8 e convocar escoceses de Essex.",0,0,False,False,,0,0,6,6,5,6,True,Monte Carlo convocou um seguidor escoceses de Essex.
+4,6,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,5,6,5,6,True,Alfa-beta passou.
+4,7,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando galeses de Northumbria por escoceses de Devon e convocar escoceses de Warwick.,1,0,False,False,,0,0,5,6,4,6,True,Monte Carlo convocou um seguidor escoceses de Warwick.
+4,8,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,4,6,4,6,True,Alfa-beta passou.
+4,9,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Strathclyde, galeses em Strathclyde, ingleses em Warwick e convocar ingleses de Warwick.",1,0,False,False,,0,0,4,6,3,6,True,Monte Carlo convocou um seguidor ingleses de Warwick.
+4,10,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,3,6,3,6,True,Alfa-beta passou.
+4,11,Monte Carlo,Monte Carlo,card,Jogar English Support em Devon e convocar galeses de Gwynedd.,1,0,False,False,,0,0,3,6,2,6,True,Monte Carlo convocou um seguidor galeses de Gwynedd.
+4,12,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,2,6,2,6,True,Alfa-beta passou.
+4,13,Monte Carlo,Monte Carlo,card,Jogar Scottish Support sem efeito e convocar galeses de Strathclyde.,1,0,False,False,,0,0,2,6,1,6,True,Monte Carlo convocou um seguidor galeses de Strathclyde.
+4,14,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,1,6,1,6,True,Alfa-beta passou.
+4,15,Monte Carlo,Monte Carlo,card,Jogar Welsh Support sem efeito e convocar galeses de Northumbria.,1,0,False,False,,0,0,1,6,0,6,False,Monte Carlo convocou um seguidor galeses de Northumbria.
+4,16,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,0,6,0,6,False,Alfa-beta passou.
+4,17,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Strathclyde,0,1,0,6,0,6,False,Strathclyde ficou instável.
+4,18,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,1,1,0,6,0,6,False,Alfa-beta passou.
+4,19,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Essex,1,2,0,6,0,6,False,Essex foi controlada pelos ingleses.
+4,20,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 3 e 5, com disco na posição 3 e convocar ingleses de Northumbria.",0,0,False,False,,2,2,0,6,0,5,False,Alfa-beta convocou um seguidor ingleses de Northumbria.
+4,21,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,5,0,5,False,Monte Carlo passou.
+4,22,Alfa-beta,Alfa-beta,card,Jogar Scottish Support em Northumbria e convocar ingleses de Northumbria.,1,0,False,False,,2,2,0,5,0,4,False,Alfa-beta convocou um seguidor ingleses de Northumbria.
+4,23,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,4,0,4,False,Monte Carlo passou.
+4,24,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando escoceses de Moray por escoceses de Northumbria e convocar ingleses de Northumbria.,1,0,False,False,,2,2,0,4,0,3,False,Alfa-beta convocou um seguidor ingleses de Northumbria.
+4,25,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,3,0,3,False,Monte Carlo passou.
+4,26,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando galeses de Moray por escoceses de Northumbria e convocar ingleses de Lancaster.,1,0,False,False,,2,2,0,3,0,2,False,Alfa-beta convocou um seguidor ingleses de Lancaster.
+4,27,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,2,0,2,False,Monte Carlo passou.
+4,28,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando galeses em Moray, ingleses em Moray e convocar ingleses de Moray.",1,0,False,False,,2,2,0,2,0,1,False,Alfa-beta convocou um seguidor ingleses de Moray.
+4,29,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,1,0,1,False,Monte Carlo passou.
+4,30,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Devon,2,3,0,1,0,1,False,Devon foi controlada pelos ingleses.
+4,31,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,1,0,1,False,Monte Carlo passou.
+4,32,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Lancaster,3,4,0,1,0,1,False,Lancaster foi controlada pelos galeses.
+4,33,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,1,0,1,False,Monte Carlo passou.
+4,34,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Moray, galeses em Warwick, ingleses em Moray e convocar ingleses de Moray.",1,0,False,False,,4,4,0,1,0,0,False,Alfa-beta convocou um seguidor ingleses de Moray.
+4,35,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Monte Carlo passou.
+4,36,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,4,5,0,0,0,0,False,Warwick foi controlada pelos galeses.
+4,37,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Monte Carlo passou.
+4,38,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Moray,5,6,0,0,0,0,False,Moray foi controlada pelos escoceses.
+4,39,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Monte Carlo passou.
+4,40,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Northumbria,6,7,0,0,0,0,False,Northumbria ficou instável.
+4,41,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Monte Carlo passou.
+4,42,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,7,8,0,0,0,0,False,Gwynedd foi controlada pelos galeses. Vencedor: Monte Carlo.
+5,1,Alfa-beta,Alfa-beta,card,Jogar English Support em Northumbria e convocar escoceses de Moray.,0,0,False,False,,0,0,8,8,8,7,True,Monte Carlo convocou um seguidor escoceses de Moray.
+5,2,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando ingleses de Moray por escoceses de Northumbria e convocar galeses de Moray.,0,0,False,False,,0,0,8,7,7,7,True,Alfa-beta convocou um seguidor galeses de Moray.
+5,3,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,7,7,7,7,True,Monte Carlo passou.
+5,4,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 7 e 8, com disco na posição 8 e convocar escoceses de Strathclyde.",1,0,False,False,,0,0,7,7,6,7,True,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+5,5,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,6,7,6,7,True,Monte Carlo passou.
+5,6,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Northumbria, galeses em Lancaster, ingleses em Moray e convocar escoceses de Moray.",1,0,False,False,,0,0,6,7,5,7,True,Alfa-beta convocou um seguidor escoceses de Moray.
+5,7,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,5,7,5,7,True,Monte Carlo passou.
+5,8,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Devon, galeses em Essex, ingleses em Gwynedd e convocar ingleses de Strathclyde.",1,0,False,False,,0,0,5,7,4,7,True,Alfa-beta convocou um seguidor ingleses de Strathclyde.
+5,9,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando escoceses de Moray por ingleses de Lancaster e convocar escoceses de Moray.,0,0,False,False,,0,0,4,7,4,6,True,Monte Carlo convocou um seguidor escoceses de Moray.
+5,10,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando ingleses de Northumbria por escoceses de Warwick e convocar galeses de Strathclyde.,0,0,False,False,,0,0,4,6,3,6,True,Alfa-beta convocou um seguidor galeses de Strathclyde.
+5,11,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,3,6,3,6,True,Monte Carlo passou.
+5,12,Monte Carlo,Monte Carlo,card,Jogar English Support em Northumbria e convocar ingleses de Moray.,1,0,False,False,,0,0,3,6,2,6,True,Alfa-beta convocou um seguidor ingleses de Moray.
+5,13,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando escoceses de Northumbria por galeses de Lancaster e convocar escoceses de Northumbria.,0,0,False,False,,0,0,2,6,2,5,True,Monte Carlo convocou um seguidor escoceses de Northumbria.
+5,14,Monte Carlo,Monte Carlo,card,Jogar Welsh Support em Devon e convocar ingleses de Warwick.,0,0,False,False,,0,0,2,5,1,5,True,Alfa-beta convocou um seguidor ingleses de Warwick.
+5,15,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,1,5,1,5,True,Monte Carlo passou.
+5,16,Monte Carlo,Monte Carlo,card,Jogar Scottish Support sem efeito e convocar galeses de Strathclyde.,1,0,False,False,,0,0,1,5,0,5,False,Alfa-beta convocou um seguidor galeses de Strathclyde.
+5,17,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,0,5,0,5,False,Monte Carlo passou.
+5,18,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Essex,0,1,0,5,0,5,False,Essex foi controlada pelos galeses.
+5,19,Alfa-beta,Alfa-beta,card,Jogar Scottish Support sem efeito e convocar galeses de Gwynedd.,0,0,False,False,,1,1,0,5,0,4,False,Monte Carlo convocou um seguidor galeses de Gwynedd.
+5,20,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,4,0,4,False,Alfa-beta passou.
+5,21,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Lancaster,1,2,0,4,0,4,False,Lancaster foi controlada pelos escoceses.
+5,22,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,4,0,4,False,Alfa-beta passou.
+5,23,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 3 e 4, com disco na posição 3 e convocar escoceses de Devon.",1,0,False,False,,2,2,0,4,0,3,False,Monte Carlo convocou um seguidor escoceses de Devon.
+5,24,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,3,0,3,False,Alfa-beta passou.
+5,25,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Moray, galeses em Moray, ingleses em Moray e convocar escoceses de Moray.",1,0,False,False,,2,2,0,3,0,2,False,Monte Carlo convocou um seguidor escoceses de Moray.
+5,26,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,2,0,2,False,Alfa-beta passou.
+5,27,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Moray, galeses em Moray, ingleses em Moray e convocar escoceses de Moray.",1,0,False,False,,2,2,0,2,0,1,False,Monte Carlo convocou um seguidor escoceses de Moray.
+5,28,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,1,0,1,False,Alfa-beta passou.
+5,29,Alfa-beta,Alfa-beta,card,Jogar Welsh Support em Northumbria e convocar galeses de Northumbria.,1,0,False,False,,2,2,0,1,0,0,False,Monte Carlo convocou um seguidor galeses de Northumbria.
+5,30,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,0,0,0,False,Alfa-beta passou.
+5,31,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Moray,2,3,0,0,0,0,False,Moray foi controlada pelos ingleses.
+5,32,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,0,0,0,False,Alfa-beta passou.
+5,33,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Strathclyde,3,4,0,0,0,0,False,Strathclyde ficou instável.
+5,34,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Alfa-beta passou.
+5,35,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Devon,4,5,0,0,0,0,False,Devon foi controlada pelos galeses.
+5,36,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Alfa-beta passou.
+5,37,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Northumbria,5,6,0,0,0,0,False,Northumbria ficou instável.
+5,38,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Alfa-beta passou.
+5,39,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,6,7,0,0,0,0,False,Gwynedd foi controlada pelos escoceses.
+5,40,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Alfa-beta passou.
+5,41,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,7,8,0,0,0,0,False,Warwick foi controlada pelos ingleses. Vencedor: Alfa-beta.
+6,1,Alfa-beta,Alfa-beta,card,Jogar English Support em Northumbria e convocar escoceses de Warwick.,0,0,False,False,,0,0,8,8,8,7,True,Alfa-beta convocou um seguidor escoceses de Warwick.
+6,2,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Lancaster, galeses em Strathclyde, ingleses em Essex e convocar ingleses de Devon.",0,0,False,False,,0,0,8,7,7,7,True,Monte Carlo convocou um seguidor ingleses de Devon.
+6,3,Alfa-beta,Alfa-beta,card,Jogar Scottish Support em Strathclyde e convocar escoceses de Moray.,0,0,False,False,,0,0,7,7,7,6,True,Alfa-beta convocou um seguidor escoceses de Moray.
+6,4,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 3 e 6, com disco na posição 6 e convocar ingleses de Northumbria.",0,0,False,False,,0,0,7,6,6,6,True,Monte Carlo convocou um seguidor ingleses de Northumbria.
+6,5,Alfa-beta,Alfa-beta,card,Jogar Welsh Support em Lancaster e convocar escoceses de Lancaster.,0,0,False,False,,0,0,6,6,6,5,True,Alfa-beta convocou um seguidor escoceses de Lancaster.
+6,6,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando ingleses de Moray por escoceses de Strathclyde e convocar galeses de Strathclyde.,0,0,False,False,,0,0,6,5,5,5,True,Monte Carlo convocou um seguidor galeses de Strathclyde.
+6,7,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando escoceses de Moray por galeses de Strathclyde e convocar escoceses de Lancaster.,0,0,False,False,,0,0,5,5,5,4,True,Alfa-beta convocou um seguidor escoceses de Lancaster.
+6,8,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando escoceses de Moray por galeses de Gwynedd e convocar ingleses de Lancaster.,0,0,False,False,,0,0,5,4,4,4,True,Monte Carlo convocou um seguidor ingleses de Lancaster.
+6,9,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando escoceses de Moray por ingleses de Strathclyde e convocar escoceses de Gwynedd.,0,0,False,False,,0,0,4,4,4,3,True,Alfa-beta convocou um seguidor escoceses de Gwynedd.
+6,10,Monte Carlo,Monte Carlo,card,Jogar Assemble colocando ingleses em Essex e convocar escoceses de Warwick.,0,0,False,False,,0,0,4,3,3,3,True,Monte Carlo convocou um seguidor escoceses de Warwick.
+6,11,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,3,3,3,3,True,Alfa-beta passou.
+6,12,Monte Carlo,Monte Carlo,card,Jogar English Support em Warwick e convocar galeses de Lancaster.,1,0,False,False,,0,0,3,3,2,3,True,Monte Carlo convocou um seguidor galeses de Lancaster.
+6,13,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 1 e 2, com disco na posição 1 e convocar escoceses de Moray.",0,0,False,False,,0,0,2,3,2,2,True,Alfa-beta convocou um seguidor escoceses de Moray.
+6,14,Monte Carlo,Monte Carlo,card,Jogar Scottish Support sem efeito e convocar galeses de Northumbria.,0,0,False,False,,0,0,2,2,1,2,True,Monte Carlo convocou um seguidor galeses de Northumbria.
+6,15,Alfa-beta,Alfa-beta,card,Jogar Assemble colocando  e convocar ingleses de Northumbria.,0,0,False,False,,0,0,1,2,1,1,True,Alfa-beta convocou um seguidor ingleses de Northumbria.
+6,16,Monte Carlo,Monte Carlo,card,Jogar Welsh Support sem efeito e convocar galeses de Moray.,0,0,False,False,,0,0,1,1,0,1,False,Monte Carlo convocou um seguidor galeses de Moray.
+6,17,Alfa-beta,Alfa-beta,card,Jogar Assemble colocando  e convocar ingleses de Moray.,0,0,False,False,,0,0,0,1,0,0,False,Alfa-beta convocou um seguidor ingleses de Moray.
+6,18,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,0,0,0,0,0,0,False,Monte Carlo passou.
+6,19,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Devon,0,1,0,0,0,0,False,Devon foi controlada pelos escoceses.
+6,20,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,0,0,0,False,Monte Carlo passou.
+6,21,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,1,2,0,0,0,0,False,Warwick foi controlada pelos ingleses.
+6,22,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,0,0,0,False,Monte Carlo passou.
+6,23,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Northumbria,2,3,0,0,0,0,False,Northumbria foi controlada pelos ingleses.
+6,24,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,0,0,0,False,Monte Carlo passou.
+6,25,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,3,4,0,0,0,0,False,Gwynedd foi controlada pelos galeses.
+6,26,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Monte Carlo passou.
+6,27,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Moray,4,5,0,0,0,0,False,Moray ficou instável.
+6,28,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Monte Carlo passou.
+6,29,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Essex,5,6,0,0,0,0,False,Essex foi controlada pelos ingleses.
+6,30,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Monte Carlo passou.
+6,31,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Lancaster,6,7,0,0,0,0,False,Lancaster foi controlada pelos galeses.
+6,32,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Monte Carlo passou.
+6,33,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Strathclyde,7,8,0,0,0,0,False,Strathclyde foi controlada pelos escoceses. Vencedor: Monte Carlo.
+7,1,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 3 e 7, com disco na posição 3 e convocar ingleses de Strathclyde.",0,0,False,False,,0,0,8,8,7,8,True,Alfa-beta convocou um seguidor ingleses de Strathclyde.
+7,2,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,7,8,7,8,True,Monte Carlo passou.
+7,3,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Gwynedd, galeses em Lancaster, ingleses em Warwick e convocar ingleses de Warwick.",1,0,False,False,,0,0,7,8,6,8,True,Alfa-beta convocou um seguidor ingleses de Warwick.
+7,4,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,6,8,6,8,True,Monte Carlo passou.
+7,5,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando escoceses de Essex por escoceses de Devon e convocar galeses de Gwynedd.,1,0,False,False,,0,0,6,8,5,8,True,Alfa-beta convocou um seguidor galeses de Gwynedd.
+7,6,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 1 e 2, com disco na posição 1 e convocar escoceses de Northumbria.",0,0,False,False,,0,0,5,8,5,7,True,Monte Carlo convocou um seguidor escoceses de Northumbria.
+7,7,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Northumbria, galeses em Strathclyde, ingleses em Moray e convocar galeses de Northumbria.",0,0,False,False,,0,0,5,7,4,7,True,Alfa-beta convocou um seguidor galeses de Northumbria.
+7,8,Alfa-beta,Alfa-beta,card,Jogar Scottish Support em Strathclyde e convocar escoceses de Northumbria.,0,0,False,False,,0,0,4,7,4,6,True,Monte Carlo convocou um seguidor escoceses de Northumbria.
+7,9,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando ingleses de Lancaster por galeses de Northumbria e convocar galeses de Moray.,0,0,False,False,,0,0,4,6,3,6,True,Alfa-beta convocou um seguidor galeses de Moray.
+7,10,Alfa-beta,Alfa-beta,card,Jogar Welsh Support em Lancaster e convocar escoceses de Lancaster.,0,0,False,False,,0,0,3,6,3,5,True,Monte Carlo convocou um seguidor escoceses de Lancaster.
+7,11,Monte Carlo,Monte Carlo,card,Jogar Welsh Support em Warwick e convocar escoceses de Strathclyde.,0,0,False,False,,0,0,3,5,2,5,True,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+7,12,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando escoceses de Moray por galeses de Devon e convocar escoceses de Moray.,0,0,False,False,,0,0,2,5,2,4,True,Monte Carlo convocou um seguidor escoceses de Moray.
+7,13,Monte Carlo,Monte Carlo,card,Jogar English Support em Northumbria e convocar ingleses de Moray.,0,0,False,False,,0,0,2,4,1,4,True,Alfa-beta convocou um seguidor ingleses de Moray.
+7,14,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando ingleses de Northumbria por ingleses de Essex e convocar escoceses de Moray.,0,0,False,False,,0,0,1,4,1,3,True,Monte Carlo convocou um seguidor escoceses de Moray.
+7,15,Monte Carlo,Monte Carlo,card,Jogar Scottish Support sem efeito e convocar escoceses de Gwynedd.,0,0,False,False,,0,0,1,3,0,3,False,Alfa-beta convocou um seguidor escoceses de Gwynedd.
+7,16,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,0,3,0,3,False,Monte Carlo passou.
+7,17,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Devon,0,1,0,3,0,3,False,Devon foi controlada pelos escoceses.
+7,18,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Moray, galeses em Essex e convocar escoceses de Lancaster.",0,0,False,False,,1,1,0,3,0,2,False,Monte Carlo convocou um seguidor escoceses de Lancaster.
+7,19,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,2,0,2,False,Alfa-beta passou.
+7,20,Alfa-beta,Alfa-beta,card,Jogar English Support sem efeito e convocar escoceses de Warwick.,1,0,False,False,,1,1,0,2,0,1,False,Monte Carlo convocou um seguidor escoceses de Warwick.
+7,21,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,1,0,1,False,Alfa-beta passou.
+7,22,Alfa-beta,Alfa-beta,card,Jogar Assemble colocando escoceses em Moray e convocar escoceses de Moray.,1,0,False,False,,1,1,0,1,0,0,False,Monte Carlo convocou um seguidor escoceses de Moray.
+7,23,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,0,0,0,False,Alfa-beta passou.
+7,24,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Essex,1,2,0,0,0,0,False,Essex foi controlada pelos galeses.
+7,25,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,0,0,0,False,Alfa-beta passou.
+7,26,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Strathclyde,2,3,0,0,0,0,False,Strathclyde foi controlada pelos escoceses.
+7,27,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,0,0,0,False,Alfa-beta passou.
+7,28,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,3,4,0,0,0,0,False,Gwynedd foi controlada pelos galeses.
+7,29,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Alfa-beta passou.
+7,30,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Moray,4,5,0,0,0,0,False,Moray ficou instável.
+7,31,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Alfa-beta passou.
+7,32,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Lancaster,5,6,0,0,0,0,False,Lancaster foi controlada pelos galeses.
+7,33,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Alfa-beta passou.
+7,34,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Northumbria,6,7,0,0,0,0,False,Northumbria foi controlada pelos ingleses.
+7,35,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Alfa-beta passou.
+7,36,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,7,8,0,0,0,0,False,Warwick foi controlada pelos ingleses. Vencedor: Alfa-beta.
+8,1,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Warwick, galeses em Lancaster, ingleses em Lancaster e convocar galeses de Essex.",0,0,False,False,,0,0,8,8,7,8,True,Monte Carlo convocou um seguidor galeses de Essex.
+8,2,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,7,8,7,8,True,Alfa-beta passou.
+8,3,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 5 e 8, com disco na posição 8 e convocar galeses de Northumbria.",1,0,False,False,,0,0,7,8,6,8,True,Monte Carlo convocou um seguidor galeses de Northumbria.
+8,4,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,6,8,6,8,True,Alfa-beta passou.
+8,5,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando ingleses de Devon por escoceses de Gwynedd e convocar ingleses de Gwynedd.,1,0,False,False,,0,0,6,8,5,8,True,Monte Carlo convocou um seguidor ingleses de Gwynedd.
+8,6,Alfa-beta,Alfa-beta,card,Jogar Welsh Support em Devon e convocar escoceses de Essex.,0,0,False,False,,0,0,5,8,5,7,True,Alfa-beta convocou um seguidor escoceses de Essex.
+8,7,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando galeses de Moray por escoceses de Northumbria e convocar ingleses de Northumbria.,0,0,False,False,,0,0,5,7,4,7,True,Monte Carlo convocou um seguidor ingleses de Northumbria.
+8,8,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando ingleses de Strathclyde por galeses de Northumbria e convocar escoceses de Strathclyde.,0,0,False,False,,0,0,4,7,4,6,True,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+8,9,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Lancaster, galeses em Moray, ingleses em Moray e convocar galeses de Lancaster.",0,0,False,False,,0,0,4,6,3,6,True,Monte Carlo convocou um seguidor galeses de Lancaster.
+8,10,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 1 e 2, com disco na posição 1 e convocar escoceses de Lancaster.",0,0,False,False,,0,0,3,6,3,5,True,Alfa-beta convocou um seguidor escoceses de Lancaster.
+8,11,Monte Carlo,Monte Carlo,card,Jogar English Support em Warwick e convocar ingleses de Moray.,0,0,False,False,,0,0,3,5,2,5,True,Monte Carlo convocou um seguidor ingleses de Moray.
+8,12,Alfa-beta,Alfa-beta,card,Jogar Scottish Support em Strathclyde e convocar escoceses de Lancaster.,0,0,False,False,,0,0,2,5,2,4,True,Alfa-beta convocou um seguidor escoceses de Lancaster.
+8,13,Monte Carlo,Monte Carlo,card,Jogar Scottish Support sem efeito e convocar escoceses de Devon.,0,0,False,False,,0,0,2,4,1,4,True,Monte Carlo convocou um seguidor escoceses de Devon.
+8,14,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando galeses de Northumbria por escoceses de Strathclyde e convocar escoceses de Warwick.,0,0,False,False,,0,0,1,4,1,3,True,Alfa-beta convocou um seguidor escoceses de Warwick.
+8,15,Monte Carlo,Monte Carlo,card,Jogar Welsh Support sem efeito e convocar escoceses de Northumbria.,0,0,False,False,,0,0,1,3,0,3,False,Monte Carlo convocou um seguidor escoceses de Northumbria.
+8,16,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,0,3,0,3,False,Alfa-beta passou.
+8,17,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Moray,0,1,0,3,0,3,False,Moray foi controlada pelos escoceses.
+8,18,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Strathclyde, galeses em Warwick, ingleses em Gwynedd e convocar escoceses de Strathclyde.",0,0,False,False,,1,1,0,3,0,2,False,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+8,19,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,2,0,2,False,Monte Carlo passou.
+8,20,Alfa-beta,Alfa-beta,card,Jogar English Support sem efeito e convocar escoceses de Devon.,1,0,False,False,,1,1,0,2,0,1,False,Alfa-beta convocou um seguidor escoceses de Devon.
+8,21,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,1,0,1,False,Monte Carlo passou.
+8,22,Alfa-beta,Alfa-beta,card,Jogar Assemble colocando escoceses em Strathclyde e convocar escoceses de Strathclyde.,1,0,False,False,,1,1,0,1,0,0,False,Alfa-beta convocou um seguidor escoceses de Strathclyde.
+8,23,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,1,1,0,0,0,0,False,Monte Carlo passou.
+8,24,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,1,2,0,0,0,0,False,Warwick foi controlada pelos ingleses.
+8,25,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,0,0,0,False,Monte Carlo passou.
+8,26,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Essex,2,3,0,0,0,0,False,Essex foi controlada pelos ingleses.
+8,27,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,0,0,0,False,Monte Carlo passou.
+8,28,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,3,4,0,0,0,0,False,Gwynedd foi controlada pelos galeses.
+8,29,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Monte Carlo passou.
+8,30,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Lancaster,4,5,0,0,0,0,False,Lancaster ficou instável.
+8,31,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Monte Carlo passou.
+8,32,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Devon,5,6,0,0,0,0,False,Devon foi controlada pelos galeses.
+8,33,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Monte Carlo passou.
+8,34,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Northumbria,6,7,0,0,0,0,False,Northumbria ficou instável.
+8,35,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Monte Carlo passou.
+8,36,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Strathclyde,7,8,0,0,0,0,False,Strathclyde ficou instável. Vencedor: Monte Carlo.
+9,1,Alfa-beta,Alfa-beta,card,Jogar Outmanoeuvre trocando ingleses de Northumbria por escoceses de Lancaster e convocar escoceses de Lancaster.,0,0,False,False,,0,0,8,8,8,7,True,Monte Carlo convocou um seguidor escoceses de Lancaster.
+9,2,Monte Carlo,Monte Carlo,card,Jogar Outmanoeuvre trocando galeses de Moray por escoceses de Strathclyde e convocar galeses de Strathclyde.,0,0,False,False,,0,0,8,7,7,7,True,Alfa-beta convocou um seguidor galeses de Strathclyde.
+9,3,Alfa-beta,Alfa-beta,card,Jogar Scottish Support em Strathclyde e convocar escoceses de Moray.,0,0,False,False,,0,0,7,7,7,6,True,Monte Carlo convocou um seguidor escoceses de Moray.
+9,4,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando escoceses em Lancaster, galeses em Devon, ingleses em Gwynedd e convocar escoceses de Warwick.",0,0,False,False,,0,0,7,6,6,6,True,Alfa-beta convocou um seguidor escoceses de Warwick.
+9,5,Alfa-beta,Alfa-beta,card,Jogar Welsh Support em Lancaster e convocar escoceses de Moray.,0,0,False,False,,0,0,6,6,6,5,True,Monte Carlo convocou um seguidor escoceses de Moray.
+9,6,Monte Carlo,Monte Carlo,card,"Jogar Assemble colocando galeses em Warwick, ingleses em Lancaster e convocar galeses de Essex.",0,0,False,False,,0,0,6,5,5,5,True,Alfa-beta convocou um seguidor galeses de Essex.
+9,7,Alfa-beta,Alfa-beta,card,Jogar English Support em Northumbria e convocar escoceses de Moray.,0,0,False,False,,0,0,5,5,5,4,True,Monte Carlo convocou um seguidor escoceses de Moray.
+9,8,Monte Carlo,Monte Carlo,card,Jogar Manoeuvre trocando escoceses de Moray por galeses de Gwynedd e convocar escoceses de Lancaster.,0,0,False,False,,0,0,5,4,4,4,True,Alfa-beta convocou um seguidor escoceses de Lancaster.
+9,9,Alfa-beta,Alfa-beta,card,"Jogar Negotiate trocando as posições 1 e 7, com disco na posição 1 e convocar escoceses de Moray.",0,0,False,False,,0,0,4,4,4,3,True,Monte Carlo convocou um seguidor escoceses de Moray.
+9,10,Monte Carlo,Monte Carlo,card,"Jogar Negotiate trocando as posições 1 e 6, com disco na posição 6 e convocar escoceses de Lancaster.",0,0,False,False,,0,0,4,3,3,3,True,Alfa-beta convocou um seguidor escoceses de Lancaster.
+9,11,Alfa-beta,Alfa-beta,card,Jogar Manoeuvre trocando galeses de Moray por escoceses de Northumbria e convocar escoceses de Northumbria.,0,0,False,False,,0,0,3,3,3,2,True,Monte Carlo convocou um seguidor escoceses de Northumbria.
+9,12,Monte Carlo,Monte Carlo,card,Jogar Welsh Support em Lancaster e convocar escoceses de Moray.,0,0,False,False,,0,0,3,2,2,2,True,Alfa-beta convocou um seguidor escoceses de Moray.
+9,13,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,2,2,2,2,True,Monte Carlo passou.
+9,14,Monte Carlo,Monte Carlo,card,Jogar Scottish Support sem efeito e convocar ingleses de Gwynedd.,1,0,False,False,,0,0,2,2,1,2,True,Alfa-beta convocou um seguidor ingleses de Gwynedd.
+9,15,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,1,2,1,2,True,Monte Carlo passou.
+9,16,Monte Carlo,Monte Carlo,card,Jogar English Support sem efeito e convocar galeses de Warwick.,1,0,False,False,,0,0,1,2,0,2,False,Alfa-beta convocou um seguidor galeses de Warwick.
+9,17,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,0,0,0,2,0,2,False,Monte Carlo passou.
+9,18,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Northumbria,0,1,0,2,0,2,False,Northumbria foi controlada pelos ingleses.
+9,19,Alfa-beta,Alfa-beta,pass,Passar.,0,1,False,False,,1,1,0,2,0,2,False,Monte Carlo passou.
+9,20,Monte Carlo,Monte Carlo,pass,Passar.,1,0,True,True,Essex,1,2,0,2,0,2,False,Essex foi controlada pelos ingleses.
+9,21,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Moray, galeses em Strathclyde, ingleses em Moray e convocar ingleses de Moray.",0,0,False,False,,2,2,0,2,0,1,False,Monte Carlo convocou um seguidor ingleses de Moray.
+9,22,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,2,2,0,1,0,1,False,Alfa-beta passou.
+9,23,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Moray,2,3,0,1,0,1,False,Moray foi controlada pelos escoceses.
+9,24,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,1,0,1,False,Alfa-beta passou.
+9,25,Alfa-beta,Alfa-beta,card,"Jogar Assemble colocando escoceses em Strathclyde, galeses em Warwick, ingleses em Lancaster e convocar ingleses de Strathclyde.",1,0,False,False,,3,3,0,1,0,0,False,Monte Carlo convocou um seguidor ingleses de Strathclyde.
+9,26,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,3,3,0,0,0,0,False,Alfa-beta passou.
+9,27,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Strathclyde,3,4,0,0,0,0,False,Strathclyde foi controlada pelos escoceses.
+9,28,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,4,4,0,0,0,0,False,Alfa-beta passou.
+9,29,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Warwick,4,5,0,0,0,0,False,Warwick ficou instável.
+9,30,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,5,5,0,0,0,0,False,Alfa-beta passou.
+9,31,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Gwynedd,5,6,0,0,0,0,False,Gwynedd foi controlada pelos escoceses.
+9,32,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,6,6,0,0,0,0,False,Alfa-beta passou.
+9,33,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Lancaster,6,7,0,0,0,0,False,Lancaster foi controlada pelos galeses.
+9,34,Monte Carlo,Monte Carlo,pass,Passar.,0,1,False,False,,7,7,0,0,0,0,False,Alfa-beta passou.
+9,35,Alfa-beta,Alfa-beta,pass,Passar.,1,0,True,True,Devon,7,8,0,0,0,0,False,Devon foi controlada pelos galeses. Vencedor: Monte Carlo.

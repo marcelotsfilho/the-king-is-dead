@@ -1,0 +1,212 @@
+{
+  "versao": 1,
+  "tabuleiro": {
+    "regioes": [
+      {
+        "nome": "Moray",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": "ESCOCESES",
+        "instavel": false
+      },
+      {
+        "nome": "Strathclyde",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": "ESCOCESES",
+        "instavel": false
+      },
+      {
+        "nome": "Northumbria",
+        "seguidores": {
+          "ESCOCESES": 4,
+          "GALESES": 0,
+          "INGLESES": 2
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Lancaster",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": "INGLESES",
+        "instavel": false
+      },
+      {
+        "nome": "Gwynedd",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": "GALESES",
+        "instavel": false
+      },
+      {
+        "nome": "Warwick",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 8,
+          "INGLESES": 1
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Essex",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": null,
+        "instavel": true
+      },
+      {
+        "nome": "Devon",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": null,
+        "instavel": true
+      }
+    ]
+  },
+  "trilha_disputas": {
+    "cartas": [
+      {
+        "nome_regiao": "Lancaster",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Gwynedd",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": true
+      },
+      {
+        "nome_regiao": "Moray",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Devon",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Strathclyde",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Essex",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Northumbria",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": true
+      },
+      {
+        "nome_regiao": "Warwick",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      }
+    ]
+  },
+  "jogadores": [
+    {
+      "nome": "Jogador 1",
+      "mao": [
+        "REUNIR"
+      ],
+      "descarte": [
+        "APOIO_ESCOCES",
+        "APOIO_GALES",
+        "APOIO_INGLES",
+        "NEGOCIAR",
+        "MANOBRAR",
+        "SUPERAR_MANOBRA",
+        "REUNIR"
+      ],
+      "corte": {
+        "ESCOCESES": 3,
+        "GALESES": 1,
+        "INGLESES": 5
+      },
+      "disco_negociacao_disponivel": false
+    },
+    {
+      "nome": "Jogador 2",
+      "mao": [
+        "REUNIR"
+      ],
+      "descarte": [
+        "APOIO_ESCOCES",
+        "APOIO_INGLES",
+        "MANOBRAR",
+        "SUPERAR_MANOBRA",
+        "NEGOCIAR",
+        "APOIO_GALES",
+        "REUNIR"
+      ],
+      "corte": {
+        "ESCOCESES": 3,
+        "GALESES": 1,
+        "INGLESES": 5
+      },
+      "disco_negociacao_disponivel": false
+    }
+  ],
+  "reserva": {
+    "ESCOCESES": 6,
+    "GALESES": 6,
+    "INGLESES": 3
+  },
+  "indice_jogador_atual": 0,
+  "passes_consecutivos": 0,
+  "historico_vitorias_faccoes": [
+    "INGLESES",
+    "GALESES",
+    "ESCOCESES",
+    "ESCOCESES"
+  ],
+  "ultima_acao": {
+    "jogador": 1,
+    "tipo": "REUNIR",
+    "detalhes": {
+      "destinos": {
+        "ESCOCESES": "Northumbria",
+        "GALESES": "Warwick",
+        "INGLESES": "Northumbria"
+      }
+    },
+    "convocacao": {
+      "regiao": "Warwick",
+      "faccao": "ESCOCESES"
+    }
+  },
+  "ultimo_jogador_que_agiu": 1,
+  "ordem_jogadores_sem_cartas": [],
+  "fase_turno": "ESCOLHER_ACAO",
+  "carta_em_execucao": null,
+  "finalizado": false,
+  "vencedor": null,
+  "faccao_vencedora": null,
+  "motivo_encerramento": null,
+  "ultima_mensagem": "Essex ficou instável."
+}

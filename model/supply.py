@@ -1,4 +1,5 @@
 from model.enums import Faccao
+from model.validacao import validar_quantidade_de_seguidores
 
 
 class ReservaSeguidores:
@@ -27,23 +28,11 @@ class ReservaSeguidores:
 
     def total(self):
         """Retorna a soma dos seguidores de todas as facções."""
-        total = 0
+        return sum(self._quantidades.values())
 
-        for faccao in Faccao:
-            total += self._quantidades[faccao]
-
-        return total
-
-    def _validar_quantidade(self, quantidade):
-        if isinstance(quantidade, bool) or not isinstance(quantidade, int):
-            raise TypeError("A quantidade deve ser um número inteiro.")
-
-        if quantidade <= 0:
-            raise ValueError("A quantidade deve ser maior que zero.")
-        
     def retirar(self, faccao, quantidade=1):
         """Retira seguidores da reserva quando houver quantidade suficiente."""
-        self._validar_quantidade(quantidade)
+        validar_quantidade_de_seguidores(quantidade)
 
         if quantidade > self._quantidades[faccao]:
             raise ValueError("Não há seguidores suficientes na reserva.")
@@ -52,5 +41,5 @@ class ReservaSeguidores:
 
     def devolver(self, faccao, quantidade=1):
         """Devolve seguidores para a reserva."""
-        self._validar_quantidade(quantidade)
+        validar_quantidade_de_seguidores(quantidade)
         self._quantidades[faccao] += quantidade

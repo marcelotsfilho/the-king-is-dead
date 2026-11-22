@@ -101,7 +101,7 @@ class AvaliadorEstado:
         carta = estado.trilha_disputas.obter_proxima_carta()
         if carta is not None:
             regiao = estado.tabuleiro.obter_regiao(carta.nome_regiao)
-            lider, margem = self._obter_lider_da_regiao(regiao)
+            lider, _ = regiao.obter_lideranca()
             if lider is None:
                 peso *= 2
                 if estado.passes_consecutivos == 1:
@@ -156,43 +156,14 @@ class AvaliadorEstado:
             regiao = estado.tabuleiro.obter_regiao(carta.nome_regiao)
             if regiao.esta_resolvida():
                 continue
-            lider, margem = self._obter_lider_da_regiao(regiao)
+            lider, margem = regiao.obter_lideranca()
             if lider is not None:
                 poder[lider] += min(margem, 2)
                 if proxima:
                     poder[lider] += 1
             proxima = False
 
-        restantes = ordem_atual.copy()
-        ordenadas = []
-        while restantes:
-            maior = restantes[0]
-            for faccao in restantes:
-                if poder[faccao] > poder[maior]:
-                    maior = faccao
-            ordenadas.append(maior)
-            restantes.remove(maior)
-        return ordenadas
-
-    def _obter_lider_da_regiao(self, regiao):
-        maior_quantidade = 0
-        segunda_maior = 0
-        lider = None
-
-        for faccao in Faccao:
-            quantidade = regiao.quantidade_de_seguidores(faccao)
-
-            if quantidade > maior_quantidade:
-                segunda_maior = maior_quantidade
-                maior_quantidade = quantidade
-                lider = faccao
-            elif quantidade > segunda_maior:
-                segunda_maior = quantidade
-
-        if lider is None or maior_quantidade == segunda_maior:
-            return None, 0
-
-        return lider, maior_quantidade - segunda_maior
+        return sorted(ordem_atual, key=poder.__getitem__, reverse=True)
 
     def _diferenca_na_corte(self, jogador_ia, adversario, faccao):
         return (

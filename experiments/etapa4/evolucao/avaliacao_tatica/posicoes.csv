@@ -1,0 +1,106 @@
+posicao,semente,amostra,mao_atual,mao_oponente,passes_antes,agente,valor_otimo,valor_escolha,jogada,milissegundos,nos_busca,busca_concluida,busca_alterou
+carta_necessaria_55114.json,55114,regressao,1,0,1,q,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Lancaster"", ""GALESES"": ""Lancaster"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.172,,,
+carta_necessaria_55114.json,55114,regressao,1,0,1,q_com_busca,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Lancaster"", ""GALESES"": ""Lancaster"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.452,3,True,False
+carta_necessaria_55114.json,55114,regressao,1,0,1,alfa_beta_3,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Lancaster"", ""GALESES"": ""Lancaster"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.132,,,
+carta_necessaria_55127.json,55127,regressao,1,0,1,q,1,-1,"{""tipo"": ""PASSE""}",0.64,,,
+carta_necessaria_55127.json,55127,regressao,1,0,1,q_com_busca,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",3.205,22,True,True
+carta_necessaria_55127.json,55127,regressao,1,0,1,alfa_beta_3,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",2.956,,,
+carta_necessaria_55179.json,55179,regressao,1,0,1,q,1,-1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Devon"", ""GALESES"": ""Northumbria"", ""INGLESES"": ""Northumbria""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",0.723,,,
+carta_necessaria_55179.json,55179,regressao,1,0,1,q_com_busca,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Northumbria"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Northumbria"", ""GALESES"": ""Northumbria"", ""INGLESES"": ""Devon""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",6.353,55,True,True
+carta_necessaria_55179.json,55179,regressao,1,0,1,alfa_beta_3,1,-1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Devon"", ""GALESES"": ""Northumbria"", ""INGLESES"": ""Northumbria""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",18.244,,,
+carta_necessaria_55207.json,55207,regressao,1,0,1,q,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Strathclyde"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Strathclyde""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",0.628,,,
+carta_necessaria_55207.json,55207,regressao,1,0,1,q_com_busca,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Strathclyde"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Strathclyde""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.008,3,True,False
+carta_necessaria_55207.json,55207,regressao,1,0,1,alfa_beta_3,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Strathclyde"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Strathclyde""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.197,,,
+guardar_carta_55738.json,55738,regressao,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",1.208,,,
+guardar_carta_55738.json,55738,regressao,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",2.367,6,True,False
+guardar_carta_55738.json,55738,regressao,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",4.654,,,
+guardar_carta_59013.json,59013,regressao,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",0.633,,,
+guardar_carta_59013.json,59013,regressao,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",1.202,6,True,False
+guardar_carta_59013.json,59013,regressao,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",1.673,,,
+guardar_carta_60577.json,60577,regressao,1,0,1,q,1,-1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",0.642,,,
+guardar_carta_60577.json,60577,regressao,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",1.484,9,True,True
+guardar_carta_60577.json,60577,regressao,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",1.82,,,
+passe_favoravel_55051.json,55051,regressao,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",0.473,,,
+passe_favoravel_55051.json,55051,regressao,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",0.471,1,True,False
+passe_favoravel_55051.json,55051,regressao,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",0.783,,,
+passe_favoravel_55264.json,55264,regressao,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",0.808,,,
+passe_favoravel_55264.json,55264,regressao,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",0.861,1,True,False
+passe_favoravel_55264.json,55264,regressao,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",1.637,,,
+passe_favoravel_55430.json,55430,regressao,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",0.631,,,
+passe_favoravel_55430.json,55430,regressao,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",0.612,1,True,False
+passe_favoravel_55430.json,55430,regressao,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",1.049,,,
+passe_favoravel_55439.json,55439,regressao,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",0.373,,,
+passe_favoravel_55439.json,55439,regressao,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",0.372,1,True,False
+passe_favoravel_55439.json,55439,regressao,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",0.511,,,
+posicao_174017.json,174017,inedita,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",0.871,,,
+posicao_174017.json,174017,inedita,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",1.03,3,True,False
+posicao_174017.json,174017,inedita,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",14.153,,,
+posicao_174052.json,174052,inedita,1,0,0,q,1,1,"{""tipo"": ""PASSE""}",0.893,,,
+posicao_174052.json,174052,inedita,1,0,0,q_com_busca,1,1,"{""tipo"": ""PASSE""}",1.944,10,True,False
+posicao_174052.json,174052,inedita,1,0,0,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",4.685,,,
+posicao_174109.json,174109,inedita,1,0,1,q,1,-1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Warwick"", ""GALESES"": ""Warwick"", ""INGLESES"": ""Strathclyde""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.187,,,
+posicao_174109.json,174109,inedita,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",3.005,11,True,True
+posicao_174109.json,174109,inedita,1,0,1,alfa_beta_3,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Strathclyde"", ""GALESES"": ""Warwick"", ""INGLESES"": ""Strathclyde""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",16.617,,,
+posicao_174110.json,174110,inedita,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",1.071,,,
+posicao_174110.json,174110,inedita,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",0.981,3,True,False
+posicao_174110.json,174110,inedita,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",4.361,,,
+posicao_174128.json,174128,inedita,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",0.901,,,
+posicao_174128.json,174128,inedita,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",1.056,3,True,False
+posicao_174128.json,174128,inedita,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",17.874,,,
+posicao_174151.json,174151,inedita,1,0,1,q,1,-1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Warwick"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Warwick"", ""GALESES"": ""Warwick"", ""INGLESES"": ""Northumbria""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.231,,,
+posicao_174151.json,174151,inedita,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",4.428,17,True,True
+posicao_174151.json,174151,inedita,1,0,1,alfa_beta_3,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Northumbria"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Northumbria"", ""GALESES"": ""Northumbria"", ""INGLESES"": ""Warwick""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",15.168,,,
+posicao_174156.json,174156,inedita,1,0,1,q,1,1,"{""tipo"": ""PASSE""}",1.127,,,
+posicao_174156.json,174156,inedita,1,0,1,q_com_busca,1,1,"{""tipo"": ""PASSE""}",2.19,9,True,False
+posicao_174156.json,174156,inedita,1,0,1,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",3.362,,,
+posicao_174199.json,174199,inedita,1,0,0,q,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Warwick"", ""parametros"": {""regiao"": ""Moray""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",1.534,,,
+posicao_174199.json,174199,inedita,1,0,0,q_com_busca,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Warwick"", ""parametros"": {""regiao"": ""Moray""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",2.299,5,True,False
+posicao_174199.json,174199,inedita,1,0,0,alfa_beta_3,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Warwick"", ""parametros"": {""regiao"": ""Moray""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_INGLES""}",4.688,,,
+posicao_184260.json,184260,inedita,1,1,0,q,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Essex"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Essex"", ""GALESES"": ""Lancaster"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.138,,,
+posicao_184260.json,184260,inedita,1,1,0,q_com_busca,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Essex"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Essex"", ""GALESES"": ""Lancaster"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",4.369,28,True,False
+posicao_184260.json,184260,inedita,1,1,0,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",41.031,,,
+posicao_185826.json,185826,inedita,1,1,0,q,1,1,"{""tipo"": ""PASSE""}",1.295,,,
+posicao_185826.json,185826,inedita,1,1,0,q_com_busca,1,1,"{""tipo"": ""PASSE""}",4.417,22,True,False
+posicao_185826.json,185826,inedita,1,1,0,alfa_beta_3,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Strathclyde"", ""GALESES"": ""Northumbria"", ""INGLESES"": ""Strathclyde""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",19.679,,,
+posicao_186146.json,186146,inedita,1,1,0,q,1,-1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Gwynedd"", ""parametros"": {""regiao"": ""Gwynedd""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",1.195,,,
+posicao_186146.json,186146,inedita,1,1,0,q_com_busca,1,1,"{""tipo"": ""PASSE""}",11.057,60,True,True
+posicao_186146.json,186146,inedita,1,1,0,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",9.999,,,
+posicao_186584.json,186584,inedita,1,1,0,q,1,-1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Devon"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Strathclyde""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.115,,,
+posicao_186584.json,186584,inedita,1,1,0,q_com_busca,1,1,"{""tipo"": ""PASSE""}",34.403,220,True,True
+posicao_186584.json,186584,inedita,1,1,0,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",113.599,,,
+posicao_188174.json,188174,inedita,1,1,0,q,1,-1,"{""tipo"": ""PASSE""}",1.052,,,
+posicao_188174.json,188174,inedita,1,1,0,q_com_busca,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""faccao_a"": ""GALESES"", ""faccao_b"": ""INGLESES"", ""regiao_a"": ""Lancaster"", ""regiao_b"": ""Warwick""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",9.526,51,True,True
+posicao_188174.json,188174,inedita,1,1,0,alfa_beta_3,1,-1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Warwick"", ""parametros"": {""faccao_a"": ""GALESES"", ""faccao_b"": ""INGLESES"", ""regiao_a"": ""Lancaster"", ""regiao_b"": ""Warwick""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",11.647,,,
+posicao_188199.json,188199,inedita,1,1,0,q,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Gwynedd"", ""parametros"": {""faccao_a"": ""GALESES"", ""faccao_b"": ""ESCOCESES"", ""regiao_a"": ""Strathclyde"", ""regiao_b"": ""Gwynedd""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",0.767,,,
+posicao_188199.json,188199,inedita,1,1,0,q_com_busca,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Gwynedd"", ""parametros"": {""faccao_a"": ""GALESES"", ""faccao_b"": ""ESCOCESES"", ""regiao_a"": ""Strathclyde"", ""regiao_b"": ""Gwynedd""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",21.037,194,True,False
+posicao_188199.json,188199,inedita,1,1,0,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",63.278,,,
+posicao_188795.json,188795,inedita,1,1,0,q,1,-1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Northumbria"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Warwick"", ""GALESES"": ""Warwick"", ""INGLESES"": ""Northumbria""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.366,,,
+posicao_188795.json,188795,inedita,1,1,0,q_com_busca,1,1,"{""tipo"": ""PASSE""}",88.253,511,True,True
+posicao_188795.json,188795,inedita,1,1,0,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",111.262,,,
+posicao_188928.json,188928,inedita,1,1,0,q,1,-1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Gwynedd"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Warwick"", ""GALESES"": ""Warwick"", ""INGLESES"": ""Gwynedd""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",0.697,,,
+posicao_188928.json,188928,inedita,1,1,0,q_com_busca,1,1,"{""tipo"": ""PASSE""}",22.555,211,True,True
+posicao_188928.json,188928,inedita,1,1,0,alfa_beta_3,1,1,"{""tipo"": ""PASSE""}",54.847,,,
+posicao_194773.json,194773,inedita,2,0,0,q,1,1,"{""tipo"": ""PASSE""}",1.025,,,
+posicao_194773.json,194773,inedita,2,0,0,q_com_busca,1,1,"{""tipo"": ""PASSE""}",4.286,28,True,False
+posicao_194773.json,194773,inedita,2,0,0,alfa_beta_3,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Northumbria"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Lancaster"", ""GALESES"": ""Northumbria"", ""INGLESES"": ""Northumbria""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",388.255,,,
+posicao_195043.json,195043,inedita,2,0,0,q,1,-1,"{""tipo"": ""PASSE""}",0.763,,,
+posicao_195043.json,195043,inedita,2,0,0,q_com_busca,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Strathclyde"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Strathclyde""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",18.636,149,True,True
+posicao_195043.json,195043,inedita,2,0,0,alfa_beta_3,1,-1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Strathclyde"", ""GALESES"": ""Warwick"", ""INGLESES"": ""Strathclyde""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",494.438,,,
+posicao_196339.json,196339,inedita,2,0,0,q,1,1,"{""tipo"": ""PASSE""}",3.594,,,
+posicao_196339.json,196339,inedita,2,0,0,q_com_busca,1,1,"{""tipo"": ""PASSE""}",9.451,25,True,False
+posicao_196339.json,196339,inedita,2,0,0,alfa_beta_3,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Gwynedd"", ""parametros"": {""faccao_a"": ""ESCOCESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Lancaster"", ""regiao_b"": ""Gwynedd""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",968.411,,,
+posicao_196412.json,196412,inedita,2,0,0,q,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Northumbria"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Lancaster"", ""GALESES"": ""Lancaster"", ""INGLESES"": ""Northumbria""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1.82,,,
+posicao_196412.json,196412,inedita,2,0,0,q_com_busca,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Northumbria"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Lancaster"", ""GALESES"": ""Lancaster"", ""INGLESES"": ""Northumbria""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",5.603,14,True,False
+posicao_196412.json,196412,inedita,2,0,0,alfa_beta_3,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Northumbria"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Northumbria"", ""GALESES"": ""Lancaster"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",582.994,,,
+posicao_196820.json,196820,inedita,2,0,1,q,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Gwynedd""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",1.479,,,
+posicao_196820.json,196820,inedita,2,0,1,q_com_busca,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""regiao"": ""Gwynedd""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",2.44,16,True,False
+posicao_196820.json,196820,inedita,2,0,1,alfa_beta_3,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Gwynedd"", ""parametros"": {""regiao"": ""Devon""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",41.056,,,
+posicao_197009.json,197009,inedita,2,0,1,q,1,-1,"{""tipo"": ""PASSE""}",2.269,,,
+posicao_197009.json,197009,inedita,2,0,1,q_com_busca,1,1,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""regiao"": ""Warwick""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",8.463,38,True,True
+posicao_197009.json,197009,inedita,2,0,1,alfa_beta_3,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""regiao"": ""Warwick""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",10.808,,,
+posicao_197217.json,197217,inedita,2,0,1,q,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Essex"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Essex"", ""GALESES"": ""Essex"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",2.89,,,
+posicao_197217.json,197217,inedita,2,0,1,q_com_busca,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Essex"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Essex"", ""GALESES"": ""Essex"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",21.606,24,True,False
+posicao_197217.json,197217,inedita,2,0,1,alfa_beta_3,1,1,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {}, ""tipo"": ""CARTA"", ""tipo_carta"": ""SUPERAR_MANOBRA""}",222.679,,,
+posicao_197258.json,197258,inedita,2,0,0,q,1,1,"{""tipo"": ""PASSE""}",3.076,,,
+posicao_197258.json,197258,inedita,2,0,0,q_com_busca,1,1,"{""tipo"": ""PASSE""}",2.925,4,True,False
+posicao_197258.json,197258,inedita,2,0,0,alfa_beta_3,1,1,"{""faccao_convocacao"": ""INGLESES"", ""nome_regiao_convocacao"": ""Northumbria"", ""parametros"": {""posicao_a"": 7, ""posicao_b"": 8, ""posicao_disco"": 7}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",90.948,,,

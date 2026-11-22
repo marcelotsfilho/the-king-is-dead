@@ -31,6 +31,19 @@ class TesteConfiguracaoPartida(unittest.TestCase):
         primeira.definir_profundidade(0, 3)
         self.assertEqual(segunda.obter_tipo_jogador(0), TipoJogador.HUMANO)
         self.assertEqual(segunda.obter_profundidade(0), 1)
+        self.assertEqual(segunda.obter_simulacoes_monte_carlo(0), 100)
+
+    def test_configura_simulacoes_monte_carlo_independentemente(self):
+        configuracao = ConfiguracaoPartida()
+        configuracao.definir_simulacoes_monte_carlo(0, 3000)
+        self.assertEqual(configuracao.obter_simulacoes_monte_carlo(0), 3000)
+        self.assertEqual(configuracao.obter_simulacoes_monte_carlo(1), 100)
+        for valor in (0, -1, 2000):
+            with self.assertRaises(ValueError):
+                configuracao.definir_simulacoes_monte_carlo(0, valor)
+        for valor in (True, 1.5, "300"):
+            with self.assertRaises(TypeError):
+                configuracao.definir_simulacoes_monte_carlo(0, valor)
 
     def test_rejeita_configuracao_invalida(self):
         configuracao = ConfiguracaoPartida()

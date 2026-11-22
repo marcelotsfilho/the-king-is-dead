@@ -18,7 +18,7 @@ from model.state_tree_serializer import SerializadorArvoreEstados
 from view.game_view import VisaoJogo
 
 
-SEMENTE_JOGO = 123
+SEMENTE_JOGO = 40
 
 _PASTA_DO_PROJETO = os.path.dirname(os.path.abspath(__file__))
 _PASTA_DE_SALVAMENTOS = os.path.join(_PASTA_DO_PROJETO, "saves")

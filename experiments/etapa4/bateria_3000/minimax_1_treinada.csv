@@ -1,0 +1,17 @@
+treinadas,partida,semente,lado_q,lado_inicial,adversario,epsilon,resultado,jogadas,cartas_primeiro_passe_q,cartas_primeiro_passe_adversario,cartas_primeira_disputa_q,cartas_primeira_disputa_adversario,turnos_q,estados_q_conhecidos,segundos,profundidade_adversario,poda_adversario,nos_adversario,podas_adversario
+500,1,53010,1,1,alfa_beta,0.0,vitoria,45,7,0,7,0,23,23,9.4113,1,True,47814,0
+500,2,53010,2,1,alfa_beta,0.0,vitoria,34,8,5,7,5,17,14,13.2231,1,True,67455,0
+500,3,53011,1,2,alfa_beta,0.0,vitoria,46,8,5,8,5,23,22,10.817,1,True,78617,0
+500,4,53011,2,2,alfa_beta,0.0,derrota,16,3,7,3,6,8,7,10.2559,1,True,77525,0
+500,5,53012,1,1,alfa_beta,0.0,vitoria,45,7,5,7,5,23,23,7.9916,1,True,66387,0
+500,6,53012,2,1,alfa_beta,0.0,vitoria,32,8,5,8,5,16,8,9.0124,1,True,74982,0
+500,7,53013,1,2,alfa_beta,0.0,vitoria,40,8,5,8,5,20,17,9.7385,1,True,79642,0
+500,8,53013,2,2,alfa_beta,0.0,derrota,24,0,8,0,4,12,12,12.4016,1,True,88162,0
+500,9,53014,1,1,alfa_beta,0.0,vitoria,27,8,5,8,5,14,10,14.1323,1,True,72437,0
+500,10,53014,2,1,alfa_beta,0.0,vitoria,37,4,7,4,6,18,18,10.8655,1,True,56353,0
+500,11,53015,1,2,alfa_beta,0.0,vitoria,20,8,5,8,5,10,6,18.0786,1,True,92692,0
+500,12,53015,2,2,alfa_beta,0.0,vitoria,23,7,5,7,5,12,9,16.4359,1,True,90879,0
+500,13,53016,1,1,alfa_beta,0.0,vitoria,38,3,7,0,1,19,19,5.5978,1,True,30906,0
+500,14,53016,2,1,alfa_beta,0.0,vitoria,26,8,3,8,3,13,12,11.6722,1,True,60846,0
+500,15,53017,1,2,alfa_beta,0.0,vitoria,38,8,5,8,5,19,16,15.2066,1,True,78459,0
+500,16,53017,2,2,alfa_beta,0.0,vitoria,31,7,5,7,5,16,15,16.1837,1,True,78588,0

@@ -40,6 +40,13 @@ class TrilhaDisputas:
                 return carta
         return None
 
+    def obter_posicoes_negociaveis(self):
+        """Retorna as posições de cartas abertas sem disco de negociação."""
+        return [
+            posicao for posicao, carta in enumerate(self.cartas_regiao, start=1)
+            if carta.virada_para_cima and not carta.possui_disco_negociacao
+        ]
+
     def quantidade_resolvida(self):
         """Retorna quantas cartas já foram viradas para baixo."""
         quantidade = 0

@@ -1,0 +1,211 @@
+{
+  "versao": 1,
+  "tabuleiro": {
+    "regioes": [
+      {
+        "nome": "Moray",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": null,
+        "instavel": false
+      },
+      {
+        "nome": "Strathclyde",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": "ESCOCESES",
+        "instavel": false
+      },
+      {
+        "nome": "Northumbria",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": null,
+        "instavel": true
+      },
+      {
+        "nome": "Lancaster",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": "GALESES",
+        "instavel": false
+      },
+      {
+        "nome": "Gwynedd",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": "GALESES",
+        "instavel": false
+      },
+      {
+        "nome": "Warwick",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": "INGLESES",
+        "instavel": false
+      },
+      {
+        "nome": "Essex",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 0
+        },
+        "controlador": "INGLESES",
+        "instavel": false
+      },
+      {
+        "nome": "Devon",
+        "seguidores": {
+          "ESCOCESES": 0,
+          "GALESES": 0,
+          "INGLESES": 6
+        },
+        "controlador": null,
+        "instavel": false
+      }
+    ]
+  },
+  "trilha_disputas": {
+    "cartas": [
+      {
+        "nome_regiao": "Northumbria",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Strathclyde",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Lancaster",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Gwynedd",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": true
+      },
+      {
+        "nome_regiao": "Warwick",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": true
+      },
+      {
+        "nome_regiao": "Essex",
+        "virada_para_cima": false,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Devon",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      },
+      {
+        "nome_regiao": "Moray",
+        "virada_para_cima": true,
+        "possui_disco_negociacao": false
+      }
+    ]
+  },
+  "jogadores": [
+    {
+      "nome": "Jogador 1",
+      "mao": [
+        "REUNIR",
+        "REUNIR"
+      ],
+      "descarte": [
+        "APOIO_INGLES",
+        "SUPERAR_MANOBRA",
+        "APOIO_ESCOCES",
+        "APOIO_GALES",
+        "MANOBRAR",
+        "NEGOCIAR"
+      ],
+      "corte": {
+        "ESCOCESES": 5,
+        "GALESES": 2,
+        "INGLESES": 1
+      },
+      "disco_negociacao_disponivel": false
+    },
+    {
+      "nome": "Jogador 2",
+      "mao": [
+        "REUNIR"
+      ],
+      "descarte": [
+        "APOIO_ESCOCES",
+        "APOIO_GALES",
+        "SUPERAR_MANOBRA",
+        "MANOBRAR",
+        "NEGOCIAR",
+        "REUNIR",
+        "APOIO_INGLES"
+      ],
+      "corte": {
+        "ESCOCESES": 5,
+        "GALESES": 3,
+        "INGLESES": 1
+      },
+      "disco_negociacao_disponivel": false
+    }
+  ],
+  "reserva": {
+    "ESCOCESES": 6,
+    "GALESES": 11,
+    "INGLESES": 8
+  },
+  "indice_jogador_atual": 0,
+  "passes_consecutivos": 0,
+  "historico_vitorias_faccoes": [
+    "ESCOCESES",
+    "GALESES",
+    "GALESES",
+    "INGLESES",
+    "INGLESES"
+  ],
+  "ultima_acao": {
+    "jogador": 1,
+    "tipo": "APOIO_INGLES",
+    "detalhes": {
+      "regiao": "Devon",
+      "faccao": "INGLESES",
+      "quantidade": 2
+    },
+    "convocacao": {
+      "regiao": "Essex",
+      "faccao": "INGLESES"
+    }
+  },
+  "ultimo_jogador_que_agiu": 1,
+  "ordem_jogadores_sem_cartas": [],
+  "fase_turno": "ESCOLHER_ACAO",
+  "carta_em_execucao": null,
+  "finalizado": false,
+  "vencedor": null,
+  "faccao_vencedora": null,
+  "motivo_encerramento": null,
+  "ultima_mensagem": "Essex foi controlada pelos ingleses."
+}

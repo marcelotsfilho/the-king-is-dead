@@ -18,23 +18,34 @@ class ExecutorJogada:
         if not isinstance(jogada, Jogada):
             raise TypeError("A jogada deve ser uma instância de Jogada.")
 
-        novo_estado = self._serializador.copiar(estado)
-        jogo = Jogo(novo_estado)
-
         if jogada.eh_passe():
-            jogo.passar()
+            novo_estado = self._serializador.copiar(estado)
+            Jogo(novo_estado).passar()
             return novo_estado
 
-        carta = self._obter_carta_do_jogador(
-            novo_estado,
+        novo_estado = self.executar_carta(
+            estado,
             jogada.tipo_carta,
+            jogada.obter_parametros(),
         )
-        jogo.jogar_carta(carta, jogada.obter_parametros())
-        jogo.convocar_seguidor(
+        Jogo(novo_estado).convocar_seguidor(
             jogada.nome_regiao_convocacao,
             jogada.faccao_convocacao,
         )
 
+        return novo_estado
+
+    def executar_carta(self, estado, tipo_carta, parametros):
+        """Aplica o efeito em uma cópia e deixa a convocação pendente."""
+        novo_estado = self._serializador.copiar(estado)
+        carta = self._obter_carta_do_jogador(novo_estado, tipo_carta)
+        Jogo(novo_estado).jogar_carta(carta, parametros)
+        return novo_estado
+
+    def executar_convocacao(self, estado, nome_regiao, faccao):
+        """Conclui a convocação pendente em uma cópia do estado."""
+        novo_estado = self._serializador.copiar(estado)
+        Jogo(novo_estado).convocar_seguidor(nome_regiao, faccao)
         return novo_estado
 
     def _obter_carta_do_jogador(self, estado, tipo_carta):

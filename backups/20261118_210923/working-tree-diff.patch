@@ -1,0 +1,820 @@
+diff --git a/experiments/DIARIO_DE_EXPERIMENTOS_2026-11-14_23-00-08_642961Z.md b/experiments/DIARIO_DE_EXPERIMENTOS_2026-11-14_23-00-08_642961Z.md
+deleted file mode 100644
+index c360bf4..0000000
+--- a/experiments/DIARIO_DE_EXPERIMENTOS_2026-11-14_23-00-08_642961Z.md
++++ /dev/null
+@@ -1,66 +0,0 @@
+-# Diário automático de experimentos
+-
+-Este diário reúne os testes desta chamada do executor.
+-O [histórico completo](results.csv) reúne os registros de todas as baterias.
+-
+-## Cenário e protocolo
+-
+-Início (UTC) · 2026-11-14T23:00:08.642961+00:00
+-
+-Cenário: inicial; seed: 123; bateria: ambas; profundidades: [1, 2]; repetições: 1; algoritmos: ['minimax', 'alfa_beta']. Plano desta invocação: 8 decisões. Estado: 151d1245a8d0f4c63e5ea7ea46a73e4a706c3e45da04fbb8a043c69905d26311. Estado inicial completo criado pelo setup padrão, sem ações anteriores.
+-
+-Configurações já concluídas e puladas nesta chamada · 2
+-
+-Cada execução mede UMA decisão de jogada, não uma partida inteira.
+-A busca usa o jogador atual como referência. As execuções rodam sequencialmente
+-no terminal, sem Pygame. Não há limite automático de tempo; Ctrl+C interrompe
+-a execução atual e encerra a bateria preservando os registros anteriores.
+-
+-Atual: avaliação estática do jogo. Inicial: reconstrução da fórmula anterior
+-à otimização, com expansão de ameaças e mobilidade. As fórmulas e pesos
+-diferem: comparar seus tempos não comprova qual joga melhor.
+-
+-O tempo inclui apenas escolher_jogada (geração, simulações e avaliação).
+-Não inclui preparação, carregamento, salvamento, impressão ou relatórios.
+-Em interrupções, os contadores são parciais e a pontuação/jogada ficam vazias.
+-Os contadores do Minimax não incluem simulações internas da heurística antiga.
+-
+-## Execuções registradas
+-
+-| Nº | Cenário | Heurística | Algoritmo | Prof. | Rep. | Status | Tempo (s) | Nós | Folhas | Cortes | Pontuação |
+-|---|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|
+-| 1 | inicial | atual | minimax | 2 | 1 | interrompido | 9684.630723 | 37056325 | 37054104 | 0 |  |
+-
+-## Tempos das execuções concluídas
+-
+-Ainda não há execuções concluídas; não é possível concluir sobre desempenho.
+-
+-## Resultados parciais dos testes interrompidos
+-
+-Os valores mostram o progresso até a interrupção. As médias usam apenas testes concluídos.
+-O traço indica uma medição indisponível.
+-
+-| Nº | Heurística | Algoritmo | Prof. | Rep. | Tempo parcial (s) | Nós visitados | Folhas avaliadas | Cortes |
+-|---|---|---|---:|---:|---:|---:|---:|---:|
+-| 1 | atual | minimax | 2 | 1 | 9684.630723 | 37056325 | 37054104 | 0 |
+-
+-## Comparação e limites
+-
+-Pares concluídos comparáveis entre Minimax e alfa-beta: 0.
+-Pares com divergência de nota ou jogada: 0.
+-Compare somente pares da mesma heurística, posição, código e profundidade.
+-Interrompido não significa derrota ou erro do algoritmo; não é tempo de conclusão.
+-Uma execução longa não estabelece o limite máximo viável. Ainda é necessário
+-definir o tempo aceitável para o usuário e analisar outras posições e seeds.
+-
+-## Ambiente e rastreabilidade
+-
+-- Código/Python/SO/CPU/CPUs lógicas: 0007fe05ce33aa67d2ac163cea90da5a12783ff5a9c2137be7f29bc921a29e82 / 3.13.14 / Windows-11-10.0.26300-SP0 / Intel64 Family 6 Model 141 Stepping 1, GenuineIntel / 12
+-
+-## Erros e interrupções
+-
+-- Execução 1: Interrupção solicitada pelo usuário (Ctrl+C).
+-
+-As posições são arquivadas em states/<estado_sha256>.json.
+-O hash do código identifica os fontes usados, inclusive alterações sem commit.
+-Não foram medidos consumo de memória, taxa de vitória ou treinamento.
+diff --git a/model/legal_move_generator.py b/model/legal_move_generator.py
+index 865d689..9e24d90 100644
+--- a/model/legal_move_generator.py
++++ b/model/legal_move_generator.py
+@@ -19,6 +19,10 @@ class GeradorJogadas:
+ 
+     def gerar(self, estado):
+         """Retorna todas as jogadas completas encontradas para o estado."""
++        return [jogada for jogada, _ in self.gerar_com_estados(estado)]
++
++    def gerar_com_estados(self, estado):
++        """Produz cada jogada legal junto com seu estado resultante."""
+         if not isinstance(estado, EstadoJogo):
+             raise TypeError("O estado deve ser uma instância de EstadoJogo.")
+ 
+@@ -30,7 +34,9 @@ class GeradorJogadas:
+ 
+         jogadas = []
+         passe = Jogada(TipoJogada.PASSE)
+-        self._adicionar_se_valida(estado, passe, jogadas)
++        estado_passe = self._executar_se_valida(estado, passe)
++        if estado_passe is not None:
++            yield passe, estado_passe
+ 
+         tipos_processados = []
+         jogador = estado.obter_jogador_atual()
+@@ -65,16 +71,19 @@ class GeradorJogadas:
+                         nome_regiao_convocacao=nome_regiao,
+                         faccao_convocacao=faccao,
+                     )
+-                    self._adicionar_se_valida(estado, jogada, jogadas)
+-
+-        return jogadas
++                    novo_estado = self._executar_se_valida(estado, jogada)
++                    if novo_estado is not None:
++                        yield jogada, novo_estado
+ 
+     def _adicionar_se_valida(self, estado, jogada, jogadas):
+-        try:
+-            self._executor.executar(estado, jogada)
++        if self._executar_se_valida(estado, jogada) is not None:
+             jogadas.append(jogada)
++
++    def _executar_se_valida(self, estado, jogada):
++        try:
++            return self._executor.executar(estado, jogada)
+         except (TypeError, ValueError):
+-            pass
++            return None
+ 
+     def _simular_carta(self, estado, tipo_carta, parametros):
+         copia = self._serializador.copiar(estado)
+diff --git a/model/minimax_agent.py b/model/minimax_agent.py
+index e59f85c..1b6f3e7 100644
+--- a/model/minimax_agent.py
++++ b/model/minimax_agent.py
+@@ -63,11 +63,6 @@ class AgenteMinimax:
+         if estado.finalizado or profundidade == profundidade_maxima:
+             return self._avaliar_folha(estado, profundidade), None
+ 
+-        jogadas = self._gerador.gerar(estado)
+-
+-        if not jogadas:
+-            return self._avaliar_folha(estado, profundidade), None
+-
+         maximizar = estado.indice_jogador_atual == self._indice_jogador_ia
+         melhor_pontuacao = float("inf")
+ 
+@@ -76,9 +71,10 @@ class AgenteMinimax:
+ 
+         melhor_jogada = None
+ 
+-        for indice in range(len(jogadas)):
+-            jogada = jogadas[indice]
+-            novo_estado = self._executor.executar(estado, jogada)
++        encontrou_jogada = False
++
++        for jogada, novo_estado in self._gerador.gerar_com_estados(estado):
++            encontrou_jogada = True
+             pontuacao, jogada_seguinte = self._buscar(
+                 novo_estado,
+                 profundidade + 1,
+@@ -88,6 +84,7 @@ class AgenteMinimax:
+                 usar_poda,
+             )
+ 
++            # avalia melhor jogada no turno da IA e pior no turno do adversário
+             if maximizar:
+                 if pontuacao > melhor_pontuacao:
+                     melhor_pontuacao = pontuacao
+@@ -97,16 +94,20 @@ class AgenteMinimax:
+                     melhor_pontuacao = pontuacao
+                     melhor_jogada = jogada
+ 
++            # avalia jogada e evita explorar ramos desnecessários com poda alfa-beta
+             if usar_poda:
+                 if maximizar:
+                     alfa = max(alfa, melhor_pontuacao)
+                 else:
+                     beta = min(beta, melhor_pontuacao)
+ 
+-                if beta <= alfa and indice < len(jogadas) - 1:
++                if beta <= alfa:
+                     self.podas_realizadas += 1
+                     break
+ 
++        if not encontrou_jogada:
++            return self._avaliar_folha(estado, profundidade), None
++
+         return melhor_pontuacao, melhor_jogada
+ 
+     def escolher_jogada(self, estado, profundidade_maxima=1, usar_poda=True):
+diff --git a/relatorio_magica_overleaf.zip b/relatorio_magica_overleaf.zip
+index 61050ccec0d54e995ac60fbe4143a432e1793c17..b52125881ea4d31018af3dc810ef4877146155a4 100644
+GIT binary patch
+delta 8409
+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
+aYU=8yEC-M9KWzyAr9KP*KrHk>)&B>vLM~$f
+
+delta 5253
+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
+
+diff --git a/relatorio_magica_overleaf/README.md b/relatorio_magica_overleaf/README.md
+index 8385410..cea5885 100644
+--- a/relatorio_magica_overleaf/README.md
++++ b/relatorio_magica_overleaf/README.md
+@@ -1,7 +1,7 @@
+ # Template Overleaf — MÁGICA / SBGames 2026
+ 
+-Este projeto contém um artigo curto estruturado para relatar as entregas do
+-projeto **The King is Dead**. O texto-base segue o formato de artigo da SBC e
++Este projeto contém um primeiro rascunho completo do artigo curto sobre as três
++entregas do projeto **The King is Dead**. O texto segue o formato de artigo da SBC e
+ as orientações divulgadas para o MÁGICA 2026: identificação dos autores,
+ de três a cinco páginas de conteúdo e uma página adicional para referências.
+ 
+@@ -11,8 +11,7 @@ de três a cinco páginas de conteúdo e uma página adicional para referências
+    fornecido ao lado da pasta).
+ 2. No Overleaf, escolha **New Project > Upload Project** e envie o ZIP.
+ 3. Confirme `main.tex` como documento principal e use o compilador **pdfLaTeX**.
+-4. Substitua autores, instituição, e-mails e todos os trechos vermelhos
+-   iniciados por **[Preencher:**.
++4. Substitua autores, instituição e e-mails.
+ 5. Adicione capturas à pasta `figuras` e habilite os blocos de figura no texto.
+ 6. Compile e confira se o conteúdo ocupa de três a cinco páginas e se apenas
+    as referências ocupam, quando necessário, a página 6.
+@@ -28,10 +27,15 @@ de três a cinco páginas de conteúdo e uma página adicional para referências
+ - considerações finais;
+ - referências.
+ 
+-O template já sugere conteúdo específico para as duas entregas documentadas no
+-repositório. Para uma nova entrega, duplique a subseção comentada no arquivo
+-`main.tex` e mantenha o padrão: **o que foi feito**, **como foi feito**,
+-**decisões e justificativas** e **resultado da entrega**.
++O rascunho descreve a versão jogável, a árvore de estados e a implementação da
++IA com Minimax e poda alfa--beta. Antes da versão final, ainda é necessário:
++
++- resolver a divergência entre o plano experimental atual e o teste que ainda
++  espera 36 configurações;
++- adicionar ao menos uma captura legível da interface;
++- definir a licença de distribuição do projeto;
++- revisar números experimentais após o fechamento do código;
++- confirmar autoria, afiliação, e-mails e limite de páginas no PDF compilado.
+ 
+ Antes da submissão, confira novamente a chamada oficial do evento, pois datas e
+ requisitos podem sofrer atualização.
+diff --git a/relatorio_magica_overleaf/main.tex b/relatorio_magica_overleaf/main.tex
+index 7852635..4048c44 100644
+--- a/relatorio_magica_overleaf/main.tex
++++ b/relatorio_magica_overleaf/main.tex
+@@ -1,7 +1,6 @@
+-% Template de artigo curto para o MÁGICA — SBGames 2026.
+-% Projeto: The King is Dead.
++% Artigo curto para o MÁGICA — SBGames 2026.
+ % Compilador recomendado no Overleaf: pdfLaTeX.
+-% Antes de submeter, remova todos os comandos \preencher{...}.
++% PENDÊNCIAS: autoria, instituição, e-mails e captura da interface.
+ 
+ \documentclass[12pt]{article}
+ 
+@@ -18,8 +17,6 @@
+ \usepackage{microtype}
+ \usepackage[hidelinks]{hyperref}
+ 
+-\definecolor{instrucao}{RGB}{145,35,35}
+-\newcommand{\preencher}[1]{\textcolor{instrucao}{\textbf{[Preencher:} #1\textbf{]}}}
+ \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+ 
+ % Corrige o rótulo da versão original do estilo SBC.
+@@ -28,7 +25,6 @@
+   \textbf{\textit{Palavras-chave---}} #1
+ }
+ 
+-% Cabeçalho solicitado pelo MÁGICA no padrão dos artigos da SBC.
+ \fancypagestyle{magica}{%
+   \fancyhf{}
+   \fancyhead[C]{\footnotesize
+@@ -39,11 +35,11 @@
+ }
+ \setlength{\headheight}{28pt}
+ 
+-\title{The King is Dead: desenvolvimento incremental de um jogo de estratégia em Python\\
++\title{The King is Dead: desenvolvimento incremental de um jogo de estratégia com árvore de estados e inteligência artificial\\
+ \medskip
+-\small{\textit{Title: The King is Dead: Incremental Development of a Strategy Game in Python}}}
++\small{\textit{Title: The King is Dead: Incremental Development of a Strategy Game with a State Tree and Artificial Intelligence}}}
+ 
+-% O(s) estudante(s) deve(m) aparecer primeiro; o professor responsável, por último.
++% PENDENTE: estudantes primeiro; professor responsável por último.
+ \author{Nome do Estudante\inst{1}, Nome do Estudante\inst{1}, Nome do Professor\inst{1}}
+ 
+ \address{Nome do Curso -- Nome da Instituição\\
+@@ -58,107 +54,104 @@
+ \pagestyle{empty}
+ 
+ \begin{abstract}
+-\textbf{Introduction:} \preencher{contextualize o projeto e o problema em uma ou duas frases.}
+-\textbf{Objective:} \preencher{declare o objetivo do jogo e deste relato.}
+-\textbf{Methodology or Steps:} \preencher{resuma o desenvolvimento incremental, a arquitetura e as entregas.}
+-\textbf{Results:} \preencher{informe o que está funcional e as evidências de validação.}
++\textbf{Introduction:} Implementing a strategy board game requires coordinating rules, interface, state persistence, and the representation of possible decisions.
++\textbf{Objective:} This paper reports the incremental development of an academic digital adaptation of \textit{The King is Dead: Second Edition}, emphasizing the technical decisions made in three deliveries.
++\textbf{Methodology or Steps:} The project was implemented in Python and Pygame using an MVC architecture. The deliveries comprised a playable two-player version, a persistent state tree, and artificial intelligence based on Minimax, a heuristic evaluation function, and alpha--beta pruning.
++\textbf{Results:} The resulting prototype supports complete local matches, state-tree navigation, saving and loading, human-versus-AI and AI-versus-AI modes, and reproducible experiments. A reduced validation scenario completed 36 decisions with no divergence between Minimax and its pruned version. Measurements of the complete initial state exposed the high branching factor and the need for further optimization at depths greater than one.
+ \end{abstract}
+ 
+-\keywords{digital games, game development, state tree, Python, Pygame.}
++\keywords{digital games, game development, state tree, Minimax, Python.}
+ 
+ \begin{resumo}
+-\textbf{Introdução:} \preencher{contextualize o projeto e o problema em uma ou duas frases.}
+-\textbf{Objetivo:} \preencher{declare o objetivo do jogo e deste relato.}
+-\textbf{Metodologia ou Etapas:} \preencher{resuma o desenvolvimento incremental, a arquitetura e as entregas.}
+-\textbf{Resultados:} \preencher{informe o que está funcional e as evidências de validação.}
++\textbf{Introdução:} Implementar digitalmente um jogo de tabuleiro estratégico exige coordenar regras, interface, persistência e a representação das decisões possíveis.
++\textbf{Objetivo:} Este artigo relata o desenvolvimento incremental de uma adaptação acadêmica de \textit{The King is Dead: Second Edition}, com ênfase nas decisões técnicas tomadas em três entregas.
++\textbf{Metodologia ou Etapas:} O projeto foi implementado em Python e Pygame com arquitetura MVC. As entregas abrangeram uma versão jogável para duas pessoas, uma árvore de estados persistente e uma inteligência artificial baseada em Minimax, função heurística e poda alfa--beta.
++\textbf{Resultados:} O protótipo permite partidas locais completas, navegação na árvore, salvamento e carregamento, modos humano contra IA e IA contra IA e experimentos reproduzíveis. Um cenário reduzido concluiu 36 decisões sem divergência entre o Minimax e sua versão com poda. As medições do estado inicial completo evidenciaram o alto fator de ramificação e a necessidade de otimizações para profundidades superiores a um.
+ \end{resumo}
+ 
+-\palavraschave{jogos digitais, desenvolvimento de jogos, árvore de estados, Python, Pygame.}
++\palavraschave{jogos digitais, desenvolvimento de jogos, árvore de estados, Minimax, Python.}
+ 
+-\section{Introdução}
++\section{Introdução e justificativa}
+ 
+-\preencher{Apresente o contexto acadêmico, a disciplina ou projeto, o gênero do jogo e o problema enfrentado. Explique por que uma adaptação de \textit{The King is Dead} é relevante para exercitar modelagem de regras, interfaces e inteligência artificial. Finalize indicando a organização do texto.}
++Jogos de estratégia constituem um domínio útil para exercitar modelagem de regras, engenharia de software e inteligência artificial (IA), pois cada ação modifica um estado bem definido e interfere nas alternativas futuras. Este trabalho apresenta uma adaptação digital acadêmica de \textit{The King is Dead: Second Edition}, jogo de controle territorial no qual dois participantes influenciam três facções e disputam oito regiões. As regras foram interpretadas a partir do manual oficial \cite{osprey2020king}.
+ 
+-% Se necessário, cite o manual do jogo: \cite{osprey2020king}.
++O projeto foi desenvolvido na graduação como uma sequência de entregas. O objetivo geral foi produzir uma versão funcional para duas pessoas e preparar sua arquitetura para buscas de jogadas por IA. Especificamente, buscou-se: separar regras e interface; representar e persistir estados da partida; gerar jogadas legais completas; permitir retorno e inspeção da árvore; e comparar Minimax simples e Minimax com poda alfa--beta. O protótipo destina-se à execução local em desktop e ao estudo de estruturas de dados, testes e algoritmos de busca. Não pretende substituir o produto comercial nem reproduz seus recursos artísticos.
+ 
+-\section{Contexto, público e objetivos}
++\section{Fundamentação e trabalhos correlatos}
+ 
+-\preencher{Descreva o público-alvo, o nível de escolaridade dos autores, a situação de uso e o escopo adotado. Deixe explícito que se trata de uma versão acadêmica para dois jogadores e informe o que ficou fora do escopo.}
++O desenvolvimento seguiu uma abordagem iterativa e incremental: cada etapa entregou um incremento executável e reutilizou componentes anteriores. Processo semelhante foi relatado por \cite{castro2024autunno} no MÁGICA, com ciclos de planejamento, prototipação, implementação e testes. No presente trabalho, contudo, os incrementos foram organizados em torno da arquitetura interna, da árvore de estados e da IA, e não de novas fases narrativas.
+ 
+-O objetivo geral foi \preencher{escreva o objetivo em uma frase verificável}. Como objetivos específicos, buscou-se: \preencher{liste de três a cinco resultados concretos, como modelar regras, criar uma interface jogável, persistir partidas e construir uma árvore de estados}.
++Em IA para jogos, uma árvore representa posições como nós e jogadas como transições. O Minimax alterna a maximização do ganho do agente e a minimização realizada pelo adversário; a poda alfa--beta evita avaliar ramos que não podem alterar a escolha final \cite{russell2021aima}. O crescimento do espaço de busca, porém, limita a profundidade viável. Em trabalho do SBGames, \cite{assuncao2022truco} exploraram outro jogo de cartas e empregaram um modelo probabilístico capaz de adaptar decisões ao comportamento do oponente. Embora a técnica e o domínio sejam diferentes, ambos os projetos tratam jogos como ambientes controlados para implementar e avaliar tomada de decisão automatizada.
+ 
+-\section{Processo de desenvolvimento e entregas}
++\section{Metodologia e entregas}
+ 
+-\preencher{Explique brevemente como o trabalho foi organizado: ciclos, responsáveis, critérios de conclusão, testes e fontes usadas para interpretar as regras. Em seguida, relate cada entrega com a mesma lógica: necessidade, implementação, decisão e evidência.}
++O código foi escrito em Python 3.13, com Pygame 2.6.1 para interface 2D. Adotou-se o padrão Model--View--Controller (MVC): o Model concentra estado e regras, a View desenha o jogo e identifica áreas de interação, e o Controller traduz entradas em operações. Essa separação permite testar as regras sem abrir uma janela e reutilizá-las tanto para jogadores humanos quanto para a IA. Seeds e estados montados manualmente tornam as verificações reproduzíveis.
+ 
+-\subsection{Primeira entrega: versão jogável e arquitetura MVC}
++\subsection{Primeira entrega: versão jogável}
+ 
+-\textbf{O que foi feito.} \preencher{Resuma as entidades modeladas, as regras implementadas, o fluxo para dois jogadores, a interface, o menu e o salvamento.}
++A primeira entrega modelou facções, regiões, cartas, jogadores, reserva e trilha de disputas. O tabuleiro foi representado como grafo: regiões são vértices e fronteiras bidirecionais são arestas. Já a trilha foi mantida separada por representar uma ordem de resolução, não uma relação geográfica. O objeto \texttt{EstadoJogo} concentra a fotografia completa da partida, enquanto \texttt{Jogo} aplica as regras sobre essa fotografia.
+ 
+-\textbf{Como foi feito.} \preencher{Explique a separação entre Model, View e Controller; a representação do tabuleiro como grafo; o estado completo da partida; e como as regras foram validadas. Cite classes ou módulos apenas quando isso ajudar o leitor.}
++Foram implementadas as cartas de ação, a convocação obrigatória após cada carta, os passes, as oito disputas e os finais por coroação ou invasão. A interface oferece partida local, instruções contextuais, menu inicial e salvamento. Centralizar o estado evitou dados divergentes entre tela e regras; separar a execução da interface permitiu que as mesmas operações fossem posteriormente chamadas pela árvore e pela IA. Ao final da etapa, já era possível concluir uma partida entre duas pessoas, mas ainda não havia representação explícita das alternativas futuras.
+ 
+-\textbf{Decisões e justificativas.} \preencher{Justifique MVC, estado centralizado, separação entre regra e interface e uso de uma configuração reproduzível. Relacione cada decisão a um benefício ou risco mitigado.}
++\subsection{Segunda entrega: árvore de estados}
+ 
+-\textbf{Resultado da entrega.} \preencher{Informe o que podia ser demonstrado ao fim desta etapa e quais limitações permaneceram.}
++A segunda entrega introduziu \texttt{Jogada}, \texttt{GeradorJogadas}, \texttt{ExecutorJogada}, nós e árvore de estados. Uma decisão de carta e sua convocação obrigatória formam uma única transição. Essa escolha impede que seleções incompletas sejam tratadas como posições válidas e oferece à IA alternativas comparáveis. Para cada opção legal, o executor altera uma cópia independente do estado; assim, simulações não corrompem a partida corrente.
+ 
+-\subsection{Segunda entrega: jogadas completas e árvore de estados}
++O serializador produz uma identificação textual estável, usada para impedir estados repetidos no mesmo nível ou em níveis diferentes. A expansão é realizada sob demanda, somente quando as opções do nó atual são solicitadas, evitando gerar subárvores nunca visitadas. A árvore pode voltar ao pai, marcar caminhos percorridos, ser salva integralmente em JSON e ser apresentada no Pygame, no terminal ou em DOT/SVG pelo Graphviz. JSON foi escolhido por ser textual, legível e diretamente compatível com dicionários e listas do Python.
+ 
+-\textbf{O que foi feito.} \preencher{Descreva a geração e execução de jogadas legais, a árvore de estados, o retorno a estados anteriores, a eliminação de repetições, a persistência em JSON e as visualizações.}
++\subsection{Terceira entrega: IA e experimentação}
+ 
+-\textbf{Como foi feito.} \preencher{Explique o fluxo Gerador de Jogadas $\rightarrow$ Executor $\rightarrow$ cópia do estado $\rightarrow$ comparação por identificador $\rightarrow$ novo nó. Informe que a expansão ocorre sob demanda.}
++A terceira entrega acrescentou uma função de avaliação estática e um agente Minimax com poda alfa--beta opcional. Estados finais recebem prioridade; posições intermediárias combinam cartas restantes, seguidores nas cortes, poder atual e projetado das facções e risco de invasão. Os pesos codificam conhecimento das regras, mas não constituem aprendizado automático. A busca continua examinando todas as jogadas legais até a profundidade configurada.
+ 
+-\textbf{Decisões e justificativas.} \preencher{Justifique por que cada nó representa uma jogada completa; por que estados são copiados; por que há um identificador estável; e por que alternativas são geradas sob demanda.}
++O menu permite definir cada lado como humano, Minimax ou Minimax com alfa--beta e selecionar a antecipação. A IA calcula em uma tarefa separada para preservar a resposta da interface; somente a jogada escolhida é registrada na árvore real. Também foram adicionados pausa, retomada e indicadores de tempo, profundidade, nós visitados e cortes. Um executor de experimentos registra configuração, versão do código, estado, ambiente, tempos e contadores em CSV e diários Markdown, permitindo interrupção e retomada sem confundir tentativas incompletas com resultados.
+ 
+-\textbf{Resultado da entrega.} \preencher{Apresente evidências: navegação na árvore, salvamento/carregamento, exportação Graphviz e quantidade atualizada de testes aprovados.}
+-
+-% Repita a subseção abaixo para entregas futuras, preservando o limite de páginas.
+-% \subsection{Terceira entrega: título}
+-% \textbf{O que foi feito.} ...
+-% \textbf{Como foi feito.} ...
+-% \textbf{Decisões e justificativas.} ...
+-% \textbf{Resultado da entrega.} ...
+-
+-\section{Tecnologias e razões de escolha}
++\section{Tecnologias e decisões}
+ 
+ \begin{table}[ht]
+   \centering
+-  \caption{Tecnologias empregadas no projeto.}
++  \caption{Tecnologias empregadas e razões de escolha.}
+   \label{tab:tecnologias}
+   \small
+-  \begin{tabularx}{\textwidth}{@{}p{0.19\textwidth}p{0.25\textwidth}Y@{}}
++  \begin{tabularx}{\textwidth}{@{}p{0.18\textwidth}p{0.25\textwidth}Y@{}}
+     \toprule
+-    \textbf{Tecnologia} & \textbf{Onde foi usada} & \textbf{Motivo da escolha} \\
++    \textbf{Tecnologia} & \textbf{Emprego} & \textbf{Razão} \\
+     \midrule
+-    Python 3.13 & Regras, entidades, árvore e persistência & Legibilidade, biblioteca padrão abrangente e adequação ao contexto didático. \\
+-    Pygame 2.6.1 & Interface, entrada e ciclo principal & Permite criar uma interface 2D interativa mantendo controle explícito do ciclo do jogo. \\
+-    JSON & Salvamento da árvore e da partida & Formato textual, portável e compatível com dicionários e listas produzidos pelos serializadores. \\
+-    Graphviz & Exportação da árvore para DOT/SVG & Automatiza o posicionamento de grafos e produz diagramas vetoriais legíveis. \\
+-    \preencher{tecnologia} & \preencher{uso} & \preencher{justificativa vinculada ao requisito} \\
++    Python 3.13 & Regras, árvore, IA e testes & Sintaxe legível, biblioteca padrão para cópias, JSON e testes, e adequação didática. \\
++    Pygame 2.6.1 & Interface e entrada & Controle explícito do ciclo 2D sem acoplar regras a um motor de alto nível. \\
++    JSON & Persistência & Formato textual, portável e inspecionável; inclui versão para detectar incompatibilidades. \\
++    Graphviz & Árvore em DOT/SVG & Posicionamento automático de grafos e saída vetorial ampliável. \\
++    \texttt{unittest} & Verificação automatizada & Integra a biblioteca padrão e permite testar o Model sem interface gráfica. \\
++    Git & Controle de versão & Rastreabilidade dos incrementos e identificação do código usado nos experimentos. \\
+     \bottomrule
+   \end{tabularx}
+ \end{table}
+ 
+-\preencher{Complemente a tabela com decisões que não cabem nela, como testes unitários, controle de versão e licenças. Evite dizer apenas que uma tecnologia é ``fácil''; compare a escolha com os requisitos do projeto.}
++O uso de cópias protege estados já registrados; enums evitam comparar textos livres; e uma pequena máquina de estados controla as fases do turno. O projeto ainda não possui um arquivo de licença, portanto a licença de distribuição deve ser definida antes de sua publicação.
++
++\section{Resultados e limitações}
+ 
+-\section{Apresentação do software e resultados}
++O protótipo permite concluir partidas, salvar e restaurar a árvore, desfazer uma jogada para análise e executar humano contra IA ou dois agentes. No cenário sintético reduzido, 36 decisões cobriram duas heurísticas, dois algoritmos, profundidades de um a três e três repetições. Os 18 pares comparáveis escolheram a mesma jogada e nota; na profundidade três, a poda visitou 31 nós, contra 34 do Minimax simples, realizando dois cortes por execução.
+ 
+-\preencher{Inclua uma ou duas capturas que mostrem o jogo e a árvore. Explique o fluxo visível, não apenas a aparência. Indique a versão avaliada, o ambiente de teste, a quantidade de testes executados e limitações conhecidas.}
++No estado inicial completo, três execuções de profundidade um tiveram média de 3,718~s no Minimax e 3,611~s com alfa--beta, ambas visitando 14.698 nós. Não ocorreram cortes nesse nível. Uma tentativa de profundidade dois do Minimax foi interrompida após 1.167~s e cerca de 3,6 milhões de nós, evidenciando explosão combinatória. Esses dados são medições locais, não demonstram superioridade estatística nem qualidade estratégica; ainda faltam partidas completas, outras posições e métricas de memória e taxa de vitória.
+ 
+-% Exemplo de figura (adicione o arquivo à pasta figuras):
++A suíte atual contém 331 testes. Na verificação de 18 de novembro de 2026, 330 passaram; o teste restante ainda esperava o plano experimental anterior de 36 configurações, enquanto a configuração padrão local passou a gerar oito. Trata-se de uma pendência de sincronização entre teste e requisito que deve ser resolvida antes da versão final. Também faltam avaliação com usuários, definição de licença e persistência da configuração de IA ao carregar uma partida.
++
++% PENDENTE: adicione uma captura da interface à pasta figuras e descomente.
+ % \begin{figure}[ht]
+ %   \centering
+ %   \includegraphics[width=.88\textwidth]{figuras/interface-jogo.png}
+-%   \caption{Interface da partida e principais elementos de interação.}
++%   \caption{Interface da partida com controles, estado e informações da decisão da IA.}
+ %   \label{fig:interface}
+ % \end{figure}
+ 
+ \section{Considerações finais}
+ 
+-\preencher{Retome o objetivo e sintetize o aprendizado técnico e de projeto. Diferencie resultados observados de expectativas. Informe limitações e próximos passos, como função de avaliação, Minimax, poda alfa--beta e modo humano contra IA, somente se estiverem realmente planejados.}
++As três entregas produziram um jogo executável e uma base comum para interação humana, navegação histórica e busca automatizada. As decisões de separar regras e interface, representar jogadas completas e simular sobre cópias permitiram acrescentar a IA sem reimplementar o jogo. A instrumentação também tornou visível o principal limite atual: o elevado número de alternativas no início da partida.
++
++Como próximos passos, pretende-se corrigir a inconsistência do plano experimental, ampliar as medições para estados de meio e fim de partida, avaliar ordenação de jogadas e limites de tempo e comparar a força dos agentes em partidas completas. Também serão necessárias avaliação de usabilidade, documentação de licença e seleção de capturas de tela para a apresentação do protótipo.
+ 
+-% O MÁGICA 2026 exige de 3 a 5 páginas de conteúdo e admite uma página
+-% extra de referências.
+-% Confira o PDF final e ajuste o texto/figuras antes da submissão.
++% O MÁGICA 2026 exige de 3 a 5 páginas de conteúdo e admite uma página extra
++% de referências. Confira o PDF após incluir autoria e figuras.
+ 
+ \bibliographystyle{sbc}
+ \bibliography{referencias}
+diff --git a/relatorio_magica_overleaf/referencias.bib b/relatorio_magica_overleaf/referencias.bib
+index d9926b3..2c62905 100644
+--- a/relatorio_magica_overleaf/referencias.bib
++++ b/relatorio_magica_overleaf/referencias.bib
+@@ -30,5 +30,31 @@
+   note         = {Acesso em: 5 nov. 2026}
+ }
+ 
++@inproceedings{castro2024autunno,
++  author       = {Castro, Luana V. and Franco, Saulo T. L. and Brito, Tarsila P. and Cordeiro, Nana},
++  title        = {Autunno: Jogo 2D de Investigação de Pinturas do Renascimento Cultural para Desktop},
++  booktitle    = {Anais Estendidos do XXIII Simpósio Brasileiro de Jogos e Entretenimento Digital},
++  year         = {2024},
++  publisher    = {Sociedade Brasileira de Computação},
++  url          = {https://sol.sbc.org.br/index.php/sbgames_estendido/article/view/32146}
++}
++
++@inproceedings{assuncao2022truco,
++  author       = {Assunção, Joaquim V. C. and Paulus, Gustavo Bathu},
++  title        = {Towards a Time-Aware Hidden Markov Model for the Truco Game},
++  booktitle    = {Anais Estendidos do XXI Simpósio Brasileiro de Jogos e Entretenimento Digital},
++  year         = {2022},
++  publisher    = {Sociedade Brasileira de Computação},
++  doi          = {10.5753/sbgames_estendido.2022.225638}
++}
++
++@book{russell2021aima,
++  author       = {Russell, Stuart and Norvig, Peter},
++  title        = {Artificial Intelligence: A Modern Approach},
++  edition      = {4},
++  year         = {2021},
++  publisher    = {Pearson}
++}
++
+ % Adicione aqui trabalhos correlatos encontrados nos Anais do SBGames.
+ % Prefira referências efetivamente discutidas no texto.
+diff --git a/tests/test_legal_move_generator.py b/tests/test_legal_move_generator.py
+index 1738b05..72c529c 100644
+--- a/tests/test_legal_move_generator.py
++++ b/tests/test_legal_move_generator.py
+@@ -5,6 +5,7 @@ from model.board import Tabuleiro
+ from model.dispute_track import TrilhaDisputas
+ from model.enums import Faccao, FaseTurno, TipoCartaAcao
+ from model.game_state import EstadoJogo
++from model.game_state_serializer import SerializadorEstadoJogo
+ from model.legal_move_executor import ExecutorJogada
+ from model.legal_move_generator import GeradorJogadas
+ from model.player import Jogador
+@@ -78,6 +79,32 @@ class TesteGeradorJogadas(unittest.TestCase):
+             resultado = self.executor.executar(estado, jogada)
+             self.assertIsNot(resultado, estado)
+ 
++    def test_geracao_com_estados_reusa_resultados_legais(self):
++        estado = criar_estado_manual(2)
++        jogador = estado.obter_jogador_atual()
++        jogador.adicionar_carta_mao(
++            CartaAcao(TipoCartaAcao.APOIO_ESCOCES)
++        )
++        estado.reserva.retirar(Faccao.ESCOCESES)
++        estado.tabuleiro.obter_regiao("Moray").adicionar_seguidores(
++            Faccao.ESCOCESES
++        )
++
++        pares = list(self.gerador.gerar_com_estados(estado))
++        jogadas = self.gerador.gerar(estado)
++
++        self.assertEqual(len(pares), len(jogadas))
++        for (jogada_com_estado, _), jogada in zip(pares, jogadas):
++            self.assertTrue(jogada_com_estado.possui_mesmos_dados(jogada))
++        for jogada, estado_resultante in pares:
++            esperado = self.executor.executar(estado, jogada)
++            self.assertTrue(
++                SerializadorEstadoJogo().possuem_mesmo_estado(
++                    estado_resultante,
++                    esperado,
++                )
++            )
++
+     def test_cartas_repetidas_nao_duplicam_as_jogadas(self):
+         estado = criar_estado_manual()
+         jogador = estado.obter_jogador_atual()
+diff --git a/tests/test_minimax_agent.py b/tests/test_minimax_agent.py
+index f01a707..92a9b6d 100644
+--- a/tests/test_minimax_agent.py
++++ b/tests/test_minimax_agent.py
+@@ -45,8 +45,11 @@ def preparar_arvore_controlada(agente, notas):
+         estados[nome].nome_teste = nome
+ 
+     agente._gerador = Mock()
+-    agente._gerador.gerar.side_effect = (
+-        lambda estado: filhos.get(estado.nome_teste, [])
++    agente._gerador.gerar_com_estados.side_effect = (
++        lambda estado: [
++            (jogada, estados[jogada])
++            for jogada in filhos.get(estado.nome_teste, [])
++        ]
+     )
+     agente._executor = Mock()
+     agente._executor.executar.side_effect = (
+@@ -109,7 +112,7 @@ class TesteAgenteMinimax(unittest.TestCase):
+         agente._gerador = Mock()
+ 
+         self.assertIsNone(agente.escolher_jogada(estado, 3))
+-        agente._gerador.gerar.assert_not_called()
++        agente._gerador.gerar_com_estados.assert_not_called()
+         self.assertEqual(agente.ultima_pontuacao, 1000000)
+ 
+     def test_prefere_vitoria_rapida_e_adia_derrota_inevitavel(self):
+@@ -133,7 +136,7 @@ class TesteAgenteMinimax(unittest.TestCase):
+     def test_sem_jogadas_avalia_o_estado(self):
+         agente = AgenteMinimax(0)
+         agente._gerador = Mock()
+-        agente._gerador.gerar.return_value = []
++        agente._gerador.gerar_com_estados.return_value = []
+         agente._avaliador = Mock()
+         agente._avaliador.avaliar.return_value = 12
+ 

@@ -1,6 +1,5 @@
 from model.enums import FaseTurno
 from model.game_state import EstadoJogo
-from model.legal_move_executor import ExecutorJogada
 from model.legal_move_generator import GeradorJogadas
 from model.state_evaluator import AvaliadorEstado
 
@@ -16,7 +15,6 @@ class AgenteMinimax:
             self._avaliador = avaliador
         self._indice_jogador_ia = indice_jogador_ia
         self._gerador = GeradorJogadas()
-        self._executor = ExecutorJogada()
         self._limpar_estatisticas()
 
     def _limpar_estatisticas(self):
@@ -63,23 +61,12 @@ class AgenteMinimax:
         if estado.finalizado or profundidade == profundidade_maxima:
             return self._avaliar_folha(estado, profundidade), None
 
-        jogadas = self._gerador.gerar(estado)
-
-        if not jogadas:
-            return self._avaliar_folha(estado, profundidade), None
-
         maximizar = estado.indice_jogador_atual == self._indice_jogador_ia
-        melhor_pontuacao = float("inf")
-
-        if maximizar:
-            melhor_pontuacao = float("-inf")
-
+        melhor_pontuacao = None
         melhor_jogada = None
 
-        for indice in range(len(jogadas)):
-            jogada = jogadas[indice]
-            novo_estado = self._executor.executar(estado, jogada)
-            pontuacao, jogada_seguinte = self._buscar(
+        for jogada, novo_estado in self._gerador.gerar_com_estados(estado):
+            pontuacao, _ = self._buscar(
                 novo_estado,
                 profundidade + 1,
                 profundidade_maxima,
@@ -88,14 +75,13 @@ class AgenteMinimax:
                 usar_poda,
             )
 
-            if maximizar:
-                if pontuacao > melhor_pontuacao:
-                    melhor_pontuacao = pontuacao
-                    melhor_jogada = jogada
-            else:
-                if pontuacao < melhor_pontuacao:
-                    melhor_pontuacao = pontuacao
-                    melhor_jogada = jogada
+            if (
+                melhor_pontuacao is None
+                or (maximizar and pontuacao > melhor_pontuacao)
+                or (not maximizar and pontuacao < melhor_pontuacao)
+            ):
+                melhor_pontuacao = pontuacao
+                melhor_jogada = jogada
 
             if usar_poda:
                 if maximizar:
@@ -103,9 +89,12 @@ class AgenteMinimax:
                 else:
                     beta = min(beta, melhor_pontuacao)
 
-                if beta <= alfa and indice < len(jogadas) - 1:
+                if beta <= alfa:
                     self.podas_realizadas += 1
                     break
+
+        if melhor_pontuacao is None:
+            return self._avaliar_folha(estado, profundidade), None
 
         return melhor_pontuacao, melhor_jogada
 

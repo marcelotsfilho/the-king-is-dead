@@ -3,7 +3,10 @@ import os
 import pygame
 
 from model.enums import TipoJogador
-from model.match_settings import ConfiguracaoPartida
+from model.match_settings import (
+    SIMULACOES_MONTE_CARLO_DISPONIVEIS,
+    ConfiguracaoPartida,
+)
 
 
 ACAO_NOVO_JOGO = "novo_jogo"
@@ -40,7 +43,18 @@ class ControladorMenuInicial:
             configuracao.definir_tipo_jogador(indice, tipos[proxima_posicao])
             return
 
-        if configuracao.obter_tipo_jogador(indice) == TipoJogador.HUMANO:
+        tipo = configuracao.obter_tipo_jogador(indice)
+        if tipo in (TipoJogador.HUMANO, TipoJogador.Q_LEARNING):
+            return
+
+        if tipo == TipoJogador.MONTE_CARLO:
+            opcoes = SIMULACOES_MONTE_CARLO_DISPONIVEIS
+            atual = configuracao.obter_simulacoes_monte_carlo(indice)
+            posicao = opcoes.index(atual)
+            if acao == "aumentar" and posicao < len(opcoes) - 1:
+                configuracao.definir_simulacoes_monte_carlo(indice, opcoes[posicao + 1])
+            elif acao == "diminuir" and posicao > 0:
+                configuracao.definir_simulacoes_monte_carlo(indice, opcoes[posicao - 1])
             return
 
         profundidade = configuracao.obter_profundidade(indice)
@@ -90,6 +104,10 @@ class ControladorMenuInicial:
                                 self.configuracao_partida.definir_profundidade(
                                     indice,
                                     configuracao_em_edicao.obter_profundidade(indice),
+                                )
+                                self.configuracao_partida.definir_simulacoes_monte_carlo(
+                                    indice,
+                                    configuracao_em_edicao.obter_simulacoes_monte_carlo(indice),
                                 )
                             return ACAO_NOVO_JOGO
                         continue

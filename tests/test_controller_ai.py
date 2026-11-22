@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from pathlib import Path
 from threading import Event
 from unittest.mock import Mock, patch
 
@@ -9,6 +10,7 @@ from model.enums import Faccao, FaseTurno, TipoCartaAcao, TipoJogada, TipoJogado
 from model.game import Jogo
 from model.action_card import CartaAcao
 from model.legal_move import Jogada
+from model.q_learning_agent import TabelaQ
 from model.state_tree_serializer import SerializadorArvoreEstados
 from tests.test_controller import VisaoFalsa
 from tests.test_minimax_agent import criar_estado
@@ -109,6 +111,43 @@ class TesteTurnosIA(unittest.TestCase):
             self.assertEqual(controlador.jogo.estado.indice_jogador_atual, 1)
             self.assertEqual(controlador.arvore.obter_no_atual().obter_nivel(), 1)
             self.assertGreaterEqual(controlador.ultima_decisao_ia["tempo_segundos"], 0)
+
+    def test_monte_carlo_entrega_jogada_legal_e_registra_simulacoes(self):
+        controlador = criar_controlador_ia(TipoJogador.MONTE_CARLO)
+        controlador.configuracao_partida.definir_simulacoes_monte_carlo(0, 300)
+        preparar_busca(controlador)
+        controlador._atualizar_turno_ia()
+
+        decisao = controlador.ultima_decisao_ia
+        self.assertEqual(decisao["algoritmo"], TipoJogador.MONTE_CARLO.value)
+        self.assertEqual(decisao["simulacoes_realizadas"], 300)
+        self.assertEqual(decisao["simulacoes_configuradas"], 300)
+        self.assertEqual(controlador.jogo.estado.indice_jogador_atual, 1)
+        self.assertEqual(controlador.arvore.obter_no_atual().obter_nivel(), 1)
+
+    def test_q_learning_carrega_tabela_e_aplica_jogada_no_fluxo_mvc(self):
+        controlador = criar_controlador_ia(TipoJogador.Q_LEARNING)
+        tabela = TabelaQ()
+        tabela.atualizar("estado_de_treino", "PASSE", 1, None, 0.5, 0.9)
+        with tempfile.TemporaryDirectory() as pasta:
+            caminho = Path(pasta) / "tabela_q.json"
+            tabela.salvar(caminho, {"partidas_treinadas": 1})
+            controlador.caminho_tabela_q = caminho
+            preparar_busca(controlador)
+            controlador._atualizar_turno_ia()
+            self.assertEqual(TabelaQ.carregar(caminho).valores, tabela.valores)
+        self.assertEqual(controlador.ultima_decisao_ia["algoritmo"], "Q-learning")
+        self.assertEqual(controlador.arvore.obter_no_atual().obter_nivel(), 1)
+
+    def test_q_learning_informa_tabela_ausente_e_preserva_posicao(self):
+        controlador = criar_controlador_ia(TipoJogador.Q_LEARNING)
+        with tempfile.TemporaryDirectory() as pasta:
+            controlador.caminho_tabela_q = Path(pasta) / "ausente.json"
+            preparar_busca(controlador)
+            controlador._atualizar_turno_ia()
+        self.assertTrue(controlador.ia_pausada)
+        self.assertIn("carregar a tabela Q", controlador._obter_status_ia())
+        self.assertEqual(controlador.arvore.obter_no_atual().obter_nivel(), 0)
 
     def test_carta_da_ia_inclui_convocacao_e_um_unico_no(self):
         estado = criar_estado()

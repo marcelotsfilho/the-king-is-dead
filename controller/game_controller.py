@@ -19,6 +19,8 @@ from model.legal_move import Jogada
 from model.legal_move_executor import ExecutorJogada
 from model.match_settings import ConfiguracaoPartida
 from model.minimax_agent import AgenteMinimax
+from model.monte_carlo_agent import AgenteMonteCarlo
+from model.q_learning_agent import CAMINHO_TABELA_Q_JOGO, AgenteQLearning, TabelaQ
 from model.state_tree import ArvoreEstados
 from model.state_tree_serializer import SerializadorArvoreEstados
 from view.state_tree_graphviz_view import VisaoArvoreGraphviz
@@ -38,12 +40,15 @@ class ControladorJogo:
         serializador_arvore=None,
         caminho_salvamento=None,
         configuracao_partida=None,
+        caminho_tabela_q=CAMINHO_TABELA_Q_JOGO,
     ):
         self.jogo = jogo
         self.visao = visao
         if configuracao_partida is None:
             configuracao_partida = ConfiguracaoPartida()
         self.configuracao_partida = configuracao_partida
+        self.caminho_tabela_q = caminho_tabela_q
+        self._tabela_q = None
 
         if arvore is None:
             arvore = ArvoreEstados(jogo.estado)
@@ -132,11 +137,23 @@ class ControladorJogo:
                 return "Jogada calculada. Aplicando o resultado..."
             indice = self._estado_busca_ia.indice_jogador_atual
             nome = self._estado_busca_ia.obter_jogador_atual().nome
-            tipo = self.configuracao_partida.obter_tipo_jogador(indice).value
-            profundidade = self.configuracao_partida.obter_profundidade(indice)
+            tipo_jogador = self.configuracao_partida.obter_tipo_jogador(indice)
+            tipo = tipo_jogador.value
+            if tipo_jogador == TipoJogador.MONTE_CARLO:
+                detalhe = (
+                    str(self.configuracao_partida.obter_simulacoes_monte_carlo(indice))
+                    + " simulações"
+                )
+            elif tipo_jogador == TipoJogador.Q_LEARNING:
+                detalhe = "tabela treinada"
+            else:
+                detalhe = (
+                    "profundidade "
+                    + str(self.configuracao_partida.obter_profundidade(indice))
+                )
             mensagem = (
-                nome + " calculando com " + tipo + ", profundidade "
-                + str(profundidade) + ". Decorrido: " + tempo + "."
+                nome + " calculando com " + tipo + ", " + detalhe
+                + ". Decorrido: " + tempo + "."
             )
             if segundos >= 10:
                 mensagem += (
@@ -150,17 +167,34 @@ class ControladorJogo:
             return "IA pausada. Clique em RETOMAR IA para continuar os turnos automáticos."
         return ""
 
-    def _calcular_jogada_ia(self, estado, indice, tipo, profundidade):
+    def _calcular_jogada_ia(
+        self, estado, indice, tipo, profundidade, simulacoes=100
+    ):
         """Calcula sobre uma cópia e envia o resultado sem acessar o Pygame."""
         inicio = perf_counter()
         resultado = {"erro": None}
         try:
-            agente = AgenteMinimax(indice)
-            jogada = agente.escolher_jogada(
-                estado,
-                profundidade_maxima=profundidade,
-                usar_poda=tipo == TipoJogador.ALFA_BETA,
-            )
+            if tipo == TipoJogador.MONTE_CARLO:
+                agente = AgenteMonteCarlo(indice)
+                jogada = agente.escolher_jogada(
+                    estado,
+                    quantidade_simulacoes=simulacoes,
+                )
+            elif tipo == TipoJogador.Q_LEARNING:
+                if self._tabela_q is None:
+                    try:
+                        self._tabela_q = TabelaQ.carregar(self.caminho_tabela_q)
+                    except (OSError, ValueError) as erro:
+                        raise ValueError("Não foi possível carregar a tabela Q: " + str(erro)) from erro
+                agente = AgenteQLearning(self._tabela_q, analisar_finais=True)
+                jogada = agente.escolher_jogada(estado)
+            else:
+                agente = AgenteMinimax(indice)
+                jogada = agente.escolher_jogada(
+                    estado,
+                    profundidade_maxima=profundidade,
+                    usar_poda=tipo == TipoJogador.ALFA_BETA,
+                )
             novo_estado = None
             if jogada is not None:
                 novo_estado = ExecutorJogada().executar(estado, jogada)
@@ -170,10 +204,20 @@ class ControladorJogo:
                 "jogador": indice,
                 "algoritmo": tipo.value,
                 "profundidade": profundidade,
+                "simulacoes_configuradas": (
+                    simulacoes if tipo == TipoJogador.MONTE_CARLO else 0
+                ),
                 "pontuacao": agente.ultima_pontuacao,
                 "nos_visitados": agente.nos_visitados,
                 "folhas_avaliadas": agente.folhas_avaliadas,
                 "podas_realizadas": agente.podas_realizadas,
+                "simulacoes_realizadas": getattr(
+                    agente,
+                    "simulacoes_realizadas",
+                    0,
+                ),
+                "busca_final_concluida": getattr(agente, "busca_final_concluida", False),
+                "busca_final_alterou": getattr(agente, "busca_final_alterou", False),
             })
         except Exception as erro:
             # Um erro na thread precisa chegar ao Controller, sem sumir em silêncio.
@@ -186,19 +230,17 @@ class ControladorJogo:
         indice = estado.indice_jogador_atual
         tipo = self.configuracao_partida.obter_tipo_jogador(indice)
         profundidade = self.configuracao_partida.obter_profundidade(indice)
+        simulacoes = self.configuracao_partida.obter_simulacoes_monte_carlo(indice)
         copia = SerializadorEstadoJogo().copiar(estado)
         self._estado_busca_ia = estado
         self._inicio_busca_ia = perf_counter()
         self._erro_ia = ""
         self._tarefa_ia = Thread(
             target=self._calcular_jogada_ia,
-            args=(copia, indice, tipo, profundidade),
+            args=(copia, indice, tipo, profundidade, simulacoes),
             daemon=True,
         )
-        self.instrucao = (
-            estado.obter_jogador_atual().nome + " calculando com "
-            + tipo.value + ", profundidade " + str(profundidade) + "."
-        )
+        self.instrucao = self._obter_status_ia()
         self._tarefa_ia.start()
 
     def _receber_jogada_ia(self):
@@ -262,6 +304,24 @@ class ControladorJogo:
         resultado = self.ultima_decisao_ia
         if resultado is None:
             return ""
+        if resultado["algoritmo"] == TipoJogador.MONTE_CARLO.value:
+            return (
+                resultado["algoritmo"] + " | "
+                + str(resultado["simulacoes_realizadas"])
+                + " simulações | "
+                + format(resultado["tempo_segundos"], ".3f") + " s | "
+                + str(resultado["nos_visitados"]) + " estados simulados."
+            )
+        if resultado["algoritmo"] == TipoJogador.Q_LEARNING.value:
+            detalhe = "tabela treinada"
+            if resultado.get("busca_final_alterou"):
+                detalhe = "jogada ajustada pela busca de final"
+            elif resultado.get("busca_final_concluida"):
+                detalhe = "jogada confirmada pela busca de final"
+            return (
+                resultado["algoritmo"] + " | " + detalhe + " | "
+                + format(resultado["tempo_segundos"], ".3f") + " s."
+            )
         return (
             resultado["algoritmo"] + " | profundidade "
             + str(resultado["profundidade"]) + " | "
@@ -338,9 +398,7 @@ class ControladorJogo:
 
         self._mostrar_ajuda_da_carta(proximo_passo)
 
-    def _registrar_jogada_realizada(self, jogada, estado_resultante=None):
-        if estado_resultante is None:
-            estado_resultante = self.jogo.estado
+    def _registrar_jogada_realizada(self, jogada, estado_resultante):
         self.arvore.registrar_jogada_realizada(
             jogada,
             estado_resultante,
@@ -378,9 +436,9 @@ class ControladorJogo:
             self.jogo.estado,
         ):
             try:
-                self.jogo.passar()
                 jogada = Jogada(TipoJogada.PASSE)
-                self._registrar_jogada_realizada(jogada)
+                resultado = ExecutorJogada().executar(self.jogo.estado, jogada)
+                self._registrar_jogada_realizada(jogada, resultado)
                 self.instrucao = (
                     "Escolha uma carta de ação ou passe."
                 )
@@ -452,23 +510,10 @@ class ControladorJogo:
 
         faccao = faccoes_pendentes[0]
         self.destinos_assemble[faccao] = nome_regiao
-        ainda_pendentes = []
-
-        for outra_faccao in Faccao:
-            disponivel = (
-                self.jogo.estado.reserva.quantidade(outra_faccao) > 0
-            )
-
-            if (
-                disponivel
-                and outra_faccao not in self.destinos_assemble
-            ):
-                ainda_pendentes.append(outra_faccao)
-
-        if ainda_pendentes:
+        if len(faccoes_pendentes) > 1:
             self._mostrar_ajuda_da_carta(
                 "clique na região dos "
-                + ainda_pendentes[0].value
+                + faccoes_pendentes[1].value
                 + "."
             )
         else:
@@ -599,7 +644,6 @@ class ControladorJogo:
         try:
             dados = self.jogada_pendente
             nome_regiao = self.regiao_convocacao
-            self.jogo.convocar_seguidor(nome_regiao, faccao)
             jogada = Jogada(
                 TipoJogada.CARTA,
                 tipo_carta=dados["tipo_carta"],
@@ -607,7 +651,10 @@ class ControladorJogo:
                 nome_regiao_convocacao=nome_regiao,
                 faccao_convocacao=faccao,
             )
-            self._registrar_jogada_realizada(jogada)
+            resultado = ExecutorJogada().executar_convocacao(
+                self.jogo.estado, nome_regiao, faccao
+            )
+            self._registrar_jogada_realizada(jogada, resultado)
             self._limpar_selecao()
             self.instrucao = (
                 "Escolha uma carta de ação ou passe."

@@ -1,4 +1,5 @@
 from model.enums import Faccao
+from model.validacao import validar_quantidade_de_seguidores
 
 
 class Regiao:
@@ -28,12 +29,25 @@ class Regiao:
 
     def total_de_seguidores(self):
         """Retorna a quantidade total de seguidores presentes na região."""
-        total = 0
+        return sum(self._seguidores.values())
 
-        for faccao in Faccao:
-            total += self._seguidores[faccao]
+    def obter_lideranca(self):
+        """Retorna a facção líder e sua vantagem sobre a segunda colocada."""
+        lider = None
+        maior_quantidade = 0
+        segunda_maior = 0
+        for faccao, quantidade in self._seguidores.items():
+            if quantidade > maior_quantidade:
+                lider = faccao
+                segunda_maior = maior_quantidade
+                maior_quantidade = quantidade
+            elif quantidade > segunda_maior:
+                segunda_maior = quantidade
 
-        return total
+        vantagem = maior_quantidade - segunda_maior
+        if vantagem == 0:
+            return None, 0
+        return lider, vantagem
 
     def definir_controlador(self, faccao):
         """Marca a região como controlada por uma facção."""
@@ -49,13 +63,6 @@ class Regiao:
         """Informa se a disputa de poder da região já foi resolvida."""
         return self.controlador is not None or self.instavel
 
-    def _validar_quantidade(self, quantidade):
-        if isinstance(quantidade, bool) or not isinstance(quantidade, int):
-            raise TypeError("A quantidade deve ser um número inteiro.")
-
-        if quantidade <= 0:
-            raise ValueError("A quantidade deve ser maior que zero.")
-
     def _validar_regiao_nao_resolvida(self):
         if self.esta_resolvida():
             raise ValueError("Não é possível alterar uma região já resolvida.")
@@ -63,13 +70,13 @@ class Regiao:
     def adicionar_seguidores(self, faccao, quantidade=1):
         """Adiciona uma quantidade positiva de seguidores de uma facção."""
         self._validar_regiao_nao_resolvida()
-        self._validar_quantidade(quantidade)
+        validar_quantidade_de_seguidores(quantidade)
         self._seguidores[faccao] += quantidade
 
     def remover_seguidores(self, faccao, quantidade=1):
         """Remove seguidores sem permitir que a quantidade fique negativa."""
         self._validar_regiao_nao_resolvida()
-        self._validar_quantidade(quantidade)
+        validar_quantidade_de_seguidores(quantidade)
 
         if quantidade > self._seguidores[faccao]:
             raise ValueError("Não há seguidores suficientes para remover.")

@@ -32,7 +32,7 @@ class NoEstado:
         )
         self._jogada_origem = jogada_origem
         self._pai = pai
-        self._filhos = []
+        self._filhos = {}
         self._visitado = False
         self._jogada_voltada = False
         self._expandido = False
@@ -95,7 +95,7 @@ class NoEstado:
 
     def obter_filhos(self):
         """Retorna uma cópia da lista de filhos."""
-        return self._filhos.copy()
+        return list(self._filhos.values())
 
     def adicionar_filho(self, filho):
         """Adiciona um filho quando ele pertence ao nó e ainda não existe."""
@@ -105,14 +105,11 @@ class NoEstado:
         if filho.obter_pai() is not self:
             raise ValueError("O nó informado não possui este nó como pai.")
 
-        for filho_existente in self._filhos:
-            if (
-                filho_existente.obter_identificador()
-                == filho.obter_identificador()
-            ):
-                return False
+        identificador = filho.obter_identificador()
+        if identificador in self._filhos:
+            return False
 
-        self._filhos.append(filho)
+        self._filhos[identificador] = filho
         return True
 
     def quantidade_filhos(self):

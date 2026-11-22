@@ -1,7 +1,6 @@
 from model.game_state import EstadoJogo
 from model.game_state_serializer import SerializadorEstadoJogo
 from model.legal_move import Jogada
-from model.legal_move_executor import ExecutorJogada
 from model.legal_move_generator import GeradorJogadas
 from model.state_node import NoEstado
 
@@ -14,7 +13,6 @@ class ArvoreEstados:
             raise TypeError("A árvore deve receber um EstadoJogo inicial.")
 
         self._serializador = SerializadorEstadoJogo()
-        self._executor = ExecutorJogada()
         self._gerador = GeradorJogadas()
         self._raiz = NoEstado(estado_inicial, avaliacao_heuristica=avaliacao_heuristica)
         self._no_atual = self._raiz
@@ -66,7 +64,8 @@ class ArvoreEstados:
             return None
 
         novo_no = NoEstado(estado, jogada, pai, avaliacao_heuristica)
-        pai.adicionar_filho(novo_no)
+        if not pai.adicionar_filho(novo_no):
+            return None
         self._nos_por_identificador[identificador] = novo_no
         return novo_no
 
@@ -76,10 +75,7 @@ class ArvoreEstados:
             return self._no_atual.obter_filhos()
 
         estado_atual = self._no_atual.obter_estado()
-        jogadas = self._gerador.gerar(estado_atual)
-
-        for jogada in jogadas:
-            novo_estado = self._executor.executar(estado_atual, jogada)
+        for jogada, novo_estado in self._gerador.gerar_com_estados(estado_atual):
             self.adicionar_estado(
                 novo_estado,
                 jogada,
@@ -100,13 +96,7 @@ class ArvoreEstados:
         identificador = self._serializador.obter_identificador(
             estado_resultante
         )
-        no_destino = None
-
-        for filho in self._no_atual.obter_filhos():
-            if filho.obter_identificador() == identificador:
-                no_destino = filho
-                break
-
+        no_destino = self._nos_por_identificador.get(identificador)
         if no_destino is None:
             no_destino = self.adicionar_estado(
                 estado_resultante,
@@ -114,7 +104,7 @@ class ArvoreEstados:
                 self._no_atual,
             )
 
-        if no_destino is None:
+        if no_destino is None or no_destino.obter_pai() is not self._no_atual:
             raise ValueError(
                 "O estado resultante já existe em outro ponto da árvore."
             )

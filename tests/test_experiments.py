@@ -18,11 +18,11 @@ from tests.test_minimax_agent import criar_estado
 
 
 class TesteExperimentos(unittest.TestCase):
-    def test_plano_padrao_possui_36_configuracoes(self):
+    def test_plano_padrao_possui_oito_configuracoes_distintas(self):
         argumentos = criar_argumentos().parse_args([])
         plano = montar_plano(argumentos.bateria, argumentos.profundidades, argumentos.repeticoes, argumentos.algoritmos)
-        self.assertEqual(len(plano), 36)
-        self.assertEqual(len({tuple(item.values()) for item in plano}), 36)
+        self.assertEqual(len(plano), 8)
+        self.assertEqual(len({tuple(item.values()) for item in plano}), 8)
 
     def test_argumentos_rejeitam_profundidade_ou_repeticao_zero(self):
         for opcao in ("--profundidades", "--repeticoes"):

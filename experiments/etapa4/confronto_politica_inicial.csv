@@ -1,0 +1,9 @@
+treinadas,partida,semente,lado_q,lado_inicial,adversario,epsilon,resultado,jogadas,cartas_primeiro_passe_q,cartas_primeiro_passe_adversario,cartas_primeira_disputa_q,cartas_primeira_disputa_adversario,turnos_q,estados_q_conhecidos,segundos,profundidade_adversario,poda_adversario
+0,1,90000,1,1,minimax,0.0,derrota,26,8,4,4,4,13,0,8.1845,1,False
+0,2,90000,2,1,minimax,0.0,derrota,25,4,4,4,4,12,0,8.0013,1,False
+0,3,90001,1,2,minimax,0.0,derrota,21,4,4,4,4,10,0,4.999,1,False
+0,4,90001,2,2,minimax,0.0,vitoria,15,6,4,4,4,8,0,3.3621,1,False
+0,5,90002,1,1,minimax,0.0,vitoria,17,8,4,4,4,9,0,6.0723,1,False
+0,6,90002,2,1,minimax,0.0,vitoria,16,4,4,4,4,8,0,6.3826,1,False
+0,7,90003,1,2,minimax,0.0,derrota,35,7,4,4,4,17,0,8.5738,1,False
+0,8,90003,2,2,minimax,0.0,derrota,34,8,8,8,8,17,0,7.7851,1,False

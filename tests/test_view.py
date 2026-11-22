@@ -92,6 +92,17 @@ class TesteVisaoResponsiva(unittest.TestCase):
 
         self.assertEqual(posicao_logica, (-1, -1))
 
+    def test_trilha_reconhece_as_oito_posicoes_em_janela_reduzida(self):
+        visao = VisaoJogo.__new__(VisaoJogo)
+        visao.janela = JanelaFalsa(800, 515)
+
+        for indice in range(8):
+            caixa = visao._retangulo_trilha(indice)
+            clique = (100 + caixa.centerx / 2, caixa.centery / 2)
+            with self.subTest(indice=indice):
+                self.assertEqual(visao.obter_posicao_trilha_clicada(clique), indice + 1)
+        self.assertIsNone(visao.obter_posicao_trilha_clicada((150, 250)))
+
     def test_paginacao_da_arvore_limita_sete_filhos(self):
         visao = VisaoJogo.__new__(VisaoJogo)
 
@@ -205,22 +216,16 @@ class TesteFronteirasDaVisao(unittest.TestCase):
         self.assertEqual(len(identificadores), len(set(identificadores)))
 
     def test_pontos_horizontais_ficam_nas_bordas_das_regioes(self):
-        ponto_moray = self.visao._calcular_ponto_na_borda(
+        ponto_moray, ponto_strathclyde = self.visao._obter_pontos_da_fronteira(
             "Moray", "Strathclyde"
-        )
-        ponto_strathclyde = self.visao._calcular_ponto_na_borda(
-            "Strathclyde", "Moray"
         )
 
         self.assertEqual(ponto_moray, (230, 165))
         self.assertEqual(ponto_strathclyde, (260, 165))
 
     def test_pontos_verticais_ficam_nas_bordas_das_regioes(self):
-        ponto_northumbria = self.visao._calcular_ponto_na_borda(
+        ponto_northumbria, ponto_essex = self.visao._obter_pontos_da_fronteira(
             "Northumbria", "Essex"
-        )
-        ponto_essex = self.visao._calcular_ponto_na_borda(
-            "Essex", "Northumbria"
         )
 
         self.assertEqual(ponto_northumbria, (575, 230))

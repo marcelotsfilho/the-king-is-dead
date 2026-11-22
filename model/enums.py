@@ -7,6 +7,8 @@ class TipoJogador(Enum):
     HUMANO = "Humano"
     MINIMAX = "Minimax"
     ALFA_BETA = "Minimax com alfa-beta"
+    MONTE_CARLO = "Monte Carlo"
+    Q_LEARNING = "Q-learning"
 
 
 class Faccao(Enum):

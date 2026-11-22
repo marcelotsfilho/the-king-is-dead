@@ -1,6 +1,4 @@
-from model.enums import Faccao
 from model.game import Jogo
-from model.legal_move_executor import ExecutorJogada
 from model.legal_move_generator import GeradorJogadas
 from model.state_evaluator import AvaliadorEstado
 
@@ -17,11 +15,10 @@ class AvaliadorInicial(AvaliadorEstado):
         jogadores = estado.obter_jogadores()
         ia = jogadores[self._indice_jogador_ia]
         adversario = jogadores[self._indice_adversario()]
-        jogadas = GeradorJogadas().gerar(estado)
         pontuacao = 0
-        executor = ExecutorJogada()
-        for jogada in jogadas:
-            resultado = executor.executar(estado, jogada)
+        quantidade_jogadas = 0
+        for _, resultado in GeradorJogadas().gerar_com_estados(estado):
+            quantidade_jogadas += 1
             if resultado.finalizado and resultado.vencedor is not None:
                 vencedor_ia = resultado.obter_jogadores()[self._indice_jogador_ia]
                 if resultado.vencedor is vencedor_ia:
@@ -45,10 +42,10 @@ class AvaliadorInicial(AvaliadorEstado):
         pontuacao += 10 * self._diferenca_na_corte(ia, adversario, faccoes[1])
         for regiao in estado.tabuleiro.obter_regioes().values():
             if not regiao.esta_resolvida():
-                lider, margem = self._obter_lider_da_regiao(regiao)
+                lider, margem = regiao.obter_lideranca()
                 if lider is not None:
                     pontuacao += margem * self._diferenca_na_corte(ia, adversario, lider) * 3
-        mobilidade = len(jogadas) * 2
+        mobilidade = quantidade_jogadas * 2
         if estado.indice_jogador_atual == self._indice_jogador_ia:
             pontuacao += mobilidade
         else:

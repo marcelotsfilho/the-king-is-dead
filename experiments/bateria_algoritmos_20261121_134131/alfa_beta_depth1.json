@@ -1,0 +1,29 @@
+[
+  {
+    "position": "opening_seed42",
+    "minimax_seconds": 3.602416399982758,
+    "alpha_beta_seconds": 3.8750714999914635,
+    "same_score": true,
+    "same_move": true,
+    "minimax_nodes": 14698,
+    "alpha_beta_nodes": 14698
+  },
+  {
+    "position": "seed0_turn8",
+    "minimax_seconds": 0.7486936000059359,
+    "alpha_beta_seconds": 0.6598634000110906,
+    "same_score": true,
+    "same_move": true,
+    "minimax_nodes": 2844,
+    "alpha_beta_nodes": 2844
+  },
+  {
+    "position": "seed0_turn16",
+    "minimax_seconds": 0.0002154999820049852,
+    "alpha_beta_seconds": 0.00018060000729747117,
+    "same_score": true,
+    "same_move": true,
+    "minimax_nodes": 2,
+    "alpha_beta_nodes": 2
+  }
+]

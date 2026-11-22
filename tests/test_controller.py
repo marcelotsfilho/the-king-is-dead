@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import pygame
 
@@ -133,6 +134,42 @@ class TesteControladorJogo(unittest.TestCase):
             .obter_jogada_origem()
             .eh_passe()
         )
+
+    def test_falha_ao_registrar_passe_preserva_estado_da_partida(self):
+        controlador = criar_controlador()
+        anterior = controlador.jogo.estado
+
+        with patch.object(
+            controlador.arvore, "registrar_jogada_realizada",
+            side_effect=ValueError("Posição já registrada em outro ramo."),
+        ):
+            controlador._processar_clique("passar")
+
+        self.assertIs(controlador.jogo.estado, anterior)
+        self.assertEqual(anterior.indice_jogador_atual, 0)
+        self.assertEqual(anterior.passes_consecutivos, 0)
+        self.assertEqual(controlador.arvore.obter_no_atual().obter_nivel(), 0)
+
+    def test_falha_ao_registrar_convocacao_preserva_convocacao_pendente(self):
+        controlador = criar_controlador()
+        mao = controlador.jogo.estado.obter_jogador_atual().obter_mao()
+        indice = next(
+            i for i, carta in enumerate(mao) if carta.tipo == TipoCartaAcao.REUNIR
+        )
+        for clique in (indice, "Moray", "Gwynedd", "Essex", "Moray"):
+            controlador._processar_clique(clique)
+        anterior = controlador.jogo.estado
+
+        with patch.object(
+            controlador.arvore, "registrar_jogada_realizada",
+            side_effect=ValueError("Posição já registrada em outro ramo."),
+        ):
+            controlador._processar_clique(Faccao.ESCOCESES)
+
+        self.assertIs(controlador.jogo.estado, anterior)
+        self.assertEqual(anterior.fase_turno, FaseTurno.CONVOCAR_SEGUIDOR)
+        self.assertEqual(anterior.indice_jogador_atual, 0)
+        self.assertEqual(controlador.arvore.obter_no_atual().obter_nivel(), 0)
 
     def test_fluxo_de_assemble_chega_a_convocacao(self):
         controlador = criar_controlador()

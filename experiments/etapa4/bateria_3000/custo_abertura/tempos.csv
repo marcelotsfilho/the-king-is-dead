@@ -1,0 +1,5 @@
+semente,algoritmo,profundidade,limite_segundos,status,segundos,jogada,nos,podas
+53000,minimax,1,30,concluido,2.0171,Passar.,13598,0
+53000,alfa_beta,1,30,concluido,2.0286,Passar.,13598,0
+53000,minimax,2,30,tempo_esgotado,30,,,
+53000,alfa_beta,2,30,concluido,6.069,Passar.,40791,13596
