@@ -543,6 +543,31 @@ class Jogo:
         )
         self.estado.avancar_jogador()
 
+    def avaliar_convocacoes(self, convocacoes, avaliar):
+        """Avalia convocações em uma cópia privada com um avaliador de leitura."""
+        estado = self.estado
+        jogador = estado.obter_jogador_atual()
+        indice = estado.indice_jogador_atual
+        carta = estado.carta_em_execucao
+        fase = estado.fase_turno
+        mensagem = estado.ultima_mensagem
+        ultima_acao = estado.ultima_acao
+        convocacao_anterior = ultima_acao["convocacao"]
+
+        for nome_regiao, faccao in convocacoes:
+            self.convocar_seguidor(nome_regiao, faccao)
+            try:
+                pontuacao = avaliar(estado)
+            finally:
+                jogador.remover_seguidor_da_corte(faccao)
+                estado.tabuleiro.obter_regiao(nome_regiao).adicionar_seguidores(faccao)
+                ultima_acao["convocacao"] = convocacao_anterior
+                estado.carta_em_execucao = carta
+                estado.fase_turno = fase
+                estado.ultima_mensagem = mensagem
+                estado.indice_jogador_atual = indice
+            yield pontuacao
+
     def resolver_proxima_disputa(self):
         """Resolve a primeira carta ainda virada para cima na trilha."""
         self._validar_partida_em_andamento()

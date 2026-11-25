@@ -1,0 +1,305 @@
+{
+  "criterio": "Mais vitorias na validacao; empate favorece menos partidas treinadas e menor semente.",
+  "partidas_validacao_por_checkpoint": 400,
+  "escolhido": {
+    "semente_treino": 670000,
+    "partidas_treinadas": 1000,
+    "resultados": {
+      "derrota": 120,
+      "vitoria": 279,
+      "empate": 1
+    },
+    "vitorias": 279,
+    "taxa_vitoria": 0.6975,
+    "cobertura_turnos_q": 0.9823,
+    "origem": "semente_670000/checkpoints/01000.json",
+    "estados_q": 140,
+    "pares_estado_acao": 512
+  },
+  "execucoes": [
+    {
+      "semente_treino": 650000,
+      "resultados_treino": {
+        "derrota": 2314,
+        "vitoria": 2686
+      },
+      "total_segundos_treino": 310.8,
+      "media_segundos_partida": 0.06216,
+      "mediana_segundos_partida": 0.0596,
+      "curva": [
+        {
+          "semente_treino": 650000,
+          "partidas_treinadas": 0,
+          "resultados": {
+            "derrota": 195,
+            "vitoria": 195,
+            "empate": 10
+          },
+          "vitorias": 195,
+          "taxa_vitoria": 0.4875,
+          "cobertura_turnos_q": 0.0
+        },
+        {
+          "semente_treino": 650000,
+          "partidas_treinadas": 1000,
+          "resultados": {
+            "derrota": 179,
+            "vitoria": 221
+          },
+          "vitorias": 221,
+          "taxa_vitoria": 0.5525,
+          "cobertura_turnos_q": 0.9919,
+          "origem": "semente_650000/checkpoints/01000.json",
+          "estados_q": 142,
+          "pares_estado_acao": 525
+        },
+        {
+          "semente_treino": 650000,
+          "partidas_treinadas": 2000,
+          "resultados": {
+            "derrota": 177,
+            "vitoria": 223
+          },
+          "vitorias": 223,
+          "taxa_vitoria": 0.5575,
+          "cobertura_turnos_q": 0.9979,
+          "origem": "semente_650000/checkpoints/02000.json",
+          "estados_q": 159,
+          "pares_estado_acao": 627
+        },
+        {
+          "semente_treino": 650000,
+          "partidas_treinadas": 3000,
+          "resultados": {
+            "derrota": 168,
+            "vitoria": 232
+          },
+          "vitorias": 232,
+          "taxa_vitoria": 0.58,
+          "cobertura_turnos_q": 0.999,
+          "origem": "semente_650000/checkpoints/03000.json",
+          "estados_q": 175,
+          "pares_estado_acao": 697
+        },
+        {
+          "semente_treino": 650000,
+          "partidas_treinadas": 4000,
+          "resultados": {
+            "derrota": 181,
+            "vitoria": 219
+          },
+          "vitorias": 219,
+          "taxa_vitoria": 0.5475,
+          "cobertura_turnos_q": 1.0,
+          "origem": "semente_650000/checkpoints/04000.json",
+          "estados_q": 182,
+          "pares_estado_acao": 747
+        },
+        {
+          "semente_treino": 650000,
+          "partidas_treinadas": 5000,
+          "resultados": {
+            "derrota": 175,
+            "vitoria": 225
+          },
+          "vitorias": 225,
+          "taxa_vitoria": 0.5625,
+          "cobertura_turnos_q": 0.9996,
+          "origem": "semente_650000/checkpoints/05000.json",
+          "estados_q": 186,
+          "pares_estado_acao": 787
+        }
+      ]
+    },
+    {
+      "semente_treino": 660000,
+      "resultados_treino": {
+        "vitoria": 2591,
+        "derrota": 2409
+      },
+      "total_segundos_treino": 316.3,
+      "media_segundos_partida": 0.06326,
+      "mediana_segundos_partida": 0.061,
+      "curva": [
+        {
+          "semente_treino": 660000,
+          "partidas_treinadas": 0,
+          "resultados": {
+            "derrota": 195,
+            "vitoria": 195,
+            "empate": 10
+          },
+          "vitorias": 195,
+          "taxa_vitoria": 0.4875,
+          "cobertura_turnos_q": 0.0
+        },
+        {
+          "semente_treino": 660000,
+          "partidas_treinadas": 1000,
+          "resultados": {
+            "derrota": 123,
+            "vitoria": 277
+          },
+          "vitorias": 277,
+          "taxa_vitoria": 0.6925,
+          "cobertura_turnos_q": 0.9629,
+          "origem": "semente_660000/checkpoints/01000.json",
+          "estados_q": 149,
+          "pares_estado_acao": 527
+        },
+        {
+          "semente_treino": 660000,
+          "partidas_treinadas": 2000,
+          "resultados": {
+            "vitoria": 234,
+            "derrota": 165,
+            "empate": 1
+          },
+          "vitorias": 234,
+          "taxa_vitoria": 0.585,
+          "cobertura_turnos_q": 0.9985,
+          "origem": "semente_660000/checkpoints/02000.json",
+          "estados_q": 164,
+          "pares_estado_acao": 630
+        },
+        {
+          "semente_treino": 660000,
+          "partidas_treinadas": 3000,
+          "resultados": {
+            "derrota": 139,
+            "vitoria": 261
+          },
+          "vitorias": 261,
+          "taxa_vitoria": 0.6525,
+          "cobertura_turnos_q": 0.9942,
+          "origem": "semente_660000/checkpoints/03000.json",
+          "estados_q": 173,
+          "pares_estado_acao": 702
+        },
+        {
+          "semente_treino": 660000,
+          "partidas_treinadas": 4000,
+          "resultados": {
+            "derrota": 173,
+            "vitoria": 227
+          },
+          "vitorias": 227,
+          "taxa_vitoria": 0.5675,
+          "cobertura_turnos_q": 0.9991,
+          "origem": "semente_660000/checkpoints/04000.json",
+          "estados_q": 180,
+          "pares_estado_acao": 751
+        },
+        {
+          "semente_treino": 660000,
+          "partidas_treinadas": 5000,
+          "resultados": {
+            "derrota": 154,
+            "vitoria": 246
+          },
+          "vitorias": 246,
+          "taxa_vitoria": 0.615,
+          "cobertura_turnos_q": 0.9991,
+          "origem": "semente_660000/checkpoints/05000.json",
+          "estados_q": 185,
+          "pares_estado_acao": 788
+        }
+      ]
+    },
+    {
+      "semente_treino": 670000,
+      "resultados_treino": {
+        "vitoria": 2684,
+        "derrota": 2316
+      },
+      "total_segundos_treino": 316.06,
+      "media_segundos_partida": 0.06321,
+      "mediana_segundos_partida": 0.0608,
+      "curva": [
+        {
+          "semente_treino": 670000,
+          "partidas_treinadas": 0,
+          "resultados": {
+            "derrota": 195,
+            "vitoria": 195,
+            "empate": 10
+          },
+          "vitorias": 195,
+          "taxa_vitoria": 0.4875,
+          "cobertura_turnos_q": 0.0
+        },
+        {
+          "semente_treino": 670000,
+          "partidas_treinadas": 1000,
+          "resultados": {
+            "derrota": 120,
+            "vitoria": 279,
+            "empate": 1
+          },
+          "vitorias": 279,
+          "taxa_vitoria": 0.6975,
+          "cobertura_turnos_q": 0.9823,
+          "origem": "semente_670000/checkpoints/01000.json",
+          "estados_q": 140,
+          "pares_estado_acao": 512
+        },
+        {
+          "semente_treino": 670000,
+          "partidas_treinadas": 2000,
+          "resultados": {
+            "derrota": 191,
+            "vitoria": 209
+          },
+          "vitorias": 209,
+          "taxa_vitoria": 0.5225,
+          "cobertura_turnos_q": 0.9999,
+          "origem": "semente_670000/checkpoints/02000.json",
+          "estados_q": 162,
+          "pares_estado_acao": 619
+        },
+        {
+          "semente_treino": 670000,
+          "partidas_treinadas": 3000,
+          "resultados": {
+            "vitoria": 236,
+            "derrota": 164
+          },
+          "vitorias": 236,
+          "taxa_vitoria": 0.59,
+          "cobertura_turnos_q": 0.9992,
+          "origem": "semente_670000/checkpoints/03000.json",
+          "estados_q": 172,
+          "pares_estado_acao": 698
+        },
+        {
+          "semente_treino": 670000,
+          "partidas_treinadas": 4000,
+          "resultados": {
+            "derrota": 168,
+            "vitoria": 232
+          },
+          "vitorias": 232,
+          "taxa_vitoria": 0.58,
+          "cobertura_turnos_q": 0.9989,
+          "origem": "semente_670000/checkpoints/04000.json",
+          "estados_q": 184,
+          "pares_estado_acao": 747
+        },
+        {
+          "semente_treino": 670000,
+          "partidas_treinadas": 5000,
+          "resultados": {
+            "derrota": 138,
+            "vitoria": 262
+          },
+          "vitorias": 262,
+          "taxa_vitoria": 0.655,
+          "cobertura_turnos_q": 0.9954,
+          "origem": "semente_670000/checkpoints/05000.json",
+          "estados_q": 188,
+          "pares_estado_acao": 793
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "tabela_nova": {
+    "resultados": {
+      "derrota": 236,
+      "vitoria": 564
+    },
+    "taxa_vitoria": 0.705
+  },
+  "tabela_anterior": {
+    "resultados": {
+      "vitoria": 506,
+      "derrota": 293,
+      "empate": 1
+    },
+    "taxa_vitoria": 0.6325
+  },
+  "politica_inicial": {
+    "resultados": {
+      "derrota": 393,
+      "vitoria": 393,
+      "empate": 14
+    },
+    "taxa_vitoria": 0.49125
+  },
+  "sorteio": {
+    "resultados": {
+      "derrota": 348,
+      "vitoria": 452
+    },
+    "taxa_vitoria": 0.565
+  },
+  "diferencas_pareadas_95": {
+    "tabela_anterior": {
+      "diferenca": 0.0725,
+      "intervalo95": [
+        0.025,
+        0.12
+      ]
+    },
+    "politica_inicial": {
+      "diferenca": 0.2137,
+      "intervalo95": [
+        0.1787,
+        0.2475
+      ]
+    },
+    "sorteio": {
+      "diferenca": 0.14,
+      "intervalo95": [
+        0.0963,
+        0.1837
+      ]
+    }
+  }
+}

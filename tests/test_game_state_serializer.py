@@ -227,20 +227,19 @@ class TesteSerializadorEstadoJogo(unittest.TestCase):
         estado.faccao_vencedora = Faccao.GALESES
         estado.motivo_encerramento = "Coroação"
 
-        restaurado = self.serializador.copiar(estado)
-        jogadores_restaurados = restaurado.obter_jogadores()
-
-        self.assertIs(
-            restaurado.ultimo_jogador_que_agiu,
-            jogadores_restaurados[1],
-        )
-        self.assertIs(
-            restaurado.ordem_jogadores_sem_cartas[0],
-            jogadores_restaurados[1],
-        )
-        self.assertIs(restaurado.vencedor, jogadores_restaurados[0])
-        self.assertEqual(restaurado.faccao_vencedora, Faccao.GALESES)
-        self.assertEqual(restaurado.fase_turno, FaseTurno.ENCERRADO)
+        for restaurado in (self.serializador.copiar(estado), estado.copiar()):
+            jogadores_restaurados = restaurado.obter_jogadores()
+            self.assertIs(
+                restaurado.ultimo_jogador_que_agiu,
+                jogadores_restaurados[1],
+            )
+            self.assertIs(
+                restaurado.ordem_jogadores_sem_cartas[0],
+                jogadores_restaurados[1],
+            )
+            self.assertIs(restaurado.vencedor, jogadores_restaurados[0])
+            self.assertEqual(restaurado.faccao_vencedora, Faccao.GALESES)
+            self.assertEqual(restaurado.fase_turno, FaseTurno.ENCERRADO)
 
     def test_restaura_destinos_de_assemble_com_chaves_de_faccao(self):
         estado = criar_estado_manual()

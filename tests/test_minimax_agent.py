@@ -1,12 +1,13 @@
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from model.action_card import CartaAcao
 from model.board import Tabuleiro
 from model.dispute_track import TrilhaDisputas
-from model.enums import Faccao, FaseTurno, TipoCartaAcao
+from model.enums import Faccao, FaseTurno, TipoCartaAcao, TipoJogada
 from model.game_state import EstadoJogo
 from model.game_state_serializer import SerializadorEstadoJogo
+from model.legal_move import Jogada
 from model.legal_move_executor import ExecutorJogada
 from model.legal_move_generator import GeradorJogadas
 from model.minimax_agent import AgenteMinimax
@@ -51,6 +52,11 @@ def preparar_arvore_controlada(agente, notas):
             for jogada in filhos.get(estado.nome_teste, [])
         ]
     )
+    agente._gerador.avaliar_sucessores.side_effect = (
+        lambda estado, avaliar: (
+            avaliar(filho) for _, filho in agente._gerador.gerar_com_estados(estado)
+        )
+    )
     agente._avaliador = Mock()
     agente._avaliador.avaliar.side_effect = (
         lambda estado, profundidade: notas[estado.nome_teste]
@@ -59,6 +65,65 @@ def preparar_arvore_controlada(agente, notas):
 
 
 class TesteAgenteMinimax(unittest.TestCase):
+    def test_prazo_preserva_a_jogada_da_ultima_profundidade_concluida(self):
+        notas = {"A": 8, "B": 5, "A1": 1, "A2": 2, "B1": 4, "B2": 6}
+        for usar_poda in (False, True):
+            with self.subTest(usar_poda=usar_poda):
+                agente = AgenteMinimax(0)
+                estados = preparar_arvore_controlada(agente, notas)
+                agora = 0
+
+                def avaliar(estado, profundidade):
+                    nonlocal agora
+                    if estado is estados["A1"]:
+                        agora = 5
+                    return notas[estado.nome_teste]
+
+                agente._avaliador.avaliar.side_effect = avaliar
+                with patch("model.minimax_agent.perf_counter", side_effect=lambda: agora):
+                    jogada = agente.escolher_jogada(estados["raiz"], 2, usar_poda, limite_segundos=5)
+
+                self.assertEqual(jogada, "A")
+                self.assertEqual(agente.ultima_pontuacao, 8)
+                self.assertEqual(agente.profundidade_concluida, 1)
+                self.assertTrue(agente.tempo_esgotado)
+                self.assertEqual(agente.escolher_jogada(estados["raiz"], 2, usar_poda), "B")
+                self.assertFalse(agente.tempo_esgotado)
+
+    def test_prazo_permite_concluir_profundidade_maxima(self):
+        agente = AgenteMinimax(0)
+        estados = preparar_arvore_controlada(
+            agente, {"A": 8, "B": 5, "A1": 1, "A2": 2, "B1": 4, "B2": 6}
+        )
+        with patch("model.minimax_agent.perf_counter", return_value=0):
+            jogada = agente.escolher_jogada(estados["raiz"], 2, limite_segundos=5)
+
+        self.assertEqual(jogada, "B")
+        self.assertEqual(agente.ultima_pontuacao, 4)
+        self.assertEqual(agente.profundidade_concluida, 2)
+        self.assertFalse(agente.tempo_esgotado)
+
+    def test_prazo_antes_da_primeira_folha_retorna_passe_legal(self):
+        estado = criar_estado()
+        agente = AgenteMinimax(0)
+        with patch("model.minimax_agent.perf_counter", side_effect=[0, 5]):
+            jogada = agente.escolher_jogada(estado, 3, limite_segundos=5)
+
+        self.assertTrue(jogada.eh_passe())
+        self.assertEqual(agente.profundidade_concluida, 0)
+        self.assertTrue(agente.tempo_esgotado)
+
+    def test_prazo_antes_de_concluir_nivel_um_preserva_melhor_jogada_avaliada(self):
+        agente = AgenteMinimax(0)
+        estados = preparar_arvore_controlada(agente, {"A": 8, "B": 5})
+        with patch("model.minimax_agent.perf_counter", side_effect=[0, 0, 0, 5]):
+            jogada = agente.escolher_jogada(estados["raiz"], 2, limite_segundos=5)
+
+        self.assertEqual(jogada, "A")
+        self.assertEqual(agente.ultima_pontuacao, 8)
+        self.assertEqual(agente.profundidade_concluida, 0)
+        self.assertTrue(agente.tempo_esgotado)
+
     def test_antecipacao_considera_a_melhor_resposta_do_adversario(self):
         agente = AgenteMinimax(0)
         estados = preparar_arvore_controlada(
@@ -99,6 +164,26 @@ class TesteAgenteMinimax(unittest.TestCase):
             self.assertEqual(
                 agente.escolher_jogada(estados["raiz"], 1, usar_poda), "A"
             )
+
+    def test_poda_aproveita_melhor_resposta_de_outro_ramo_e_preserva_empate(self):
+        agente = AgenteMinimax(0)
+        estados = preparar_arvore_controlada(
+            agente, {"A1": 3, "A2": 5, "B1": 3, "B2": 6}
+        )
+        resposta = Jogada(
+            TipoJogada.CARTA, TipoCartaAcao.APOIO_ESCOCES, {}, "Moray", Faccao.ESCOCESES
+        )
+        gerar = agente._gerador.gerar_com_estados.side_effect
+
+        def gerar_com_prioridade(estado, prioridade=None):
+            self.assertIs(prioridade, resposta if estado is estados["B"] else None)
+            for jogada, seguinte in gerar(estado):
+                yield (resposta if jogada == "A1" else jogada), seguinte
+
+        agente._gerador.gerar_com_estados.side_effect = gerar_com_prioridade
+        self.assertEqual(agente.escolher_jogada(estados["raiz"], 2, True), "A")
+        self.assertEqual(agente.ultima_pontuacao, 3)
+        self.assertEqual(agente.folhas_avaliadas, 3)
 
     def test_mantem_primeira_jogada_quando_todas_valem_menos_infinito(self):
         nota = float("-inf")

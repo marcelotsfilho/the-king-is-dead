@@ -1,17 +1,45 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from experiments.q_learning_evolution import _ler_estado, _PASTA_HISTORICA
+from experiments.q_learning_evolution import _ler_estado, _PASTA_HISTORICA, _TABELA_HISTORICA
 from experiments.q_learning_scenarios import criar_posicao, desfecho
 from experiments.q_learning_tactics import _continuar
+from main_q_learning import executar_partida
 from model.endgame_search import BuscaFinal
 from model.game_setup import ConfiguracaoJogo
 from model.game_state_serializer import SerializadorEstadoJogo
+from model.legal_move_generator import GeradorJogadas
 from model.q_learning_agent import CAMINHO_TABELA_Q_JOGO, AgenteQLearning, TabelaQ
 
 
 class TesteQLearning(unittest.TestCase):
+    def test_treino_aleatorio_sorteia_jogadas_completas_e_atualiza_a_tabela(self):
+        agente = AgenteQLearning(TabelaQ())
+        heuristica = AgenteQLearning(TabelaQ())
+
+        with (
+            patch.object(agente, "escolher_opcao", side_effect=AssertionError),
+            patch.object(heuristica, "escolher_opcao", wraps=heuristica.escolher_opcao) as escolher,
+            patch.object(GeradorJogadas, "sortear_com_estado", autospec=True,
+                         side_effect=GeradorJogadas.sortear_com_estado) as sortear,
+        ):
+            resultado = executar_partida(
+                agente, heuristica, 650000, 0, 0, "politica_inicial", 1,
+                treinamento=True, sortear_jogadas_q=True,
+            )
+
+        self.assertIn(resultado["resultado"], ("vitoria", "derrota"))
+        self.assertEqual(resultado["epsilon"], 1.0)
+        self.assertGreater(resultado["turnos_q"], 0)
+        self.assertEqual(sortear.call_count, resultado["turnos_q"])
+        self.assertEqual(escolher.call_count, resultado["jogadas"] - resultado["turnos_q"])
+        self.assertTrue(any(
+            valor != 0 for acoes in agente.tabela.valores.values() for valor in acoes.values()
+        ))
+        self.assertFalse(heuristica.tabela.valores)
+
     def test_atualizacao_usa_apenas_acoes_legais_e_ignora_futuro_no_terminal(self):
         tabela = TabelaQ()
         tabela.atualizar("seguinte", "PASSE", 1, None, 1, 0.9)
@@ -47,7 +75,7 @@ class TesteQLearning(unittest.TestCase):
             self.assertEqual(carregada.metadados["partidas_treinadas"], 2)
 
     def test_busca_final_corrige_as_tres_decisoes_da_auditoria(self):
-        tabela = TabelaQ.carregar(CAMINHO_TABELA_Q_JOGO)
+        tabela = TabelaQ.carregar(_TABELA_HISTORICA)
         agente = AgenteQLearning(tabela, analisar_finais=True)
         serializador = SerializadorEstadoJogo()
         for arquivo, escolha in (("carta_necessaria_55127.json", "NEGOCIAR"),

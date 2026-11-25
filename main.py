@@ -28,11 +28,7 @@ _CAMINHO_DA_ARVORE = os.path.join(
 )
 
 
-def _preparar_arvore(argumentos, serializador):
-    if "--carregar" in argumentos:
-        return serializador.carregar(_CAMINHO_DA_ARVORE)
-
-    # geracao da arvore com uma determinada seed
+def _criar_arvore_inicial():
     configuracao = ConfiguracaoJogo(semente=SEMENTE_JOGO)
     estado = configuracao.criar_estado_inicial(
         ["Jogador 1", "Jogador 2"]
@@ -40,9 +36,8 @@ def _preparar_arvore(argumentos, serializador):
     return ArvoreEstados(estado)
 
 
-def _escolher_arvore_pelo_menu(
-    visao, serializador, mensagem="", configuracao_partida=None
-):
+def _escolher_partida_pelo_menu(visao, serializador, mensagem=""):
+    configuracao_partida = ConfiguracaoPartida()
     controlador_menu = ControladorMenuInicial(
         visao,
         _CAMINHO_DA_ARVORE,
@@ -56,7 +51,7 @@ def _escolher_arvore_pelo_menu(
             return None
 
         if acao == ACAO_NOVO_JOGO:
-            return _preparar_arvore([], serializador)
+            return _criar_arvore_inicial(), configuracao_partida
 
         if acao == ACAO_CONTINUAR_JOGO:
             visao.desenhar_menu_inicial(
@@ -65,7 +60,7 @@ def _escolher_arvore_pelo_menu(
             )
 
             try:
-                return _preparar_arvore(["--carregar"], serializador)
+                return serializador.carregar_partida(_CAMINHO_DA_ARVORE)
             except (OSError, KeyError, TypeError, ValueError) as erro:
                 mensagem = "Não foi possível carregar a partida: " + str(
                     erro
@@ -78,30 +73,27 @@ def principal():
     pygame.init()
     serializador = SerializadorArvoreEstados()
     visao = VisaoJogo()
-    configuracao_partida = ConfiguracaoPartida()
 
     if "--carregar" in sys.argv[1:]:
         try:
-            arvore = _preparar_arvore(sys.argv[1:], serializador)
+            partida = serializador.carregar_partida(_CAMINHO_DA_ARVORE)
         except (OSError, KeyError, TypeError, ValueError) as erro:
             mensagem = "Não foi possível carregar a partida: " + str(
                 erro
             )
-            arvore = _escolher_arvore_pelo_menu(
+            partida = _escolher_partida_pelo_menu(
                 visao,
                 serializador,
                 mensagem,
-                configuracao_partida,
             )
     else:
-        arvore = _escolher_arvore_pelo_menu(
-            visao, serializador, configuracao_partida=configuracao_partida
-        )
+        partida = _escolher_partida_pelo_menu(visao, serializador)
 
-    if arvore is None:
+    if partida is None:
         pygame.quit()
         return
 
+    arvore, configuracao_partida = partida
     estado = arvore.obter_estado_atual()
     jogo = Jogo(estado)
     controlador = ControladorJogo(

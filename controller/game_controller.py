@@ -17,7 +17,7 @@ from model.enums import (
 from model.game_state_serializer import SerializadorEstadoJogo
 from model.legal_move import Jogada
 from model.legal_move_executor import ExecutorJogada
-from model.match_settings import ConfiguracaoPartida
+from model.match_settings import TIPOS_COM_LIMITE_DE_TEMPO, ConfiguracaoPartida
 from model.minimax_agent import AgenteMinimax
 from model.monte_carlo_agent import AgenteMonteCarlo
 from model.q_learning_agent import CAMINHO_TABELA_Q_JOGO, AgenteQLearning, TabelaQ
@@ -147,10 +147,12 @@ class ControladorJogo:
             elif tipo_jogador == TipoJogador.Q_LEARNING:
                 detalhe = "tabela treinada"
             else:
-                detalhe = (
-                    "profundidade "
-                    + str(self.configuracao_partida.obter_profundidade(indice))
-                )
+                profundidade = self.configuracao_partida.obter_profundidade(indice)
+                limite = self.configuracao_partida.obter_limite_tempo(indice)
+                if limite is None:
+                    detalhe = f"profundidade {profundidade}"
+                else:
+                    detalhe = f"até profundidade {profundidade}, limite de {limite} s"
             mensagem = (
                 nome + " calculando com " + tipo + ", " + detalhe
                 + ". Decorrido: " + tempo + "."
@@ -168,7 +170,7 @@ class ControladorJogo:
         return ""
 
     def _calcular_jogada_ia(
-        self, estado, indice, tipo, profundidade, simulacoes=100
+        self, estado, indice, tipo, profundidade, simulacoes=100, limite_segundos=None
     ):
         """Calcula sobre uma cópia e envia o resultado sem acessar o Pygame."""
         inicio = perf_counter()
@@ -190,10 +192,12 @@ class ControladorJogo:
                 jogada = agente.escolher_jogada(estado)
             else:
                 agente = AgenteMinimax(indice)
+                opcoes = {} if limite_segundos is None else {"limite_segundos": limite_segundos}
                 jogada = agente.escolher_jogada(
                     estado,
                     profundidade_maxima=profundidade,
                     usar_poda=tipo == TipoJogador.ALFA_BETA,
+                    **opcoes,
                 )
             novo_estado = None
             if jogada is not None:
@@ -204,6 +208,11 @@ class ControladorJogo:
                 "jogador": indice,
                 "algoritmo": tipo.value,
                 "profundidade": profundidade,
+                "limite_segundos": limite_segundos,
+                "profundidade_concluida": (
+                    profundidade if limite_segundos is None else agente.profundidade_concluida
+                ),
+                "tempo_esgotado": limite_segundos is not None and agente.tempo_esgotado,
                 "simulacoes_configuradas": (
                     simulacoes if tipo == TipoJogador.MONTE_CARLO else 0
                 ),
@@ -231,13 +240,16 @@ class ControladorJogo:
         tipo = self.configuracao_partida.obter_tipo_jogador(indice)
         profundidade = self.configuracao_partida.obter_profundidade(indice)
         simulacoes = self.configuracao_partida.obter_simulacoes_monte_carlo(indice)
+        limite = None
+        if tipo in TIPOS_COM_LIMITE_DE_TEMPO:
+            limite = self.configuracao_partida.obter_limite_tempo(indice)
         copia = SerializadorEstadoJogo().copiar(estado)
         self._estado_busca_ia = estado
         self._inicio_busca_ia = perf_counter()
         self._erro_ia = ""
         self._tarefa_ia = Thread(
             target=self._calcular_jogada_ia,
-            args=(copia, indice, tipo, profundidade, simulacoes),
+            args=(copia, indice, tipo, profundidade, simulacoes, limite),
             daemon=True,
         )
         self.instrucao = self._obter_status_ia()
@@ -322,9 +334,21 @@ class ControladorJogo:
                 resultado["algoritmo"] + " | " + detalhe + " | "
                 + format(resultado["tempo_segundos"], ".3f") + " s."
             )
+        profundidade = resultado["profundidade"]
+        detalhe = f"profundidade {profundidade}"
+        limite = resultado.get("limite_segundos")
+        if limite is not None:
+            concluida = resultado["profundidade_concluida"]
+            if concluida:
+                detalhe = f"profundidade {concluida} de {profundidade}"
+            elif resultado["pontuacao"] is not None:
+                detalhe = "profundidade 1 parcial"
+            else:
+                detalhe = "passe de segurança"
+            if resultado["tempo_esgotado"]:
+                detalhe += f" | limite de {limite} s atingido"
         return (
-            resultado["algoritmo"] + " | profundidade "
-            + str(resultado["profundidade"]) + " | "
+            resultado["algoritmo"] + " | " + detalhe + " | "
             + format(resultado["tempo_segundos"], ".3f") + " s | "
             + str(resultado["nos_visitados"]) + " nós | "
             + str(resultado["podas_realizadas"]) + " cortes."
@@ -421,6 +445,7 @@ class ControladorJogo:
             self.serializador_arvore.salvar(
                 self.arvore,
                 self.caminho_salvamento,
+                configuracao_partida=self.configuracao_partida,
             )
             self.arvore_salva = True
             return True

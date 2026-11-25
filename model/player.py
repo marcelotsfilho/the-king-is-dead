@@ -1,3 +1,4 @@
+from model.action_card import CartaAcao
 from model.enums import Faccao
 
 
@@ -19,6 +20,15 @@ class Jogador:
         }
 
         self.disco_negociacao_disponivel = True
+
+    def copiar(self):
+        copia = Jogador.__new__(Jogador)
+        copia.nome = self.nome
+        copia._mao = [CartaAcao(carta.tipo) for carta in self._mao]
+        copia._descarte_mao = [CartaAcao(carta.tipo) for carta in self._descarte_mao]
+        copia._corte = self._corte.copy()
+        copia.disco_negociacao_disponivel = self.disco_negociacao_disponivel
+        return copia
 
     def obter_mao(self):
         return self._mao.copy()

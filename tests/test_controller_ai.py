@@ -125,6 +125,23 @@ class TesteTurnosIA(unittest.TestCase):
         self.assertEqual(controlador.jogo.estado.indice_jogador_atual, 1)
         self.assertEqual(controlador.arvore.obter_no_atual().obter_nivel(), 1)
 
+    def test_busca_com_limite_mostra_a_profundidade_realmente_concluida(self):
+        controlador = criar_controlador_ia(TipoJogador.ALFA_BETA)
+        controlador.configuracao_partida.definir_profundidade(0, 3)
+        controlador.configuracao_partida.definir_limite_tempo(0, 5)
+        agente = Mock(profundidade_concluida=2, tempo_esgotado=True)
+        agente.escolher_jogada.return_value = Jogada(TipoJogada.PASSE)
+        with patch("controller.game_controller.AgenteMinimax", return_value=agente):
+            preparar_busca(controlador)
+        controlador._atualizar_turno_ia()
+
+        self.assertEqual(agente.escolher_jogada.call_args.kwargs, {
+            "profundidade_maxima": 3, "usar_poda": True, "limite_segundos": 5,
+        })
+        self.assertEqual(controlador.jogo.estado.indice_jogador_atual, 1)
+        self.assertIn("profundidade 2 de 3", controlador.instrucao)
+        self.assertIn("limite de 5 s atingido", controlador.instrucao)
+
     def test_q_learning_carrega_tabela_e_aplica_jogada_no_fluxo_mvc(self):
         controlador = criar_controlador_ia(TipoJogador.Q_LEARNING)
         tabela = TabelaQ()
@@ -136,6 +153,17 @@ class TesteTurnosIA(unittest.TestCase):
             preparar_busca(controlador)
             controlador._atualizar_turno_ia()
             self.assertEqual(TabelaQ.carregar(caminho).valores, tabela.valores)
+        self.assertEqual(controlador.ultima_decisao_ia["algoritmo"], "Q-learning")
+        self.assertEqual(controlador.arvore.obter_no_atual().obter_nivel(), 1)
+
+    def test_q_learning_carrega_tabela_do_treino_aleatorio_por_padrao(self):
+        controlador = criar_controlador_ia(TipoJogador.Q_LEARNING)
+        preparar_busca(controlador)
+        controlador._atualizar_turno_ia()
+
+        metadados = controlador._tabela_q.metadados
+        self.assertEqual(metadados["exploracao"], "jogadas_legais_completas")
+        self.assertEqual(metadados["adversario_treino"], "politica_inicial")
         self.assertEqual(controlador.ultima_decisao_ia["algoritmo"], "Q-learning")
         self.assertEqual(controlador.arvore.obter_no_atual().obter_nivel(), 1)
 

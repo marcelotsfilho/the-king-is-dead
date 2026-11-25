@@ -24,6 +24,11 @@ class TrilhaDisputas:
             carta = CartaRegiao(nome)
             self.cartas_regiao.append(carta)
 
+    def copiar(self):
+        copia = TrilhaDisputas.__new__(TrilhaDisputas)
+        copia.cartas_regiao = [carta.copiar() for carta in self.cartas_regiao]
+        return copia
+
     def obter_cartas(self):
         return self.cartas_regiao.copy()
 

@@ -1,9 +1,11 @@
 import unittest
 
-from model.enums import FaseTurno
+from model.enums import Faccao, FaseTurno, TipoCartaAcao
 from model.board import Tabuleiro
+from model.game import Jogo
 from model.game_setup import ConfiguracaoJogo
 from model.game_state import EstadoJogo
+from model.game_state_serializer import SerializadorEstadoJogo
 from model.player import Jogador
 from model.supply import ReservaSeguidores
 
@@ -51,6 +53,34 @@ class TesteEstadoJogo(unittest.TestCase):
         self.assertIsNone(estado.ultima_acao)
         self.assertIsNone(estado.vencedor)
         self.assertIsNone(estado.motivo_encerramento)
+
+    def test_copia_direta_isola_convocacao_pendente_e_referencia_a_carta(self):
+        estado = ConfiguracaoJogo(42).criar_estado_inicial(["Ana", "Bruno"])
+        jogador = estado.obter_jogador_atual()
+        primeira, segunda = [
+            carta for carta in jogador.obter_mao() if carta.tipo == TipoCartaAcao.REUNIR
+        ]
+        jogador.usar_carta(primeira)
+        destinos = {faccao: "Moray" for faccao in Faccao}
+        Jogo(estado).jogar_carta(segunda, {"destinos": destinos})
+
+        serializador = SerializadorEstadoJogo()
+        antes = serializador.serializar(estado)
+        copia = estado.copiar()
+        irmao = estado.copiar()
+        self.assertEqual(serializador.serializar(copia), antes)
+        jogador_da_copia = copia.obter_jogador_atual()
+        self.assertIs(copia.ultima_acao["jogador"], jogador_da_copia)
+        self.assertIs(copia.ultimo_jogador_que_agiu, jogador_da_copia)
+        self.assertIs(copia.carta_em_execucao, jogador_da_copia.obter_descarte_mao()[-1])
+        self.assertIsNot(copia.carta_em_execucao, estado.carta_em_execucao)
+
+        Jogo(copia).convocar_seguidor("Moray", Faccao.ESCOCESES)
+        copia.ultima_acao["detalhes"]["destinos"].clear()
+        copia.trilha_disputas.obter_carta(1).virar_para_baixo()
+        copia.reserva.devolver(Faccao.GALESES)
+        self.assertEqual(serializador.serializar(estado), antes)
+        self.assertEqual(serializador.serializar(irmao), antes)
 
     def test_jogadores_devem_ser_informados_em_uma_lista(self):
         tabuleiro = Tabuleiro()

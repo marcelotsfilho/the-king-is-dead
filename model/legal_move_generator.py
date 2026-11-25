@@ -21,25 +21,77 @@ class GeradorJogadas:
         """Retorna todas as jogadas completas encontradas para o estado."""
         return [jogada for jogada, _ in self.gerar_com_estados(estado)]
 
-    def gerar_com_estados(self, estado):
-        """Produz cada jogada legal junto com seu estado resultante."""
-        if not isinstance(estado, EstadoJogo):
-            raise TypeError("O estado deve ser uma instância de EstadoJogo.")
-
-        if estado.finalizado or estado.fase_turno != FaseTurno.ESCOLHER_ACAO:
+    def gerar_com_estados(self, estado, prioridade=None):
+        """Produz os sucessores sob demanda, começando pelo passe."""
+        if not self._pode_gerar(estado):
             return
 
         yield self._executar_passe(estado)
 
-        for tipo_carta in self._obter_tipos_de_carta(estado):
-            opcoes = self._gerar_parametros(estado, tipo_carta)
+        for tipo_carta, parametros, estado_apos_carta, convocacoes in (
+            self._gerar_cartas_com_convocacoes(estado, prioridade)
+        ):
+            for convocacao in convocacoes:
+                yield self._concluir_carta(
+                    estado_apos_carta, tipo_carta, parametros, convocacao
+                )
+
+    def avaliar_sucessores(self, estado, avaliar):
+        """Avalia a última camada reaproveitando o estado após cada carta."""
+        if not self._pode_gerar(estado):
+            return
+
+        _, estado_apos_passe = self._executar_passe(estado)
+        yield avaliar(estado_apos_passe)
+        for _, _, estado_apos_carta, convocacoes in (
+            self._gerar_cartas_com_convocacoes(estado)
+        ):
+            yield from Jogo(estado_apos_carta).avaliar_convocacoes(convocacoes, avaliar)
+
+    @staticmethod
+    def _pode_gerar(estado):
+        if not isinstance(estado, EstadoJogo):
+            raise TypeError("O estado deve ser uma instância de EstadoJogo.")
+        return not estado.finalizado and estado.fase_turno == FaseTurno.ESCOLHER_ACAO
+
+    def _gerar_cartas_com_convocacoes(self, estado, prioridade=None):
+        tipos = self._obter_tipos_de_carta(estado)
+        tipo_prioritario = None
+        if prioridade is not None and prioridade.tipo_carta in tipos:
+            tipo_prioritario = prioridade.tipo_carta
+            parametros_prioritarios = prioridade.obter_parametros()
+            convocacao_prioritaria = (
+                prioridade.nome_regiao_convocacao, prioridade.faccao_convocacao,
+            )
+            opcoes_prioritarias = self._gerar_parametros(estado, tipo_prioritario)
+            if self._priorizar(opcoes_prioritarias, parametros_prioritarios):
+                self._priorizar(tipos, tipo_prioritario)
+
+        for tipo_carta in tipos:
+            opcoes = (
+                opcoes_prioritarias if tipo_carta == tipo_prioritario
+                else self._gerar_parametros(estado, tipo_carta)
+            )
             for parametros, estado_apos_carta in self._simular_cartas(
                 estado, tipo_carta, opcoes
             ):
-                for convocacao in self._obter_convocacoes(estado_apos_carta):
-                    yield self._concluir_carta(
-                        estado_apos_carta, tipo_carta, parametros, convocacao
-                    )
+                convocacoes = self._obter_convocacoes(estado_apos_carta)
+                if (
+                    tipo_carta == tipo_prioritario
+                    and parametros == parametros_prioritarios
+                ):
+                    self._priorizar(convocacoes, convocacao_prioritaria)
+                yield tipo_carta, parametros, estado_apos_carta, convocacoes
+
+    @staticmethod
+    def _priorizar(opcoes, preferida):
+        try:
+            indice = opcoes.index(preferida)
+        except ValueError:
+            return False
+        if indice:
+            opcoes.insert(0, opcoes.pop(indice))
+        return True
 
     def sortear_com_estado(self, estado, aleatorio):
         """Sorteia um tipo de ação, depois parâmetros e convocação."""

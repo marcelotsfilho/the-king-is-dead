@@ -1,7 +1,10 @@
 import pygame
 from model.action_card import eh_carta_de_apoio, obter_dados_da_carta_de_apoio
 from model.enums import Faccao, FaseTurno, TipoCartaAcao, TipoJogador
-from model.match_settings import SIMULACOES_MONTE_CARLO_DISPONIVEIS
+from model.match_settings import (
+    SIMULACOES_MONTE_CARLO_DISPONIVEIS,
+    TIPOS_COM_LIMITE_DE_TEMPO,
+)
 from view.constants import (
     ALTURA_CARTA_ACAO,
     ALTURA_JANELA,
@@ -225,6 +228,7 @@ class VisaoJogo:
             "tipo": pygame.Rect(posicao_x, 338, 454, 64),
             "diminuir": pygame.Rect(posicao_x + 43, 473, 66, 51),
             "aumentar": pygame.Rect(posicao_x + 345, 473, 66, 51),
+            "tempo": pygame.Rect(posicao_x + 43, 550, 368, 52),
         }
 
     def obter_acao_configuracao(self, posicao):
@@ -539,6 +543,8 @@ class VisaoJogo:
             self._simbolo("♟", (painel.x + 48, 294), TINTA)
             self._texto(f"Jogador {indice + 1}", (painel.x + 77, 294), self.fonte_titulo, TINTA, "midleft")
             tipo = configuracao.obter_tipo_jogador(indice)
+            permite_limite = tipo in TIPOS_COM_LIMITE_DE_TEMPO
+            limite = configuracao.obter_limite_tempo(indice)
             self._botao(seletor, tipo.value, fonte=self.fonte_normal)
             self._simbolo("‹", (seletor.x + 25, seletor.centery), MARFIM)
             self._simbolo("›", (seletor.right - 25, seletor.centery), MARFIM)
@@ -555,7 +561,10 @@ class VisaoJogo:
                 valor = "Tabela Q"
                 pode_aumentar = pode_diminuir = False
             else:
-                rotulo = "Antecipação (jogadas completas)"
+                rotulo = (
+                    "Profundidade máxima" if permite_limite and limite is not None
+                    else "Antecipação (jogadas completas)"
+                )
                 profundidade = configuracao.obter_profundidade(indice)
                 pode_aumentar = tipo != TipoJogador.HUMANO
                 pode_diminuir = pode_aumentar and profundidade > 1
@@ -567,7 +576,13 @@ class VisaoJogo:
             visor = pygame.Rect(seletor.x + 118, 473, 218, 51)
             self._pergaminho(visor)
             self._centralizar(str(valor), visor.center, cor=TINTA)
-            self._centralizar("Clique no tipo para alternar.", (painel.centerx, 556), self.fonte_legenda, TINTA)
+            if permite_limite:
+                tempo = "Sem limite" if limite is None else f"{limite} s"
+                botao_tempo = controles["tempo"]
+                self._botao(
+                    botao_tempo, f"Tempo por jogada · {tempo}", estilo="couro", fonte=self.fonte_rotulo,
+                )
+                self._simbolo("›", (botao_tempo.right - 22, botao_tempo.centery), MARFIM)
 
     def desenhar_tela_configuracao(self, configuracao_partida):
         self._fundo(destaque=True)

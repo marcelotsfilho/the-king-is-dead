@@ -7,7 +7,7 @@ import pygame
 
 from controller.start_menu_controller import ControladorMenuInicial
 from model.enums import TipoJogador
-from model.match_settings import ConfiguracaoPartida
+from model.match_settings import LIMITES_TEMPO_BUSCA, ConfiguracaoPartida
 
 
 class VisaoFalsa:
@@ -57,17 +57,32 @@ class TesteControladorMenuInicial(unittest.TestCase):
 
     def test_loop_recebe_selecao_e_preserva_configuracao_ao_iniciar(self):
         visao = Mock()
-        visao.obter_acao_configuracao.side_effect = [("tipo", 0), ("aumentar", 0), None]
+        visao.obter_acao_configuracao.side_effect = [
+            ("tipo", 0), ("aumentar", 0), ("tempo", 0), None,
+        ]
         visao.obter_acao_menu_inicial.return_value = "novo_jogo"
         visao.obter_acao_tela_configuracao.return_value = "iniciar"
         configuracao = ConfiguracaoPartida()
         controlador = ControladorMenuInicial(visao, "nao_existe.json", configuracao)
         clique = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(0, 0))
-        with patch("pygame.event.get", return_value=[clique] * 4):
+        with patch("pygame.event.get", return_value=[clique] * 5):
             self.assertEqual(controlador.executar(), "novo_jogo")
         self.assertIs(controlador.configuracao_partida, configuracao)
         self.assertEqual(configuracao.obter_tipo_jogador(0), TipoJogador.MINIMAX)
         self.assertEqual(configuracao.obter_profundidade(0), 2)
+        self.assertEqual(configuracao.obter_limite_tempo(0), 5)
+        self.assertIsNone(configuracao.obter_limite_tempo(1))
+
+    def test_limite_pode_voltar_ao_modo_sem_prazo(self):
+        controlador = ControladorMenuInicial(VisaoFalsa(), "nao_existe.json")
+        configuracao = controlador.configuracao_partida
+        controlador._alterar_configuracao("tempo", 1)
+        self.assertIsNone(configuracao.obter_limite_tempo(1))
+
+        configuracao.definir_tipo_jogador(1, TipoJogador.ALFA_BETA)
+        for esperado in (*LIMITES_TEMPO_BUSCA[1:], None):
+            controlador._alterar_configuracao("tempo", 1)
+            self.assertEqual(configuracao.obter_limite_tempo(1), esperado)
 
     def test_loop_preserva_orcamento_monte_carlo_ao_iniciar(self):
         visao = Mock()

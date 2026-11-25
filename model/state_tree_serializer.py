@@ -1,7 +1,12 @@
 import json
+from os import replace
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 
+from model.enums import TipoJogador
 from model.game_state_serializer import SerializadorEstadoJogo
 from model.legal_move import restaurar_jogada, serializar_jogada
+from model.match_settings import ConfiguracaoPartida
 from model.state_tree import ArvoreEstados
 
 
@@ -14,8 +19,8 @@ class SerializadorArvoreEstados:
     def __init__(self):
         self._serializador_estado = SerializadorEstadoJogo()
 
-    def serializar(self, arvore):
-        """Transforma a árvore completa em dados simples."""
+    def serializar(self, arvore, configuracao_partida=None):
+        """Transforma a árvore e, quando informada, a configuração em dados simples."""
         if not isinstance(arvore, ArvoreEstados):
             raise TypeError("O valor informado deve ser uma ArvoreEstados.")
 
@@ -51,11 +56,14 @@ class SerializadorArvoreEstados:
             nos,
         )
 
-        return {
+        dados = {
             "versao": _VERSAO_DA_ARVORE,
             "indice_no_atual": indice_atual,
             "nos": dados_nos,
         }
+        if configuracao_partida is not None:
+            dados["configuracao_partida"] = self._serializar_configuracao(configuracao_partida)
+        return dados
 
     def restaurar(self, dados):
         """Reconstrói a árvore a partir dos dados salvos."""
@@ -114,25 +122,76 @@ class SerializadorArvoreEstados:
         )
         return arvore
 
-    def salvar(self, arvore, caminho):
-        """Escreve a árvore em um arquivo JSON."""
+    def salvar(self, arvore, caminho, configuracao_partida=None):
+        """Grava a árvore e a configuração juntas e substitui o arquivo salvo."""
         self._validar_caminho(caminho)
-        dados = self.serializar(arvore)
+        dados = self.serializar(arvore, configuracao_partida)
 
-        with open(caminho, "w", encoding="utf-8") as arquivo:
-            json.dump(dados, arquivo, ensure_ascii=False, indent=2)
+        temporario = NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=Path(caminho).parent, delete=False
+        )
+        try:
+            with temporario:
+                json.dump(dados, temporario, ensure_ascii=False, indent=2)
+            replace(temporario.name, caminho)
+        finally:
+            Path(temporario.name).unlink(missing_ok=True)
 
     def carregar(self, caminho):
         """Lê um arquivo JSON e reconstrói a árvore."""
-        self._validar_caminho(caminho)
+        return self.restaurar(self._ler_dados(caminho))
 
+    def carregar_partida(self, caminho):
+        """Restaura a árvore e as escolhas dos jogadores para retomar a partida."""
+        dados = self._ler_dados(caminho)
+        arvore = self.restaurar(dados)
+        if "configuracao_partida" not in dados:
+            return arvore, ConfiguracaoPartida()
+        return arvore, self._restaurar_configuracao(dados["configuracao_partida"])
+
+    def _ler_dados(self, caminho):
+        self._validar_caminho(caminho)
         try:
             with open(caminho, "r", encoding="utf-8") as arquivo:
-                dados = json.load(arquivo)
+                return json.load(arquivo)
         except json.JSONDecodeError:
             raise ValueError("O arquivo não contém um JSON válido.")
 
-        return self.restaurar(dados)
+    def _serializar_configuracao(self, configuracao):
+        if not isinstance(configuracao, ConfiguracaoPartida):
+            raise TypeError("A configuração deve ser uma ConfiguracaoPartida.")
+
+        return {
+            "jogadores": [
+                {
+                    "tipo": configuracao.obter_tipo_jogador(indice).name,
+                    "profundidade": configuracao.obter_profundidade(indice),
+                    "simulacoes_monte_carlo": configuracao.obter_simulacoes_monte_carlo(indice),
+                    "limite_tempo_segundos": configuracao.obter_limite_tempo(indice),
+                }
+                for indice in range(2)
+            ]
+        }
+
+    def _restaurar_configuracao(self, dados):
+        if not isinstance(dados, dict):
+            raise ValueError("A configuração da partida salva é inválida.")
+        jogadores = dados.get("jogadores")
+        if not isinstance(jogadores, list) or len(jogadores) != 2:
+            raise ValueError("A configuração da partida deve conter dois jogadores.")
+
+        configuracao = ConfiguracaoPartida()
+        for indice, jogador in enumerate(jogadores):
+            try:
+                configuracao.definir_tipo_jogador(indice, TipoJogador[jogador["tipo"]])
+                configuracao.definir_profundidade(indice, jogador["profundidade"])
+                configuracao.definir_simulacoes_monte_carlo(
+                    indice, jogador["simulacoes_monte_carlo"]
+                )
+                configuracao.definir_limite_tempo(indice, jogador.get("limite_tempo_segundos"))
+            except (KeyError, TypeError, ValueError) as erro:
+                raise ValueError(f"A configuração do Jogador {indice + 1} é inválida.") from erro
+        return configuracao
 
     def _obter_indice_no(self, no_procurado, nos):
         if no_procurado is None:

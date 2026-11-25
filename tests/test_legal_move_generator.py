@@ -9,6 +9,7 @@ from model.enums import Faccao, FaseTurno, TipoCartaAcao
 from model.game import Jogo
 from model.game_state import EstadoJogo
 from model.game_state_serializer import SerializadorEstadoJogo
+from model.legal_move import serializar_jogada
 from model.legal_move_executor import ExecutorJogada
 from model.legal_move_generator import GeradorJogadas
 from model.player import Jogador
@@ -126,6 +127,34 @@ class TesteGeradorJogadas(unittest.TestCase):
 
         self.assertEqual(len(jogadas_reunir), 1)
 
+    def test_prioriza_resposta_legal_sem_gerar_as_demais_jogadas_antes(self):
+        estado = criar_estado_manual()
+        jogador = estado.obter_jogador_atual()
+        jogador.adicionar_carta_mao(CartaAcao(TipoCartaAcao.APOIO_GALES))
+        jogador.adicionar_carta_mao(CartaAcao(TipoCartaAcao.REUNIR))
+        estado.tabuleiro.obter_regiao("Moray").adicionar_seguidores(Faccao.ESCOCESES)
+        estado.tabuleiro.obter_regiao("Gwynedd").adicionar_seguidores(Faccao.GALESES)
+        jogadas = self.gerador.gerar(estado)
+        preferida = jogadas[-1]
+
+        with patch.object(Jogo, "jogar_carta", autospec=True, side_effect=Jogo.jogar_carta) as jogar:
+            sucessores = self.gerador.gerar_com_estados(estado, prioridade=preferida)
+            passe, _ = next(sucessores)
+            self.assertTrue(passe.eh_passe())
+            jogar.assert_not_called()
+            primeira_carta, resultado = next(sucessores)
+            self.assertTrue(primeira_carta.possui_mesmos_dados(preferida))
+            jogar.assert_called_once()
+
+        serializador = SerializadorEstadoJogo()
+        esperado = self.executor.executar(estado, preferida)
+        self.assertEqual(serializador.serializar(resultado), serializador.serializar(esperado))
+        ordenadas = [passe, primeira_carta, *(jogada for jogada, _ in sucessores)]
+        self.assertCountEqual(
+            [serializar_jogada(jogada) for jogada in ordenadas],
+            [serializar_jogada(jogada) for jogada in jogadas],
+        )
+
     def test_convocacoes_reaproveitam_o_efeito_da_carta_em_estados_independentes(self):
         estado = criar_estado_manual()
         jogador = estado.obter_jogador_atual()
@@ -155,6 +184,39 @@ class TesteGeradorJogadas(unittest.TestCase):
                 serializador.serializar(resultado), serializador.serializar(esperado)
             )
         self.assertEqual(serializador.serializar(estado), original)
+
+    def test_avaliacao_dos_sucessores_reusa_a_copia_apos_a_carta(self):
+        estado = criar_estado_manual()
+        estado.obter_jogador_atual().adicionar_carta_mao(CartaAcao(TipoCartaAcao.REUNIR))
+        estado.tabuleiro.obter_regiao("Moray").adicionar_seguidores(Faccao.ESCOCESES)
+        estado.tabuleiro.obter_regiao("Gwynedd").adicionar_seguidores(Faccao.GALESES)
+        serializar = SerializadorEstadoJogo().serializar
+        antes = serializar(estado)
+        esperados = [serializar(filho) for _, filho in self.gerador.gerar_com_estados(estado)]
+
+        with patch.object(EstadoJogo, "copiar", autospec=True, side_effect=EstadoJogo.copiar) as copiar:
+            obtidos = list(self.gerador.avaliar_sucessores(estado, serializar))
+
+        self.assertEqual(obtidos, esperados)
+        self.assertEqual(len(obtidos), 3)
+        self.assertEqual(copiar.call_count, 2)
+        self.assertEqual(serializar(estado), antes)
+
+    def test_convocacao_temporaria_restaura_estado_se_a_avaliacao_falhar(self):
+        estado = criar_estado_manual()
+        estado.obter_jogador_atual().adicionar_carta_mao(CartaAcao(TipoCartaAcao.REUNIR))
+        estado.tabuleiro.obter_regiao("Moray").adicionar_seguidores(Faccao.ESCOCESES)
+        pendente = self.executor.executar_carta(estado, TipoCartaAcao.REUNIR, {})
+        serializar = SerializadorEstadoJogo().serializar
+        antes = serializar(pendente)
+
+        def avaliar(filho):
+            self.assertEqual(filho.fase_turno, FaseTurno.ESCOLHER_ACAO)
+            raise RuntimeError("Falha simulada")
+
+        with self.assertRaisesRegex(RuntimeError, "Falha simulada"):
+            list(Jogo(pendente).avaliar_convocacoes([("Moray", Faccao.ESCOCESES)], avaliar))
+        self.assertEqual(serializar(pendente), antes)
 
     def test_negociar_sem_efeito_nao_exige_disco_disponivel(self):
         estado = criar_estado_manual()

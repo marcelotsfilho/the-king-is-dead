@@ -18,6 +18,11 @@ class ReservaSeguidores:
             Faccao.INGLESES: quantidade_por_faccao,
         }
 
+    def copiar(self):
+        copia = ReservaSeguidores.__new__(ReservaSeguidores)
+        copia._quantidades = self._quantidades.copy()
+        return copia
+
     def obter_quantidades(self):
         """Retorna uma cópia das quantidades disponíveis."""
         return self._quantidades.copy()

@@ -11,6 +11,13 @@ class CartaRegiao:
         self.virada_para_cima = True
         self.possui_disco_negociacao = False
 
+    def copiar(self):
+        copia = CartaRegiao.__new__(CartaRegiao)
+        copia.nome_regiao = self.nome_regiao
+        copia.virada_para_cima = self.virada_para_cima
+        copia.possui_disco_negociacao = self.possui_disco_negociacao
+        return copia
+
     def virar_para_baixo(self):
         self.virada_para_cima = False
 

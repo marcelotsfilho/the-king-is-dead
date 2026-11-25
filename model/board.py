@@ -1,3 +1,5 @@
+from types import MappingProxyType
+
 from model.region import Regiao
 
 
@@ -12,16 +14,16 @@ _NOMES_DAS_REGIOES = [
     "Devon",
 ]
 
-_ADJACENCIAS = {
-    "Moray": {"Strathclyde", "Northumbria"},
-    "Strathclyde": {"Moray", "Northumbria", "Lancaster"},
-    "Northumbria": {"Moray", "Strathclyde", "Lancaster", "Warwick", "Essex"},
-    "Lancaster": {"Strathclyde", "Northumbria", "Gwynedd", "Warwick"},
-    "Gwynedd": {"Lancaster", "Warwick", "Devon"},
-    "Warwick": {"Northumbria", "Lancaster", "Gwynedd", "Essex", "Devon"},
-    "Essex": {"Northumbria", "Warwick", "Devon"},
-    "Devon": {"Gwynedd", "Warwick", "Essex"},
-}
+_ADJACENCIAS = MappingProxyType({
+    "Moray": frozenset(("Strathclyde", "Northumbria")),
+    "Strathclyde": frozenset(("Moray", "Northumbria", "Lancaster")),
+    "Northumbria": frozenset(("Moray", "Strathclyde", "Lancaster", "Warwick", "Essex")),
+    "Lancaster": frozenset(("Strathclyde", "Northumbria", "Gwynedd", "Warwick")),
+    "Gwynedd": frozenset(("Lancaster", "Warwick", "Devon")),
+    "Warwick": frozenset(("Northumbria", "Lancaster", "Gwynedd", "Essex", "Devon")),
+    "Essex": frozenset(("Northumbria", "Warwick", "Devon")),
+    "Devon": frozenset(("Gwynedd", "Warwick", "Essex")),
+})
 
 
 class Tabuleiro:
@@ -32,11 +34,14 @@ class Tabuleiro:
         for nome in _NOMES_DAS_REGIOES:
             self._regioes[nome] = Regiao(nome)
 
-        self._adjacencias = {}
-        for nome in _ADJACENCIAS:
-            self._adjacencias[nome] = _ADJACENCIAS[nome].copy()
-
         self._validar_grafo()
+
+    def copiar(self):
+        copia = Tabuleiro.__new__(Tabuleiro)
+        copia._regioes = {
+            nome: regiao.copiar() for nome, regiao in self._regioes.items()
+        }
+        return copia
 
     def _validar_nome(self, nome):
         if nome not in self._regioes:
@@ -68,13 +73,13 @@ class Tabuleiro:
     def regioes_adjacentes(self, nome):
         """Retorna os nomes das regiões que fazem fronteira com a região."""
         self._validar_nome(nome)
-        return self._adjacencias[nome].copy()
+        return set(_ADJACENCIAS[nome])
 
     def sao_adjacentes(self, nome_regiao_a, nome_regiao_b):
         """Informa se duas regiões compartilham uma fronteira."""
         self._validar_nome(nome_regiao_a)
         self._validar_nome(nome_regiao_b)
-        return nome_regiao_b in self._adjacencias[nome_regiao_a]
+        return nome_regiao_b in _ADJACENCIAS[nome_regiao_a]
 
     def quantidade_instabilidades(self):
         """Conta quantas regiões do tabuleiro estão instáveis."""
@@ -89,10 +94,10 @@ class Tabuleiro:
     def _validar_grafo(self):
         nomes = set(self._regioes.keys())
 
-        if set(self._adjacencias) != nomes:
+        if set(_ADJACENCIAS) != nomes:
             raise RuntimeError("O grafo não possui uma entrada para cada região.")
 
-        for origem, destinos in self._adjacencias.items():
+        for origem, destinos in _ADJACENCIAS.items():
             if origem in destinos:
                 raise RuntimeError(f"{origem} não pode ser adjacente a si mesma.")
 
@@ -100,7 +105,7 @@ class Tabuleiro:
                 if destino not in nomes:
                     raise RuntimeError(f"Região desconhecida no grafo: {destino}.")
 
-                if origem not in self._adjacencias[destino]:
+                if origem not in _ADJACENCIAS[destino]:
                     raise RuntimeError(
                         f"A fronteira entre {origem} e {destino} não é simétrica."
                     )

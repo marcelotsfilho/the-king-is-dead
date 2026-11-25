@@ -17,10 +17,11 @@ from model.legal_move import serializar_jogada
 from model.legal_move_executor import ExecutorJogada
 from model.legal_move_generator import GeradorJogadas
 from model.minimax_agent import AgenteMinimax
-from model.q_learning_agent import CAMINHO_TABELA_Q_JOGO, AgenteQLearning, TabelaQ
+from model.q_learning_agent import CAMINHO_TABELA_Q, AgenteQLearning, TabelaQ
 
 
-_PASTA_HISTORICA = CAMINHO_TABELA_Q_JOGO.parent / "taticas"
+_TABELA_HISTORICA = CAMINHO_TABELA_Q.parent / "bateria_3000" / "tabela_selecionada.json"
+_PASTA_HISTORICA = _TABELA_HISTORICA.parent / "taticas"
 
 
 def _ler_estado(caminho):
@@ -236,7 +237,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("modo", choices=("auditoria", "posicoes", "confrontos", "resumo", "demonstrar"))
     parser.add_argument("saida", type=Path)
-    parser.add_argument("--tabela", type=Path, default=CAMINHO_TABELA_Q_JOGO)
+    parser.add_argument("--tabela", type=Path, default=_TABELA_HISTORICA)
     parser.add_argument("--semente", type=int, default=174000)
     parser.add_argument("--adversario", choices=("politica_inicial", "alfa_beta"), default="politica_inicial")
     parser.add_argument("--partidas", type=int, default=200)

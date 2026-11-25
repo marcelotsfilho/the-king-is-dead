@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pygame
 
 from controller.game_controller import ControladorJogo
-from model.enums import Faccao, FaseTurno, TipoCartaAcao
+from model.enums import Faccao, FaseTurno, TipoCartaAcao, TipoJogador
 from model.game import Jogo
 from model.game_setup import ConfiguracaoJogo
 from model.state_tree_serializer import SerializadorArvoreEstados
@@ -332,14 +332,23 @@ class TesteControladorJogo(unittest.TestCase):
             caminho = os.path.join(pasta, "arvore.json")
             controlador = criar_controlador(caminho)
             controlador._processar_clique("passar")
+            controlador.configuracao_partida.definir_tipo_jogador(0, TipoJogador.ALFA_BETA)
+            controlador.configuracao_partida.definir_profundidade(0, 2)
+            controlador.configuracao_partida.definir_tipo_jogador(1, TipoJogador.MONTE_CARLO)
+            controlador.configuracao_partida.definir_simulacoes_monte_carlo(1, 3000)
 
             salvou = controlador._salvar_arvore()
-            restaurada = SerializadorArvoreEstados().carregar(
+            restaurada, configuracao = SerializadorArvoreEstados().carregar_partida(
                 caminho
             )
 
         self.assertTrue(salvou)
         self.assertEqual(restaurada.quantidade_nos(), 2)
+        self.assertEqual(restaurada.obter_estado_atual().indice_jogador_atual, 1)
+        self.assertEqual(configuracao.obter_tipo_jogador(0), TipoJogador.ALFA_BETA)
+        self.assertEqual(configuracao.obter_profundidade(0), 2)
+        self.assertEqual(configuracao.obter_tipo_jogador(1), TipoJogador.MONTE_CARLO)
+        self.assertEqual(configuracao.obter_simulacoes_monte_carlo(1), 3000)
         self.assertEqual(
             restaurada.obter_no_atual().obter_nivel(),
             1,

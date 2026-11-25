@@ -19,6 +19,14 @@ class Regiao:
         self.controlador = None
         self.instavel = False
 
+    def copiar(self):
+        copia = Regiao.__new__(Regiao)
+        copia.nome = self.nome
+        copia._seguidores = self._seguidores.copy()
+        copia.controlador = self.controlador
+        copia.instavel = self.instavel
+        return copia
+
     def obter_seguidores(self):
         """Retorna uma cópia das quantidades de seguidores."""
         return self._seguidores.copy()

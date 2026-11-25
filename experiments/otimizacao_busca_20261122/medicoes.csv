@@ -1,0 +1,226 @@
+fase,variante,posicao,profundidade,algoritmo,status,limite_segundos,segundos,nos,folhas,copias,cortes,pontuacao,jogada,repeticao
+bateria,base,reduzido,1,alfa_beta,concluido,12.0,0.000731,4,3,4,0,0,"{""tipo"": ""PASSE""}",1
+bateria,copia,reduzido,1,alfa_beta,concluido,12.0,0.002342,4,3,4,0,0,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,reduzido,1,alfa_beta,concluido,12.0,0.000535,4,3,4,0,0,"{""tipo"": ""PASSE""}",1
+bateria,base,reduzido,1,alfa_beta,concluido,12.0,0.000675,4,3,4,0,0,"{""tipo"": ""PASSE""}",2
+bateria,copia,reduzido,1,alfa_beta,concluido,12.0,0.000695,4,3,4,0,0,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,reduzido,1,alfa_beta,concluido,12.0,0.000721,4,3,4,0,0,"{""tipo"": ""PASSE""}",2
+bateria,base,reduzido,1,alfa_beta,concluido,12.0,0.000775,4,3,4,0,0,"{""tipo"": ""PASSE""}",3
+bateria,copia,reduzido,1,alfa_beta,concluido,12.0,0.000504,4,3,4,0,0,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,reduzido,1,alfa_beta,concluido,12.0,0.001032,4,3,4,0,0,"{""tipo"": ""PASSE""}",3
+bateria,base,reduzido,1,minimax,concluido,12.0,0.000783,4,3,4,0,0,"{""tipo"": ""PASSE""}",1
+bateria,copia,reduzido,1,minimax,concluido,12.0,0.000658,4,3,4,0,0,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,reduzido,1,minimax,concluido,12.0,0.000634,4,3,4,0,0,"{""tipo"": ""PASSE""}",1
+bateria,base,reduzido,1,minimax,concluido,12.0,0.000854,4,3,4,0,0,"{""tipo"": ""PASSE""}",2
+bateria,copia,reduzido,1,minimax,concluido,12.0,0.000429,4,3,4,0,0,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,reduzido,1,minimax,concluido,12.0,0.000475,4,3,4,0,0,"{""tipo"": ""PASSE""}",2
+bateria,base,reduzido,1,minimax,concluido,12.0,0.000838,4,3,4,0,0,"{""tipo"": ""PASSE""}",3
+bateria,copia,reduzido,1,minimax,concluido,12.0,0.00112,4,3,4,0,0,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,reduzido,1,minimax,concluido,12.0,0.000749,4,3,4,0,0,"{""tipo"": ""PASSE""}",3
+bateria,base,reduzido,2,alfa_beta,concluido,12.0,0.001423,9,5,10,2,0,"{""tipo"": ""PASSE""}",1
+bateria,copia,reduzido,2,alfa_beta,concluido,12.0,0.001217,9,5,10,2,0,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,reduzido,2,alfa_beta,concluido,12.0,0.001319,9,5,10,2,0,"{""tipo"": ""PASSE""}",1
+bateria,base,reduzido,2,alfa_beta,concluido,12.0,0.002027,9,5,10,2,0,"{""tipo"": ""PASSE""}",2
+bateria,copia,reduzido,2,alfa_beta,concluido,12.0,0.000718,9,5,10,2,0,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,reduzido,2,alfa_beta,concluido,12.0,0.000702,9,5,10,2,0,"{""tipo"": ""PASSE""}",2
+bateria,base,reduzido,2,alfa_beta,concluido,12.0,0.001455,9,5,10,2,0,"{""tipo"": ""PASSE""}",3
+bateria,copia,reduzido,2,alfa_beta,concluido,12.0,0.001461,9,5,10,2,0,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,reduzido,2,alfa_beta,concluido,12.0,0.000945,9,5,10,2,0,"{""tipo"": ""PASSE""}",3
+bateria,base,reduzido,2,minimax,concluido,12.0,0.002024,11,7,14,0,0,"{""tipo"": ""PASSE""}",1
+bateria,copia,reduzido,2,minimax,concluido,12.0,0.001097,11,7,14,0,0,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,reduzido,2,minimax,concluido,12.0,0.001125,11,7,14,0,0,"{""tipo"": ""PASSE""}",1
+bateria,base,reduzido,2,minimax,concluido,12.0,0.001833,11,7,14,0,0,"{""tipo"": ""PASSE""}",2
+bateria,copia,reduzido,2,minimax,concluido,12.0,0.001049,11,7,14,0,0,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,reduzido,2,minimax,concluido,12.0,0.001002,11,7,14,0,0,"{""tipo"": ""PASSE""}",2
+bateria,base,reduzido,2,minimax,concluido,12.0,0.002741,11,7,14,0,0,"{""tipo"": ""PASSE""}",3
+bateria,copia,reduzido,2,minimax,concluido,12.0,0.001316,11,7,14,0,0,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,reduzido,2,minimax,concluido,12.0,0.00128,11,7,14,0,0,"{""tipo"": ""PASSE""}",3
+bateria,base,reduzido,3,alfa_beta,concluido,12.0,0.003826,28,19,36,4,0,"{""tipo"": ""PASSE""}",1
+bateria,copia,reduzido,3,alfa_beta,concluido,12.0,0.00209,28,19,36,4,0,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,reduzido,3,alfa_beta,concluido,12.0,0.002525,28,19,36,4,0,"{""tipo"": ""PASSE""}",1
+bateria,base,reduzido,3,alfa_beta,concluido,12.0,0.004731,28,19,36,4,0,"{""tipo"": ""PASSE""}",2
+bateria,copia,reduzido,3,alfa_beta,concluido,12.0,0.004098,28,19,36,4,0,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,reduzido,3,alfa_beta,concluido,12.0,0.002404,28,19,36,4,0,"{""tipo"": ""PASSE""}",2
+bateria,base,reduzido,3,alfa_beta,concluido,12.0,0.007356,28,19,36,4,0,"{""tipo"": ""PASSE""}",3
+bateria,copia,reduzido,3,alfa_beta,concluido,12.0,0.004365,28,19,36,4,0,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,reduzido,3,alfa_beta,concluido,12.0,0.00328,28,19,36,4,0,"{""tipo"": ""PASSE""}",3
+bateria,base,reduzido,3,minimax,concluido,12.0,0.005003,34,23,46,0,0,"{""tipo"": ""PASSE""}",1
+bateria,copia,reduzido,3,minimax,concluido,12.0,0.002836,34,23,46,0,0,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,reduzido,3,minimax,concluido,12.0,0.002485,34,23,46,0,0,"{""tipo"": ""PASSE""}",1
+bateria,base,reduzido,3,minimax,concluido,12.0,0.005759,34,23,46,0,0,"{""tipo"": ""PASSE""}",2
+bateria,copia,reduzido,3,minimax,concluido,12.0,0.002465,34,23,46,0,0,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,reduzido,3,minimax,concluido,12.0,0.002451,34,23,46,0,0,"{""tipo"": ""PASSE""}",2
+bateria,base,reduzido,3,minimax,concluido,12.0,0.008942,34,23,46,0,0,"{""tipo"": ""PASSE""}",3
+bateria,copia,reduzido,3,minimax,concluido,12.0,0.005376,34,23,46,0,0,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,reduzido,3,minimax,concluido,12.0,0.004579,34,23,46,0,0,"{""tipo"": ""PASSE""}",3
+bateria,base,abertura42,1,alfa_beta,concluido,12.0,3.446552,14698,14697,15495,0,554,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",1
+bateria,copia,abertura42,1,alfa_beta,concluido,12.0,1.284281,14698,14697,15495,0,554,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",1
+bateria,otimizado,abertura42,1,alfa_beta,concluido,12.0,1.398941,14698,14697,15495,0,554,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",1
+bateria,base,abertura42,1,alfa_beta,concluido,12.0,2.677641,14698,14697,15495,0,554,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",2
+bateria,copia,abertura42,1,alfa_beta,concluido,12.0,1.212874,14698,14697,15495,0,554,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",2
+bateria,otimizado,abertura42,1,alfa_beta,concluido,12.0,1.294995,14698,14697,15495,0,554,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",2
+bateria,base,abertura42,1,alfa_beta,concluido,12.0,3.32405,14698,14697,15495,0,554,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",3
+bateria,copia,abertura42,1,alfa_beta,concluido,12.0,1.580977,14698,14697,15495,0,554,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",3
+bateria,otimizado,abertura42,1,alfa_beta,concluido,12.0,1.810864,14698,14697,15495,0,554,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_ESCOCES""}",3
+bateria,base,abertura42,2,alfa_beta,tempo_esgotado,12.0,12.093148,34207,34042,36096,161,,null,1
+bateria,copia,abertura42,2,alfa_beta,tempo_esgotado,12.0,12.004207,63778,55384,68864,8389,,null,1
+bateria,otimizado,abertura42,2,alfa_beta,tempo_esgotado,12.0,12.012928,57223,51377,61440,5841,,null,1
+bateria,base,abertura42,2,alfa_beta,tempo_esgotado,12.0,12.259065,26464,26461,27904,0,,null,2
+bateria,copia,abertura42,2,alfa_beta,tempo_esgotado,12.0,12.027575,46928,45988,49664,936,,null,2
+bateria,otimizado,abertura42,2,alfa_beta,tempo_esgotado,12.0,12.033175,51373,48121,54784,3247,,null,2
+bateria,base,abertura42,2,alfa_beta,tempo_esgotado,12.0,12.03173,53217,49494,56832,3718,,null,3
+bateria,copia,abertura42,2,alfa_beta,concluido,12.0,8.522927,78163,63465,85358,14694,-2,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 1, ""posicao_b"": 2, ""posicao_disco"": 2}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",3
+bateria,otimizado,abertura42,2,alfa_beta,concluido,12.0,8.290501,77395,62697,84550,14694,-2,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 1, ""posicao_b"": 2, ""posicao_disco"": 2}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",3
+bateria,base,abertura42,3,alfa_beta,tempo_esgotado,12.0,12.030247,31231,31065,33024,161,,null,1
+bateria,copia,abertura42,3,alfa_beta,tempo_esgotado,12.0,12.031173,70858,56891,77568,13961,,null,1
+bateria,otimizado,abertura42,3,alfa_beta,tempo_esgotado,12.0,12.05268,58515,49620,63488,8890,,null,1
+bateria,base,abertura42,3,alfa_beta,tempo_esgotado,12.0,12.1022,26624,26458,28160,161,,null,2
+bateria,copia,abertura42,3,alfa_beta,tempo_esgotado,12.0,12.02414,57464,49365,62208,8093,,null,2
+bateria,otimizado,abertura42,3,alfa_beta,tempo_esgotado,12.0,12.039453,61860,51502,67328,10353,,null,2
+bateria,base,abertura42,3,alfa_beta,tempo_esgotado,12.0,12.021175,46906,43475,50176,3425,,null,3
+bateria,copia,abertura42,3,alfa_beta,tempo_esgotado,12.0,12.006807,99329,84465,107776,14855,,null,3
+bateria,otimizado,abertura42,3,alfa_beta,tempo_esgotado,12.0,12.009466,90615,75913,98560,14694,,null,3
+bateria,base,abertura53000,1,alfa_beta,concluido,12.0,4.089797,13598,13597,14371,0,-4920,"{""tipo"": ""PASSE""}",1
+bateria,copia,abertura53000,1,alfa_beta,concluido,12.0,1.154656,13598,13597,14371,0,-4920,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,abertura53000,1,alfa_beta,concluido,12.0,1.192336,13598,13597,14371,0,-4920,"{""tipo"": ""PASSE""}",1
+bateria,base,abertura53000,1,alfa_beta,concluido,12.0,2.549473,13598,13597,14371,0,-4920,"{""tipo"": ""PASSE""}",2
+bateria,copia,abertura53000,1,alfa_beta,concluido,12.0,1.340604,13598,13597,14371,0,-4920,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,abertura53000,1,alfa_beta,concluido,12.0,1.252032,13598,13597,14371,0,-4920,"{""tipo"": ""PASSE""}",2
+bateria,base,abertura53000,1,alfa_beta,concluido,12.0,3.391066,13598,13597,14371,0,-4920,"{""tipo"": ""PASSE""}",3
+bateria,copia,abertura53000,1,alfa_beta,concluido,12.0,1.528745,13598,13597,14371,0,-4920,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,abertura53000,1,alfa_beta,concluido,12.0,1.706788,13598,13597,14371,0,-4920,"{""tipo"": ""PASSE""}",3
+bateria,base,abertura53000,2,alfa_beta,tempo_esgotado,12.0,12.064067,38455,26025,39936,12428,,null,1
+bateria,copia,abertura53000,2,alfa_beta,concluido,12.0,2.804561,40791,27193,42338,13596,-4552,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,abertura53000,2,alfa_beta,concluido,12.0,3.113297,40791,27193,42338,13596,-4552,"{""tipo"": ""PASSE""}",1
+bateria,base,abertura53000,2,alfa_beta,tempo_esgotado,12.0,12.070036,36959,25277,38400,11680,,null,2
+bateria,copia,abertura53000,2,alfa_beta,concluido,12.0,2.888749,40791,27193,42338,13596,-4552,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,abertura53000,2,alfa_beta,concluido,12.0,3.761256,40791,27193,42338,13596,-4552,"{""tipo"": ""PASSE""}",2
+bateria,base,abertura53000,2,alfa_beta,concluido,12.0,8.743723,40791,27193,42338,13596,-4552,"{""tipo"": ""PASSE""}",3
+bateria,copia,abertura53000,2,alfa_beta,concluido,12.0,3.945082,40791,27193,42338,13596,-4552,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,abertura53000,2,alfa_beta,concluido,12.0,3.867745,40791,27193,42338,13596,-4552,"{""tipo"": ""PASSE""}",3
+bateria,base,abertura53000,3,alfa_beta,tempo_esgotado,12.0,12.08781,33807,33562,35840,240,,null,1
+bateria,copia,abertura53000,3,alfa_beta,tempo_esgotado,12.0,12.003191,74452,60851,78080,13593,,null,1
+bateria,otimizado,abertura53000,3,alfa_beta,tempo_esgotado,12.0,12.038939,73483,59918,77056,13558,,null,1
+bateria,base,abertura53000,3,alfa_beta,tempo_esgotado,12.0,12.036224,62274,54314,65536,7954,,null,2
+bateria,copia,abertura53000,3,alfa_beta,tempo_esgotado,12.0,12.019843,113895,100290,119808,13594,,null,2
+bateria,otimizado,abertura53000,3,alfa_beta,tempo_esgotado,12.0,12.002575,123613,110008,130048,13594,,null,2
+bateria,base,abertura53000,3,alfa_beta,tempo_esgotado,12.0,12.021541,54558,50456,57600,4096,,null,3
+bateria,copia,abertura53000,3,alfa_beta,tempo_esgotado,12.0,12.003516,134476,120869,141568,13595,,null,3
+bateria,otimizado,abertura53000,3,alfa_beta,tempo_esgotado,12.0,12.000243,124099,110494,130560,13594,,null,3
+bateria,base,abertura7,1,alfa_beta,concluido,12.0,4.193296,13768,13767,14549,0,-1940,"{""tipo"": ""PASSE""}",1
+bateria,copia,abertura7,1,alfa_beta,concluido,12.0,1.17914,13768,13767,14549,0,-1940,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,abertura7,1,alfa_beta,concluido,12.0,1.200306,13768,13767,14549,0,-1940,"{""tipo"": ""PASSE""}",1
+bateria,base,abertura7,1,alfa_beta,concluido,12.0,2.058119,13768,13767,14549,0,-1940,"{""tipo"": ""PASSE""}",2
+bateria,copia,abertura7,1,alfa_beta,concluido,12.0,1.191592,13768,13767,14549,0,-1940,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,abertura7,1,alfa_beta,concluido,12.0,1.058824,13768,13767,14549,0,-1940,"{""tipo"": ""PASSE""}",2
+bateria,base,abertura7,1,alfa_beta,concluido,12.0,3.355841,13768,13767,14549,0,-1940,"{""tipo"": ""PASSE""}",3
+bateria,copia,abertura7,1,alfa_beta,concluido,12.0,1.528989,13768,13767,14549,0,-1940,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,abertura7,1,alfa_beta,concluido,12.0,2.313871,13768,13767,14549,0,-1940,"{""tipo"": ""PASSE""}",3
+bateria,base,abertura7,2,alfa_beta,tempo_esgotado,12.0,12.140345,33902,33882,35840,16,,null,1
+bateria,copia,abertura7,2,alfa_beta,tempo_esgotado,12.0,12.046726,70029,69958,73984,66,,null,1
+bateria,otimizado,abertura7,2,alfa_beta,tempo_esgotado,12.0,12.029118,69054,68981,72960,68,,null,1
+bateria,base,abertura7,2,alfa_beta,tempo_esgotado,12.0,12.025321,30516,30498,32256,14,,null,2
+bateria,copia,abertura7,2,alfa_beta,tempo_esgotado,12.0,12.005128,57181,57142,60416,34,,null,2
+bateria,otimizado,abertura7,2,alfa_beta,tempo_esgotado,12.0,12.043854,59843,59770,63232,68,,null,2
+bateria,base,abertura7,2,alfa_beta,tempo_esgotado,12.0,12.000868,50133,50096,52992,33,,null,3
+bateria,copia,abertura7,2,alfa_beta,tempo_esgotado,12.0,12.001388,112635,111177,119296,1452,,null,3
+bateria,otimizado,abertura7,2,alfa_beta,tempo_esgotado,12.0,12.003496,97560,95592,103424,1961,,null,3
+bateria,base,abertura7,3,alfa_beta,tempo_esgotado,12.0,12.19124,34763,34749,36864,8,,null,1
+bateria,copia,abertura7,3,alfa_beta,tempo_esgotado,12.0,12.058352,73168,71841,77568,1321,,null,1
+bateria,otimizado,abertura7,3,alfa_beta,tempo_esgotado,12.0,12.09127,65091,62948,69120,2137,,null,1
+bateria,base,abertura7,3,alfa_beta,tempo_esgotado,12.0,12.022498,58926,58011,62464,909,,null,2
+bateria,copia,abertura7,3,alfa_beta,tempo_esgotado,12.0,12.033671,62065,60980,65792,1079,,null,2
+bateria,otimizado,abertura7,3,alfa_beta,tempo_esgotado,12.0,12.017606,116912,103139,124928,13764,,null,2
+bateria,base,abertura7,3,alfa_beta,tempo_esgotado,12.0,12.026292,56269,55490,59648,773,,null,3
+bateria,copia,abertura7,3,alfa_beta,tempo_esgotado,12.0,12.014531,111821,110073,118528,1742,,null,3
+bateria,otimizado,abertura7,3,alfa_beta,tempo_esgotado,12.0,12.000624,111098,97327,118784,13763,,null,3
+bateria,base,meio0_8,1,alfa_beta,concluido,12.0,0.540302,2844,2843,3019,0,-5826,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""faccao_a"": ""INGLESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",1
+bateria,copia,meio0_8,1,alfa_beta,concluido,12.0,0.246013,2844,2843,3019,0,-5826,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""faccao_a"": ""INGLESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",1
+bateria,otimizado,meio0_8,1,alfa_beta,concluido,12.0,0.22564,2844,2843,3019,0,-5826,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""faccao_a"": ""INGLESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",1
+bateria,base,meio0_8,1,alfa_beta,concluido,12.0,0.511823,2844,2843,3019,0,-5826,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""faccao_a"": ""INGLESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",2
+bateria,copia,meio0_8,1,alfa_beta,concluido,12.0,0.261796,2844,2843,3019,0,-5826,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""faccao_a"": ""INGLESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",2
+bateria,otimizado,meio0_8,1,alfa_beta,concluido,12.0,0.309337,2844,2843,3019,0,-5826,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""faccao_a"": ""INGLESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",2
+bateria,base,meio0_8,1,alfa_beta,concluido,12.0,0.600762,2844,2843,3019,0,-5826,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""faccao_a"": ""INGLESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",3
+bateria,copia,meio0_8,1,alfa_beta,concluido,12.0,0.365614,2844,2843,3019,0,-5826,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""faccao_a"": ""INGLESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",3
+bateria,otimizado,meio0_8,1,alfa_beta,concluido,12.0,0.315662,2844,2843,3019,0,-5826,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Strathclyde"", ""parametros"": {""faccao_a"": ""INGLESES"", ""faccao_b"": ""GALESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Strathclyde""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",3
+bateria,base,meio0_8,2,alfa_beta,tempo_esgotado,12.0,12.053045,34834,33424,37120,1407,,null,1
+bateria,copia,meio0_8,2,alfa_beta,tempo_esgotado,12.0,12.007855,74337,72328,79104,2006,,null,1
+bateria,otimizado,meio0_8,2,alfa_beta,concluido,12.0,2.46099,23341,20497,25239,2842,-7884,"{""tipo"": ""PASSE""}",1
+bateria,base,meio0_8,2,alfa_beta,tempo_esgotado,12.0,12.075249,33164,31842,35328,1319,,null,2
+bateria,copia,meio0_8,2,alfa_beta,tempo_esgotado,12.0,12.004837,66623,64863,70912,1757,,null,2
+bateria,otimizado,meio0_8,2,alfa_beta,concluido,12.0,2.648178,23341,20497,25239,2842,-7884,"{""tipo"": ""PASSE""}",2
+bateria,base,meio0_8,2,alfa_beta,tempo_esgotado,12.0,12.10914,58171,56471,61952,1697,,null,3
+bateria,copia,meio0_8,2,alfa_beta,concluido,12.0,10.504073,93900,91056,99938,2842,-7884,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,meio0_8,2,alfa_beta,concluido,12.0,2.405467,23341,20497,25239,2842,-7884,"{""tipo"": ""PASSE""}",3
+bateria,base,meio0_8,3,alfa_beta,tempo_esgotado,12.0,12.143228,33365,32949,35584,412,,null,1
+bateria,copia,meio0_8,3,alfa_beta,tempo_esgotado,12.0,12.007823,54459,53563,58112,892,,null,1
+bateria,otimizado,meio0_8,3,alfa_beta,tempo_esgotado,12.0,12.000337,61972,59040,66304,2912,,null,1
+bateria,base,meio0_8,3,alfa_beta,tempo_esgotado,12.0,12.051654,49665,48880,52992,782,,null,2
+bateria,copia,meio0_8,3,alfa_beta,tempo_esgotado,12.0,12.007188,112106,110222,119552,1880,,null,2
+bateria,otimizado,meio0_8,3,alfa_beta,tempo_esgotado,12.0,12.020565,103162,100190,110080,2932,,null,2
+bateria,base,meio0_8,3,alfa_beta,tempo_esgotado,12.0,12.050932,33604,33172,35840,428,,null,3
+bateria,copia,meio0_8,3,alfa_beta,tempo_esgotado,12.0,12.008047,68385,67260,72960,1121,,null,3
+bateria,otimizado,meio0_8,3,alfa_beta,tempo_esgotado,12.0,12.01338,115449,112463,123136,2939,,null,3
+bateria,base,meio7_12,1,alfa_beta,concluido,12.0,0.332991,1731,1730,1878,0,-8910,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Moray"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1
+bateria,copia,meio7_12,1,alfa_beta,concluido,12.0,0.180346,1731,1730,1878,0,-8910,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Moray"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1
+bateria,otimizado,meio7_12,1,alfa_beta,concluido,12.0,0.14443,1731,1730,1878,0,-8910,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Moray"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",1
+bateria,base,meio7_12,1,alfa_beta,concluido,12.0,0.311503,1731,1730,1878,0,-8910,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Moray"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",2
+bateria,copia,meio7_12,1,alfa_beta,concluido,12.0,0.152139,1731,1730,1878,0,-8910,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Moray"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",2
+bateria,otimizado,meio7_12,1,alfa_beta,concluido,12.0,0.146287,1731,1730,1878,0,-8910,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Moray"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",2
+bateria,base,meio7_12,1,alfa_beta,concluido,12.0,0.416298,1731,1730,1878,0,-8910,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Moray"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",3
+bateria,copia,meio7_12,1,alfa_beta,concluido,12.0,0.196853,1731,1730,1878,0,-8910,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Moray"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",3
+bateria,otimizado,meio7_12,1,alfa_beta,concluido,12.0,0.197919,1731,1730,1878,0,-8910,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Lancaster"", ""parametros"": {""destinos"": {""ESCOCESES"": ""Moray"", ""GALESES"": ""Strathclyde"", ""INGLESES"": ""Lancaster""}}, ""tipo"": ""CARTA"", ""tipo_carta"": ""REUNIR""}",3
+bateria,base,meio7_12,2,alfa_beta,concluido,12.0,1.393099,9292,7561,10512,1728,-11420,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Lancaster""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",1
+bateria,copia,meio7_12,2,alfa_beta,concluido,12.0,0.65904,9292,7561,10512,1728,-11420,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Lancaster""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",1
+bateria,otimizado,meio7_12,2,alfa_beta,concluido,12.0,0.686585,9255,7524,10471,1728,-11420,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Lancaster""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",1
+bateria,base,meio7_12,2,alfa_beta,concluido,12.0,2.194525,9292,7561,10512,1728,-11420,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Lancaster""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",2
+bateria,copia,meio7_12,2,alfa_beta,concluido,12.0,0.758817,9292,7561,10512,1728,-11420,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Lancaster""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",2
+bateria,otimizado,meio7_12,2,alfa_beta,concluido,12.0,0.882391,9255,7524,10471,1728,-11420,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Lancaster""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",2
+bateria,base,meio7_12,2,alfa_beta,concluido,12.0,1.921548,9292,7561,10512,1728,-11420,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Lancaster""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",3
+bateria,copia,meio7_12,2,alfa_beta,concluido,12.0,0.902155,9292,7561,10512,1728,-11420,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Lancaster""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",3
+bateria,otimizado,meio7_12,2,alfa_beta,concluido,12.0,0.903134,9255,7524,10471,1728,-11420,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""regiao"": ""Lancaster""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""APOIO_GALES""}",3
+bateria,base,meio7_12,3,alfa_beta,tempo_esgotado,12.0,12.011908,34293,29351,38144,4932,,null,1
+bateria,copia,meio7_12,3,alfa_beta,tempo_esgotado,12.0,12.061497,64843,59676,71424,5138,,null,1
+bateria,otimizado,meio7_12,3,alfa_beta,tempo_esgotado,12.0,12.083719,63248,58069,69632,5145,,null,1
+bateria,base,meio7_12,3,alfa_beta,tempo_esgotado,12.0,12.066681,49810,44657,55040,5133,,null,2
+bateria,copia,meio7_12,3,alfa_beta,tempo_esgotado,12.0,12.006825,120813,115598,132096,5154,,null,2
+bateria,otimizado,meio7_12,3,alfa_beta,tempo_esgotado,12.0,12.013443,107209,101993,117248,5157,,null,2
+bateria,base,meio7_12,3,alfa_beta,tempo_esgotado,12.0,12.025244,63431,58266,69888,5137,,null,3
+bateria,copia,meio7_12,3,alfa_beta,tempo_esgotado,12.0,12.010989,63198,58033,69632,5137,,null,3
+bateria,otimizado,meio7_12,3,alfa_beta,tempo_esgotado,12.0,12.019922,121312,116082,132608,5162,,null,3
+bateria,base,meio19_22,1,alfa_beta,concluido,12.0,0.030627,142,141,158,0,-3410,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 6, ""posicao_disco"": 5}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",1
+bateria,copia,meio19_22,1,alfa_beta,concluido,12.0,0.011301,142,141,158,0,-3410,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 6, ""posicao_disco"": 5}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",1
+bateria,otimizado,meio19_22,1,alfa_beta,concluido,12.0,0.01153,142,141,158,0,-3410,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 6, ""posicao_disco"": 5}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",1
+bateria,base,meio19_22,1,alfa_beta,concluido,12.0,0.027614,142,141,158,0,-3410,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 6, ""posicao_disco"": 5}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",2
+bateria,copia,meio19_22,1,alfa_beta,concluido,12.0,0.010774,142,141,158,0,-3410,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 6, ""posicao_disco"": 5}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",2
+bateria,otimizado,meio19_22,1,alfa_beta,concluido,12.0,0.010081,142,141,158,0,-3410,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 6, ""posicao_disco"": 5}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",2
+bateria,base,meio19_22,1,alfa_beta,concluido,12.0,0.033459,142,141,158,0,-3410,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 6, ""posicao_disco"": 5}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",3
+bateria,copia,meio19_22,1,alfa_beta,concluido,12.0,0.016418,142,141,158,0,-3410,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 6, ""posicao_disco"": 5}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",3
+bateria,otimizado,meio19_22,1,alfa_beta,concluido,12.0,0.012546,142,141,158,0,-3410,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 6, ""posicao_disco"": 5}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",3
+bateria,base,meio19_22,2,alfa_beta,concluido,12.0,0.377575,2454,2312,2740,138,-3940,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 8, ""posicao_disco"": 8}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",1
+bateria,copia,meio19_22,2,alfa_beta,concluido,12.0,0.172493,2454,2312,2740,138,-3940,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 8, ""posicao_disco"": 8}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",1
+bateria,otimizado,meio19_22,2,alfa_beta,concluido,12.0,0.181561,2369,2227,2648,138,-3940,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 8, ""posicao_disco"": 8}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",1
+bateria,base,meio19_22,2,alfa_beta,concluido,12.0,0.521143,2454,2312,2740,138,-3940,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 8, ""posicao_disco"": 8}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",2
+bateria,copia,meio19_22,2,alfa_beta,concluido,12.0,0.208893,2454,2312,2740,138,-3940,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 8, ""posicao_disco"": 8}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",2
+bateria,otimizado,meio19_22,2,alfa_beta,concluido,12.0,0.22504,2369,2227,2648,138,-3940,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 8, ""posicao_disco"": 8}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",2
+bateria,base,meio19_22,2,alfa_beta,concluido,12.0,0.994299,2454,2312,2740,138,-3940,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 8, ""posicao_disco"": 8}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",3
+bateria,copia,meio19_22,2,alfa_beta,concluido,12.0,0.39002,2454,2312,2740,138,-3940,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 8, ""posicao_disco"": 8}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",3
+bateria,otimizado,meio19_22,2,alfa_beta,concluido,12.0,0.510594,2369,2227,2648,138,-3940,"{""faccao_convocacao"": ""GALESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 5, ""posicao_b"": 8, ""posicao_disco"": 8}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",3
+bateria,base,meio19_22,3,alfa_beta,concluido,12.0,2.697121,17200,15865,19156,1118,-3720,"{""tipo"": ""PASSE""}",1
+bateria,copia,meio19_22,3,alfa_beta,concluido,12.0,1.234856,17200,15865,19156,1118,-3720,"{""tipo"": ""PASSE""}",1
+bateria,otimizado,meio19_22,3,alfa_beta,concluido,12.0,1.192995,13644,12777,15240,675,-3720,"{""tipo"": ""PASSE""}",1
+bateria,base,meio19_22,3,alfa_beta,concluido,12.0,4.694183,17200,15865,19156,1118,-3720,"{""tipo"": ""PASSE""}",2
+bateria,copia,meio19_22,3,alfa_beta,concluido,12.0,1.390575,17200,15865,19156,1118,-3720,"{""tipo"": ""PASSE""}",2
+bateria,otimizado,meio19_22,3,alfa_beta,concluido,12.0,1.063707,13644,12777,15240,675,-3720,"{""tipo"": ""PASSE""}",2
+bateria,base,meio19_22,3,alfa_beta,concluido,12.0,4.437251,17200,15865,19156,1118,-3720,"{""tipo"": ""PASSE""}",3
+bateria,copia,meio19_22,3,alfa_beta,concluido,12.0,2.259614,17200,15865,19156,1118,-3720,"{""tipo"": ""PASSE""}",3
+bateria,otimizado,meio19_22,3,alfa_beta,concluido,12.0,1.543428,13644,12777,15240,675,-3720,"{""tipo"": ""PASSE""}",3
+confirmacao,base,abertura42,2,alfa_beta,concluido,45.0,19.070915,78163,63465,85358,14694,-2,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 1, ""posicao_b"": 2, ""posicao_disco"": 2}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",1
+confirmacao,copia,abertura42,2,alfa_beta,concluido,45.0,9.518786,78163,63465,85358,14694,-2,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 1, ""posicao_b"": 2, ""posicao_disco"": 2}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",1
+confirmacao,otimizado,abertura42,2,alfa_beta,concluido,45.0,9.955804,77395,62697,84550,14694,-2,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Moray"", ""parametros"": {""posicao_a"": 1, ""posicao_b"": 2, ""posicao_disco"": 2}, ""tipo"": ""CARTA"", ""tipo_carta"": ""NEGOCIAR""}",1
+confirmacao,base,abertura7,2,alfa_beta,tempo_esgotado,45.0,45.008167,204096,192842,215808,11247,,null,1
+confirmacao,copia,abertura7,2,alfa_beta,concluido,45.0,28.535796,247325,233557,261633,13762,-2370,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""faccao_a"": ""GALESES"", ""faccao_b"": ""INGLESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Essex""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",1
+confirmacao,otimizado,abertura7,2,alfa_beta,concluido,45.0,16.70498,137252,123484,145405,13762,-2370,"{""faccao_convocacao"": ""ESCOCESES"", ""nome_regiao_convocacao"": ""Devon"", ""parametros"": {""faccao_a"": ""GALESES"", ""faccao_b"": ""INGLESES"", ""regiao_a"": ""Moray"", ""regiao_b"": ""Essex""}, ""tipo"": ""CARTA"", ""tipo_carta"": ""MANOBRAR""}",1
+confirmacao,base,meio0_8,2,alfa_beta,concluido,45.0,22.130903,93900,91056,99938,2842,-7884,"{""tipo"": ""PASSE""}",1
+confirmacao,copia,meio0_8,2,alfa_beta,concluido,45.0,10.633368,93900,91056,99938,2842,-7884,"{""tipo"": ""PASSE""}",1
+confirmacao,otimizado,meio0_8,2,alfa_beta,concluido,45.0,3.211504,23341,20497,25239,2842,-7884,"{""tipo"": ""PASSE""}",1

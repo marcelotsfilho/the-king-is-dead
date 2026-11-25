@@ -2,6 +2,8 @@ from model.enums import TipoJogador
 
 
 SIMULACOES_MONTE_CARLO_DISPONIVEIS = (100, 300, 1000, 3000, 5000)
+LIMITES_TEMPO_BUSCA = (None, 5, 10, 20, 30, 60)
+TIPOS_COM_LIMITE_DE_TEMPO = (TipoJogador.MINIMAX, TipoJogador.ALFA_BETA)
 
 
 class ConfiguracaoPartida:
@@ -11,6 +13,7 @@ class ConfiguracaoPartida:
         self._tipos = [TipoJogador.HUMANO, TipoJogador.HUMANO]
         self._profundidades = [1, 1]
         self._simulacoes_monte_carlo = [100, 100]
+        self._limites_tempo = [None, None]
 
     def _validar_indice(self, indice):
         if isinstance(indice, bool) or not isinstance(indice, int):
@@ -51,3 +54,15 @@ class ConfiguracaoPartida:
         if quantidade not in SIMULACOES_MONTE_CARLO_DISPONIVEIS:
             raise ValueError("A quantidade de simulações não está disponível.")
         self._simulacoes_monte_carlo[indice] = quantidade
+
+    def obter_limite_tempo(self, indice):
+        self._validar_indice(indice)
+        return self._limites_tempo[indice]
+
+    def definir_limite_tempo(self, indice, segundos):
+        self._validar_indice(indice)
+        if segundos is not None and type(segundos) is not int:
+            raise TypeError("O limite de tempo deve ser inteiro ou None.")
+        if segundos not in LIMITES_TEMPO_BUSCA:
+            raise ValueError("O limite de tempo não está disponível.")
+        self._limites_tempo[indice] = segundos

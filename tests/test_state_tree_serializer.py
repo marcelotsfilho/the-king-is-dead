@@ -2,13 +2,15 @@ import json
 import os
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from model.action_card import CartaAcao
 from model.board import Tabuleiro
 from model.dispute_track import TrilhaDisputas
-from model.enums import Faccao, TipoCartaAcao
+from model.enums import Faccao, TipoCartaAcao, TipoJogador
 from model.game_state import EstadoJogo
+from model.match_settings import ConfiguracaoPartida
 from model.player import Jogador
 from model.state_tree import ArvoreEstados
 from model.state_tree_serializer import SerializadorArvoreEstados
@@ -115,6 +117,52 @@ class TesteSerializadorArvoreEstados(unittest.TestCase):
         )
         for original, carregado in zip(arvore.obter_nos(), restaurada.obter_nos()):
             self.assertEqual(original.obter_avaliacao_heuristica(), carregado.obter_avaliacao_heuristica())
+
+    def test_retomada_rejeita_configuracao_invalida(self):
+        dados = self.serializador.serializar(
+            criar_arvore_com_tres_niveis(), ConfiguracaoPartida()
+        )
+        dados["configuracao_partida"]["jogadores"][1]["profundidade"] = 0
+        with tempfile.TemporaryDirectory() as pasta:
+            caminho = Path(pasta) / "arvore.json"
+            caminho.write_text(json.dumps(dados), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "configuração do Jogador 2"):
+                self.serializador.carregar_partida(str(caminho))
+
+    def test_retomada_preserva_configuracao_anterior_sem_campo_de_tempo(self):
+        configuracao = ConfiguracaoPartida()
+        configuracao.definir_tipo_jogador(1, TipoJogador.ALFA_BETA)
+        configuracao.definir_profundidade(1, 2)
+        dados = self.serializador.serializar(criar_arvore_com_tres_niveis(), configuracao)
+        for jogador in dados["configuracao_partida"]["jogadores"]:
+            del jogador["limite_tempo_segundos"]
+
+        with tempfile.TemporaryDirectory() as pasta:
+            caminho = Path(pasta) / "arvore.json"
+            caminho.write_text(json.dumps(dados), encoding="utf-8")
+            _, restaurada = self.serializador.carregar_partida(str(caminho))
+
+        self.assertEqual(restaurada.obter_tipo_jogador(1), TipoJogador.ALFA_BETA)
+        self.assertEqual(restaurada.obter_profundidade(1), 2)
+        self.assertIsNone(restaurada.obter_limite_tempo(1))
+
+    def test_falha_na_gravacao_preserva_salvamento_anterior(self):
+        arvore = criar_arvore_com_tres_niveis()
+
+        def gravar_incompleto(dados, arquivo, **opcoes):
+            arquivo.write('{"configuracao_partida":')
+            raise OSError("Falha simulada")
+
+        with tempfile.TemporaryDirectory() as pasta:
+            caminho = Path(pasta) / "arvore.json"
+            self.serializador.salvar(arvore, str(caminho), ConfiguracaoPartida())
+            anterior = caminho.read_bytes()
+            arvore.voltar()
+            with patch("model.state_tree_serializer.json.dump", side_effect=gravar_incompleto):
+                with self.assertRaisesRegex(OSError, "Falha simulada"):
+                    self.serializador.salvar(arvore, str(caminho))
+            self.assertEqual(caminho.read_bytes(), anterior)
+            self.assertEqual(list(Path(pasta).iterdir()), [caminho])
 
     def test_preserva_marca_de_jogada_voltada(self):
         arvore = criar_arvore_com_tres_niveis()

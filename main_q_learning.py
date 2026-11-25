@@ -37,7 +37,8 @@ def _gravar_csv(caminho, campos=_CAMPOS):
 
 
 def executar_partida(agente, inicial, semente, lado, primeiro, adversario, profundidade,
-                     epsilon=0.0, treinamento=False, estado_inicial=None, registrar_turno=None):
+                     epsilon=0.0, treinamento=False, estado_inicial=None, registrar_turno=None,
+                     *, sortear_jogadas_q=False):
     if estado_inicial is None:
         estado = ConfiguracaoJogo(semente).criar_estado_inicial(["Jogador 1", "Jogador 2"])
         estado.indice_jogador_atual = primeiro
@@ -65,7 +66,10 @@ def executar_partida(agente, inicial, semente, lado, primeiro, adversario, profu
             if treinamento and anterior is not None:
                 agente.tabela.atualizar(*anterior, 0, turno, _ALPHA, _GAMMA)
             conhecidos += turno[0] in agente.tabela.valores
-            if treinamento or epsilon:
+            if sortear_jogadas_q:
+                jogada, novo_estado = gerador.sortear_com_estado(estado, aleatorio)
+                acao = "PASSE" if jogada.eh_passe() else jogada.tipo_carta.name
+            elif treinamento or epsilon:
                 acao, jogada, novo_estado = agente.escolher_opcao(turno, epsilon)
             else:
                 acao, jogada, novo_estado = agente.decidir_turno(estado, turno)
@@ -103,7 +107,8 @@ def executar_partida(agente, inicial, semente, lado, primeiro, adversario, profu
     maos_primeira_disputa = maos_primeira_disputa or [None, None]
     return {
         "semente": semente, "lado_q": lado + 1, "lado_inicial": primeiro + 1,
-        "adversario": adversario, "epsilon": round(epsilon, 6), "resultado": resultado,
+        "adversario": adversario, "epsilon": 1.0 if sortear_jogadas_q else round(epsilon, 6),
+        "resultado": resultado,
         "jogadas": jogadas, "cartas_primeiro_passe_q": primeiros_passes[lado],
         "cartas_primeiro_passe_adversario": primeiros_passes[1 - lado],
         "cartas_primeira_disputa_q": maos_primeira_disputa[lado],
@@ -138,6 +143,8 @@ def treinar(args):
     tabela = TabelaQ()
     agente = AgenteQLearning(tabela, args.semente)
     inicial = AgenteQLearning(TabelaQ())
+    sortear_jogadas = args.jogadas_aleatorias_contra_heuristica
+    epsilon_inicial, epsilon_final = (1.0, 1.0) if sortear_jogadas else (0.90, 0.10)
     metadados = {
         "alpha": _ALPHA, "gamma": _GAMMA, "semente_treino": args.semente,
         "semente_validacao": (
@@ -145,21 +152,26 @@ def treinar(args):
             else args.semente + args.partidas + 1
         ),
         "partidas_validacao": args.validacao, "intervalo": args.intervalo,
-        "partidas_planejadas": args.partidas, "epsilon_inicial": 0.90, "epsilon_final": 0.10,
+        "partidas_planejadas": args.partidas, "epsilon_inicial": epsilon_inicial,
+        "epsilon_final": epsilon_final,
     }
+    if sortear_jogadas:
+        metadados.update(exploracao="jogadas_legais_completas", adversario_treino="politica_inicial")
     caminho_tabela = args.saida / "tabela_q.json"
     melhor_validacao = -1
     with _gravar_csv(args.saida / "treino.csv") as treino, _gravar_csv(args.saida / "validacao.csv") as validacao:
         for numero in range(args.partidas + 1):
             if numero:
                 fracao = (numero - 1) / max(args.partidas - 1, 1)
-                epsilon = 0.90 - 0.80 * fracao
+                epsilon = epsilon_inicial - (epsilon_inicial - epsilon_final) * fracao
                 lado = (numero - 1) % 2
                 primeiro = ((numero - 1) // 2) % 2
-                adversario = "aleatorio" if ((numero - 1) // 4) % 2 else "politica_inicial"
+                adversario = "politica_inicial"
+                if not sortear_jogadas and ((numero - 1) // 4) % 2:
+                    adversario = "aleatorio"
                 resultado = executar_partida(
                     agente, inicial, args.semente + numero - 1, lado, primeiro,
-                    adversario, 1, epsilon, treinamento=True,
+                    adversario, 1, epsilon, treinamento=True, sortear_jogadas_q=sortear_jogadas,
                 )
                 treino.writerow({"treinadas": numero, "partida": numero, **resultado})
             if numero % args.intervalo == 0 or numero == args.partidas:
@@ -203,6 +215,11 @@ def principal():
     treino.add_argument("--semente", type=int, default=10000)
     treino.add_argument("--semente-validacao", type=int)
     treino.add_argument("--salvar-checkpoints", action="store_true")
+    treino.add_argument(
+        "--jogadas-aleatorias-contra-heuristica", action="store_true",
+        help="Treina com sorteio de jogadas completas em todos os turnos do Q-learning, "
+             "sempre contra a política heurística inicial.",
+    )
     treino.add_argument("--saida", type=Path, default=CAMINHO_TABELA_Q.parent)
     treino.set_defaults(executar=treinar)
     avaliacao = comandos.add_parser("avaliar")

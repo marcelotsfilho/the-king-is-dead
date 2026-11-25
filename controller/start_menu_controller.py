@@ -4,7 +4,9 @@ import pygame
 
 from model.enums import TipoJogador
 from model.match_settings import (
+    LIMITES_TEMPO_BUSCA,
     SIMULACOES_MONTE_CARLO_DISPONIVEIS,
+    TIPOS_COM_LIMITE_DE_TEMPO,
     ConfiguracaoPartida,
 )
 
@@ -44,6 +46,13 @@ class ControladorMenuInicial:
             return
 
         tipo = configuracao.obter_tipo_jogador(indice)
+        if acao == "tempo":
+            if tipo in TIPOS_COM_LIMITE_DE_TEMPO:
+                posicao = LIMITES_TEMPO_BUSCA.index(configuracao.obter_limite_tempo(indice))
+                proximo = (posicao + 1) % len(LIMITES_TEMPO_BUSCA)
+                configuracao.definir_limite_tempo(indice, LIMITES_TEMPO_BUSCA[proximo])
+            return
+
         if tipo in (TipoJogador.HUMANO, TipoJogador.Q_LEARNING):
             return
 
@@ -108,6 +117,9 @@ class ControladorMenuInicial:
                                 self.configuracao_partida.definir_simulacoes_monte_carlo(
                                     indice,
                                     configuracao_em_edicao.obter_simulacoes_monte_carlo(indice),
+                                )
+                                self.configuracao_partida.definir_limite_tempo(
+                                    indice, configuracao_em_edicao.obter_limite_tempo(indice)
                                 )
                             return ACAO_NOVO_JOGO
                         continue

@@ -10,7 +10,7 @@ from model.state_evaluator import AvaliadorEstado
 
 
 CAMINHO_TABELA_Q = Path(__file__).resolve().parents[1] / "experiments" / "etapa4" / "tabela_q.json"
-CAMINHO_TABELA_Q_JOGO = CAMINHO_TABELA_Q.parent / "bateria_3000" / "tabela_selecionada.json"
+CAMINHO_TABELA_Q_JOGO = CAMINHO_TABELA_Q.parent / "treino_aleatorio" / "tabela_selecionada.json"
 _VERSAO = 1
 _TIPOS_ACAO = ("PASSE", *(carta.name for carta in TipoCartaAcao))
 

@@ -65,6 +65,14 @@ cada lado independentemente. Clique no tipo para alternar entre **Humano**,
 ou a quantidade de simulações do Monte Carlo. O Q-learning carrega a tabela
 treinada ao calcular seu primeiro turno.
 
+Para **Minimax** e **Minimax com alfa-beta**, clique em **Tempo por jogada**
+para alternar entre **Sem limite**, **5 s**, **10 s**, **20 s**, **30 s** e **60 s**.
+**Sem limite** faz a busca em profundidade fixa. Com um prazo, a IA aprofunda
+a busca de 1 até o máximo escolhido e usa a melhor jogada da última
+profundidade concluída. Se o prazo acabar antes da primeira profundidade, ela
+usa a melhor jogada já avaliada ou passa se ainda estiver no início da busca.
+O resultado mostra a profundidade alcançada e avisa quando o limite é atingido.
+
 Clique em **INICIAR PARTIDA** para confirmar. **VOLTAR AO MENU** descarta a
 edição e retorna à tela inicial, sem criar uma partida ou alterar o salvamento.
 As escolhas confirmadas são entregues ao `ControladorJogo` ao iniciar o novo
@@ -82,13 +90,11 @@ O tempo da última decisão, algoritmo, profundidade, nós visitados e cortes
 aparecem no rodapé, inclusive depois do fim da partida. Enquanto calcula, o
 quadro de instruções identifica o jogador, algoritmo e profundidade usados.
 
-O padrão é Humano contra Humano, com profundidades inicialmente em 1. A
-configuração vale para a sessão atual e ainda não é gravada no JSON da árvore.
-**CONTINUAR JOGO** mantém o carregamento direto da partida salva, sem abrir a
-tela de configuração; `--carregar` também continua direto. Como essas escolhas
-ainda não são salvas, o carregamento usa os padrões humanos. Não há um limite superior de
-profundidade imposto pelo menu, mas profundidades maiores ainda precisam ser
-avaliadas nos experimentos de desempenho.
+O padrão para uma nova partida é Humano contra Humano, com profundidade 1
+para cada jogador. O salvamento guarda o tipo de cada jogador, a profundidade,
+o limite de tempo e a quantidade de simulações do Monte Carlo. **CONTINUAR JOGO** e
+`--carregar` retomam o turno salvo com essas escolhas. Em salvamentos antigos
+que guardavam apenas a árvore, a partida abre como Humano contra Humano.
 
 Se o arquivo salvo estiver inválido, o jogo volta ao menu e apresenta uma
 mensagem de erro. Os nomes iniciais são `Jogador 1` e `Jogador 2`. A partida
@@ -140,12 +146,12 @@ na árvore.
 - [ ] Montar o `.zip` de entrega quando o relatório final estiver incorporado.
 
 Para demonstrar, selecione **Q-learning** em um dos lados e **Minimax** ou
-**Minimax com alfa-beta** no outro. O jogo usa a tabela selecionada após 500
-partidas e verifica as decisões nos finais pequenos. A tabela está em
-`experiments/etapa4/bateria_3000/tabela_selecionada.json`. O [relatório de
-evolução e guia de apresentação](experiments/etapa4/evolucao/README.md) explica
-o funcionamento atual. O [registro experimental](experiments/etapa4/README.md)
-preserva as baterias de treino, os gráficos e os comandos de reprodução.
+**Minimax com alfa-beta** no outro. No primeiro turno do Q-learning, o jogo
+carrega a tabela selecionada após 1.000 partidas com jogadas aleatórias contra
+a heurística. O agente também verifica as decisões nos finais pequenos.
+[Tabela ativa](experiments/etapa4/treino_aleatorio/tabela_selecionada.json) ·
+[Treino e validação](experiments/etapa4/treino_aleatorio/README.md) ·
+[Experimentos anteriores](experiments/etapa4/README.md)
 
 ## Segunda entrega — árvore de estados
 
@@ -280,12 +286,13 @@ arvore_carregada = serializador.carregar("arvore_da_partida.json")
 
 O arquivo guarda os estados, as jogadas, a relação entre pais e filhos, quais
 nós já foram expandidos e qual era o nó atual. A marcação do caminho visitado é
-reconstruída no carregamento.
+reconstruída no carregamento. A configuração da partida, quando informada,
+fica no campo `configuracao_partida` e pode ser lida com `carregar_partida()`.
 
 No fluxo normal não é necessário chamar esses métodos manualmente. O Controller
 salva `saves/state_tree.json` ao encerrar a aplicação ou concluir a partida, e
-o botão **CONTINUAR JOGO** restaura a árvore e usa uma cópia do nó atual como
-estado do jogo. Durante a leitura, o menu apresenta a mensagem de carregamento.
+o botão **CONTINUAR JOGO** restaura a árvore, a configuração e o turno do nó
+atual. Durante a leitura, o menu apresenta a mensagem de carregamento.
 
 O salvamento manual ou automático acontece desta forma:
 
@@ -505,11 +512,9 @@ the-king-is-dead/
 
 ### `main.py`
 
-- `_preparar_arvore(argumentos, serializador)`: carrega
-  `saves/state_tree.json` quando existe `--carregar`; caso contrário, cria um
-  novo estado e sua raiz usando `SEMENTE_JOGO` como seed;
-- `_escolher_arvore_pelo_menu(...)`: repete a tela inicial até criar, carregar
-  ou sair; se o JSON for inválido, mantém o menu aberto com uma mensagem;
+- `_criar_arvore_inicial()`: cria a árvore de um novo jogo pela `SEMENTE_JOGO`;
+- `_escolher_partida_pelo_menu(...)`: retorna a árvore e a configuração
+  escolhida ou salva, e informa erros de carregamento na tela inicial;
 - `principal()`: prepara a pasta de salvamento, inicializa Pygame, Model, View,
   menu, árvore e Controller, executa a aplicação e encerra o Pygame.
 
@@ -864,12 +869,14 @@ aceitam a nota como argumento opcional; os demais fluxos continuam calculando
 a avaliação automaticamente na criação do nó.
 
 - `__init__()`: prepara o serializador já usado pelos estados individuais;
-- `serializar(arvore)`: converte todos os nós, incluindo a marca de jogada
-  voltada, em dados simples;
+- `serializar(arvore, configuracao_partida=None)` converte a árvore e, quando
+  informada, a configuração da partida em dados simples;
 - `restaurar(dados)`: recria nós, pais, filhos, expansão, voltas e caminho
   atual; arquivos anteriores sem a nova marca continuam aceitos;
-- `salvar(arvore, caminho)`: grava um arquivo JSON em UTF-8;
+- `salvar(arvore, caminho, configuracao_partida=None)` substitui o JSON depois
+  de gravar a árvore e a configuração completa em UTF-8;
 - `carregar(caminho)`: lê o JSON e devolve uma `ArvoreEstados` funcional;
+- `carregar_partida(caminho)` devolve a árvore e a configuração da partida;
 - `_obter_indice_no()`: troca referências entre objetos por índices simples;
 - `_validar_dados_principais()`: verifica versão, lista e nó atual;
 - `_validar_dados_raiz()`: confirma que a raiz não possui pai nem jogada;
